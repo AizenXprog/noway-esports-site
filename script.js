@@ -14,8 +14,19 @@ $('#closeModal').addEventListener('click',()=>$('#playerModal').close());$('#pla
 const tournamentContainer=$('#tournaments');
 tournamentContainer.innerHTML=data.tournaments.length?data.tournaments.map(t=>`<div class="comp-item"><div><strong>${escapeHTML(t.name)}</strong><p>${escapeHTML(t.description)}</p></div><span>${escapeHTML(t.date)}</span><span>${escapeHTML(t.result)}</span></div>`).join(''):'<div class="empty-comp"><div><b>THE JOURNEY STARTS HERE.</b><p>Em breve, esta seção reunirá campeonatos disputados, resultados, adversários e a trajetória competitiva da NOWAY. Nenhum resultado foi publicado sem confirmação.</p></div><div class="empty-icon">01↗</div></div>';
 const media=$('#mediaGrid');
-const defaultCards=[{tag:'INSTAGRAM / COMUNIDADE',title:'ACOMPANHE A JORNADA.',desc:'Atualizações do Niel, treinos e bastidores do projeto.',label:'INSTAGRAM DO NIEL ↗',url:data.socials.instagram},{tag:'CONTEÚDO / COMUNIDADE',title:'MAIS PERTO DO TIME.',desc:'Acesse os canais do Niel e acompanhe os próximos conteúdos da NOWAY.',label:'ACESSAR KONECT ↗',url:data.socials.konect}];
-media.innerHTML=(data.media.length?data.media.map(m=>({tag:m.type,title:m.title,desc:'Conteúdo NOWAY',label:'ABRIR CONTEÚDO ↗',url:m.url})):defaultCards).map(m=>`<a class="media-card" href="${escapeHTML(safeLink(m.url)||'#media')}" target="_blank" rel="noopener noreferrer"><span class="media-tag">${escapeHTML(m.tag)}</span><h3>${escapeHTML(m.title)}</h3><p>${escapeHTML(m.desc)}</p><span class="media-link">${escapeHTML(m.label)}</span></a>`).join('');
+const defaultCards=[
+ {tag:'BASTIDORES / NOWAY',title:'O QUE VEM POR AÍ.',desc:'Treinos, preparação e novidades da organização em um só lugar.',label:'EM BREVE'},
+ {tag:'MÍDIA / NOWAY',title:'NOSSA HISTÓRIA EM IMAGENS.',desc:'Highlights, registros de campeonatos e momentos do elenco serão publicados aqui.',label:'CONTEÚDOS EM PREPARAÇÃO'}
+];
+if(data.media.length){
+ media.innerHTML=data.media.map(m=>{
+  const link=safeLink(m.url);
+  const content=`<span class="media-tag">${escapeHTML(m.type||'MÍDIA')}</span><h3>${escapeHTML(m.title)}</h3><p>Conteúdo oficial da NOWAY.</p><span class="media-link">ABRIR CONTEÚDO ↗</span>`;
+  return link?`<a class="media-card" href="${escapeHTML(link)}" target="_blank" rel="noopener noreferrer">${content}</a>`:`<article class="media-card">${content}</article>`;
+ }).join('');
+}else{
+ media.innerHTML=defaultCards.map(m=>`<article class="media-card"><span class="media-tag">${escapeHTML(m.tag)}</span><h3>${escapeHTML(m.title)}</h3><p>${escapeHTML(m.desc)}</p><span class="media-link">${escapeHTML(m.label)}</span></article>`).join('');
+}
 $('#year').textContent=String(new Date().getFullYear());
 const menu=$('#mobileNav');$('#menuBtn').addEventListener('click',()=>{menu.hidden=!menu.hidden;$('#menuBtn').setAttribute('aria-expanded',String(!menu.hidden))});menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.hidden=true;$('#menuBtn').setAttribute('aria-expanded','false')}));
 window.addEventListener('scroll',()=>{$('.reading-line').style.width=`${100*window.scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)}%`},{passive:true});
