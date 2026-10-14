@@ -230,3 +230,22 @@ setInterval(async()=>{
     if(activeId)await openTicket(activeId);
   }catch(error){console.warn("NOWAY ID: atualização adiada",error)}
 },60000);
+
+
+// Mostra o botão do Google somente quando o provedor estiver habilitado.
+(async function nowayCheckGoogleProvider(){
+  try{
+    const url="https://vdipsufzlqmnprbjiojb.supabase.co/auth/v1/settings";
+    const response=await fetch(url,{
+      headers:{"apikey":"sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e"}
+    });
+    if(!response.ok)return;
+    const settings=await response.json();
+    if(settings?.external?.google===false){
+      const button=$id("nowayGoogleLogin");
+      button.disabled=true;
+      button.title="A autenticação Google ainda precisa ser ativada no Supabase";
+      button.textContent="LOGIN GOOGLE — ATIVAÇÃO PENDENTE";
+    }
+  }catch{ /* Sem resposta do serviço, o fluxo normal continua disponível. */ }
+})();
