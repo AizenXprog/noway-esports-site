@@ -46,7 +46,7 @@
       <span class="noway-tiny">CONTA AUTENTICADA</span>
       <h3 id="nowayAccountName">MEMBRO NOWAY</h3>
       <span class="noway-role" id="nowayAccountRole">MEMBRO</span>
-    </div><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div>
+    </div><div class="noway-account-actions"><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></div>
     <div class="noway-dash-grid">
       <section class="noway-panel">
         <div class="noway-panel-top"><span class="noway-tiny">01 / NOVO CONTATO</span><h3>MANDE SUA MENSAGEM.</h3></div>
@@ -63,7 +63,7 @@
       <section class="noway-panel">
         <div class="noway-panel-top"><span class="noway-tiny">02 / MENSAGENS</span><h3 id="nowayInboxTitle">SUAS CONVERSAS.</h3></div>
         <p class="noway-inbox-description" id="nowayInboxDescription">Acompanhe suas solicitações e as respostas da equipe.</p>
-        <div id="nowayContactsList" class="noway-contact-list"><p class="noway-muted">Carregando solicitações...</p></div>
+        <button type="button" id="nowayRefreshInbox" class="noway-outline-action noway-refresh-inbox">ATUALIZAR MENSAGENS ↻</button><div id="nowayContactsList" class="noway-contact-list"><p class="noway-muted">Carregando solicitações...</p></div>
       </section>
     </div>
     <section id="nowayThreadSection" class="noway-panel noway-thread-panel" hidden>
