@@ -144,7 +144,7 @@ $id("nowayGoogleLogin").addEventListener("click",async()=>{
   feedback("Redirecionando para o Google...");
   const {error}=await supabase.auth.signInWithOAuth({
     provider:"google",
-    options:{redirectTo:location.origin+location.pathname+"#community"}
+    options:{redirectTo:location.origin+location.pathname}
   });
   if(error){feedback("Google ainda não disponível: "+error.message+". Use o acesso por e-mail.",true);button.disabled=false}
 });
@@ -154,7 +154,7 @@ $id("nowayEmailForm").addEventListener("submit",async event=>{
   const form=event.currentTarget;setBusy(form,true);
   const email=$id("nowayLoginEmail").value.trim().toLowerCase();
   const {error}=await supabase.auth.signInWithOtp({
-    email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname+"#community"}
+    email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}
   });
   setBusy(form,false);
   feedback(error?"Não foi possível enviar o link: "+error.message:
