@@ -201,3 +201,105 @@
   .player-stream-preview{min-height:190px}
   .player-stream-play{padding:12px 16px}
 }
+
+
+/* NOWAY ID — comunidade, autenticação e central de mensagens */
+[hidden]{display:none!important}
+.header-login{
+  border:1px solid #8e971d;background:#f2ff00;color:#08090a;
+  padding:11px 15px;font:900 10px/1.4 Inter,sans-serif;
+  letter-spacing:.11em;cursor:pointer;transition:background .2s,transform .2s;
+}
+.header-login:hover{background:#fff;transform:translateY(-2px)}
+.noway-id-section{background:#0e0f10;border-top:1px solid #292c2c;scroll-margin-top:30px}
+.noway-id-section .section-heading{margin-bottom:38px}
+.noway-system-notice{
+  border-left:3px solid #f2ff00;background:#242616;color:#f1f3e5;
+  padding:15px 20px;font:600 13px/1.6 Inter,sans-serif;margin-bottom:25px
+}
+.noway-system-notice.is-error{border-left-color:#e13b4d;background:#25171c}
+.noway-tiny{font:800 10px/1.6 Inter,sans-serif;letter-spacing:.2em;color:#f2ff00}
+.noway-auth-surface{display:grid;grid-template-columns:1fr .9fr;min-height:435px;border:1px solid #3a3c3d;background:#141516}
+.noway-auth-intro{padding:clamp(35px,5vw,75px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+background:radial-gradient(circle at 15% 15%,#e0ff0014,transparent 56%),#17191a}
+.noway-auth-intro h3,.noway-auth-form h3,.noway-account-strip h3,.noway-panel h3{
+  font:900 clamp(36px,4vw,58px)/.95 'Barlow Condensed',sans-serif;
+  letter-spacing:-.01em;margin:18px 0
+}
+.noway-auth-intro p,.noway-auth-help{color:#a9adae;font:400 13px/1.85 Inter,sans-serif;max-width:420px}
+.noway-auth-points{display:flex;flex-direction:column;gap:10px;margin-top:27px;color:#989c9d;font:800 10px/1.4 Inter,sans-serif;letter-spacing:.09em}
+.noway-auth-form{padding:clamp(32px,4vw,65px);border-left:1px solid #343537}
+.noway-auth-form h3{font-size:55px}
+.noway-google-button{width:100%;background:#f1f0ec;color:#141414;border:0;padding:16px 20px;min-height:53px;
+display:flex;align-items:center;justify-content:center;gap:12px;font:800 11px/1.35 Inter,sans-serif;letter-spacing:.04em}
+.noway-google-mark{font:800 19px/1 Inter,sans-serif;color:#4285f4}
+.noway-google-button:hover{background:#fff}
+.noway-auth-divider{position:relative;margin:30px 0 20px;text-align:center;font-size:9px;color:#8f9495;letter-spacing:.12em}
+.noway-auth-divider:before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #343638}
+.noway-auth-divider span{position:relative;background:#141516;padding:0 13px}
+.noway-form{display:flex;flex-direction:column;gap:10px}
+.noway-form label,#nowayOwnerTicketControls label{font:800 10px/1.6 Inter,sans-serif;letter-spacing:.12em;color:#c7c8c8}
+.noway-form input,.noway-form select,.noway-form textarea,#nowayTicketStatus,.noway-member-row select{
+  width:100%;min-width:0;border:1px solid #424546;background:#1b1d1f;color:#f2f2f0;border-radius:0;
+  padding:13px 15px;font:500 13px/1.6 Inter,sans-serif;outline:none;resize:vertical
+}
+.noway-form input:focus,.noway-form textarea:focus,.noway-form select:focus,#nowayTicketStatus:focus{
+  border-color:#f2ff00;box-shadow:0 0 0 2px #f2ff0024
+}
+.noway-form .btn{border:0;margin-top:11px;cursor:pointer}
+.noway-form .btn:disabled,.noway-google-button:disabled,.noway-mini-action:disabled{opacity:.6;cursor:wait}
+.noway-auth-help{font-size:11px;margin:15px 0 0}
+.noway-dashboard{display:flex;flex-direction:column;gap:15px}
+.noway-account-strip{background:#1a1c1d;padding:27px 34px;border:1px solid #333536;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.noway-account-strip h3{font-size:42px;margin:8px 0}
+.noway-role{display:inline-block;background:#f2ff00;color:#0a0a0a;padding:5px 10px;
+font:900 9px Inter,sans-serif;letter-spacing:.14em}
+.noway-outline-action,.noway-mini-action{border:1px solid #676d6e;background:transparent;color:#f7f7f5;
+font:800 10px/1.5 Inter,sans-serif;padding:12px 16px;letter-spacing:.08em;cursor:pointer}
+.noway-outline-action:hover,.noway-mini-action:hover{border-color:#f2ff00;color:#f2ff00}
+.noway-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.noway-panel{border:1px solid #393b3c;background:#161719;padding:clamp(21px,3vw,36px)}
+.noway-panel-top{margin-bottom:25px}
+.noway-panel-top h3{font-size:40px;margin:10px 0}
+.noway-muted,.noway-inbox-description{color:#a8acad;font:500 12px/1.8 Inter,sans-serif}
+.noway-contact-list{display:flex;flex-direction:column;gap:8px;max-height:490px;overflow-y:auto}
+.noway-ticket{width:100%;text-align:left;background:#202224;border:1px solid #3e4041;color:#e8e9e9;
+padding:17px;display:grid;grid-template-columns:1fr auto;gap:7px;align-items:start;cursor:pointer}
+.noway-ticket:hover{border-color:#f2ff00}
+.noway-ticket-title{grid-column:1/-1;font:800 18px/1.1 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.noway-ticket-by{font:600 10px/1.4 Inter,sans-serif;color:#aaa}
+.noway-ticket-status{font:800 9px/1.5 Inter,sans-serif;letter-spacing:.08em;color:#f2ff00;text-align:right}
+.noway-thread-panel{margin-top:0}
+.noway-thread-messages{display:flex;flex-direction:column;gap:12px;margin-bottom:25px}
+.noway-chat-message{max-width:86%;align-self:flex-start;background:#222426;border-left:2px solid #696e70;padding:17px 22px}
+.noway-chat-message.is-own{align-self:flex-end;background:#252a1d;border-left-color:#f2ff00}
+.noway-chat-author{font:900 9px/1.5 Inter,sans-serif;color:#f2ff00;letter-spacing:.13em}
+.noway-chat-message p{white-space:pre-wrap;overflow-wrap:anywhere;color:#dcdfe0;font:500 13px/1.8 Inter,sans-serif;margin:10px 0 0}
+#nowayOwnerTicketControls{margin-top:25px;padding-top:20px;border-top:1px solid #3a3c3d;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#nowayTicketStatus{width:auto;min-width:185px}
+.noway-member-row{display:grid;grid-template-columns:minmax(130px,1fr) minmax(150px,230px) auto;
+gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
+.noway-member-row>span{font:700 13px Inter,sans-serif}
+.noway-member-row>strong{font-size:11px;color:#f2ff00}
+@media(max-width:950px){
+  .noway-auth-surface{grid-template-columns:1fr 1fr}
+  .noway-dash-grid{grid-template-columns:1fr}
+  .noway-auth-intro,.noway-auth-form{padding:32px}
+}
+@media(max-width:760px){
+  .header-login{padding:9px;font-size:9px}
+  .noway-auth-surface{grid-template-columns:1fr}
+  .noway-auth-form{border-left:0;border-top:1px solid #343537}
+  .noway-auth-intro{padding:28px}
+  .noway-auth-intro h3{font-size:47px}
+  .noway-auth-form{padding:28px}
+  .noway-account-strip{padding:25px 18px;align-items:flex-start;flex-wrap:wrap}
+  .noway-account-strip h3{font-size:35px}
+  .noway-panel{padding:20px 16px}
+  .noway-member-row{grid-template-columns:1fr auto}
+  .noway-member-row select{grid-column:1;grid-row:2}
+  .noway-member-row button{grid-column:2;grid-row:2}
+  .noway-chat-message{max-width:96%}
+  #nowayOwnerTicketControls{align-items:stretch;flex-direction:column}
+  #nowayTicketStatus{width:100%}
+}
