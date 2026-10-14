@@ -204,3 +204,29 @@ $id("nowaySaveStatus").addEventListener("click",async()=>{
 
 supabase.auth.onAuthStateChange(()=>{setTimeout(()=>{refreshAuth().catch(err=>feedback("Erro de acesso: "+err.message,true))},0)});
 refreshAuth().catch(err=>feedback("Erro ao iniciar NOWAY ID: "+err.message,true));
+
+
+// Controles de administração e atualização manual, sem compartilhar e-mail no site.
+$id("nowayCopyId").addEventListener("click",async()=>{
+  if(!signedUser)return;
+  try {
+    await navigator.clipboard.writeText(signedUser.id);
+    feedback("ID da conta copiado. Ele permite que a gestão identifique seu perfil.");
+  } catch {
+    feedback("ID da sua conta: "+signedUser.id);
+  }
+});
+$id("nowayRefreshInbox").addEventListener("click",async()=>{
+  await refreshTickets();
+  if(activeId)await openTicket(activeId);
+  if(profile?.role==="owner")await refreshMembers();
+  feedback("Caixa de entrada atualizada.");
+});
+// Mantém a caixa de entrada atualizada sem descartar rascunhos.
+setInterval(async()=>{
+  if(!signedUser || document.hidden)return;
+  try {
+    await refreshTickets();
+    if(activeId)await openTicket(activeId);
+  }catch(error){console.warn("NOWAY ID: atualização adiada",error)}
+},60000);
