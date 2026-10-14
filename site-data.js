@@ -5,7 +5,7 @@ window.NOWAY_DATA = {
     { id:'prado', name:'Prado', role:'Âncora / Suporte', management:'Team Manager', status:'Em avaliação', initials:'PR', bio:'Responsável pela gestão operacional e competitiva da NOWAY. Dentro do servidor, atua no suporte e na coordenação de jogadas.', socials:[] },
     { id:'jhonny', name:'Jhonny', role:'2º Entry / Lurker', management:'', status:'Em avaliação', initials:'JH', bio:'Atuação próxima aos objetivos, abrindo espaço e apoiando as entradas e retomadas.', socials:[] },
     { id:'imperador', name:'Imperador', role:'Âncora / Suporte', management:'', status:'Em avaliação', initials:'IM', bio:'Focado no controle dos objetivos, no suporte da equipe e nas decisões em momentos decisivos.', socials:[] },
-    { id:'ace', name:'Ace', role:'Função em definição', management:'', status:'Em avaliação', initials:'AC', bio:'Jogador em avaliação para definição da função que melhor complementa o elenco.', socials:[] }
+    { id:'ace', name:'Ace', role:'Player Scout', management:'Recrutamento', status:'Em avaliação', initials:'AC', bio:'Responsável por identificar novos talentos, realizar os primeiros contatos e encaminhar candidatos para tryouts da NOWAY.', socials:[] }
   ],
   tournaments: [], // {name:'Nome', date:'2026', result:'...', description:'...'}
   media: [] // {title:'Título', type:'Vídeo', url:'https://...', image:'assets/imagem.webp'}
