@@ -8,3 +8,34 @@
 /* Perfis com biografias longas e parágrafos preservados */
 .modal-body p{white-space:pre-line}
 .player-card:focus-visible,.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+
+
+/* Atualização NOWAY: Brasil, assinatura visual NW e biografia editorial. */
+.hero::after,.media-card::before,.lead-card::after{content:"";position:absolute;background:url("assets/logo-white.webp") center/contain no-repeat;pointer-events:none;opacity:.045}
+.hero::after{right:0;bottom:0;width:190px;height:190px}
+.media-card::before{right:-6%;top:-8%;width:210px;height:210px;transform:rotate(-15deg)}
+.lead-card{position:relative;overflow:hidden}
+.lead-card::after{right:-10px;bottom:-18px;width:120px;height:120px}
+.flag-corner{position:absolute;top:105px;right:52px;z-index:4;width:29px;height:20px;background:#009b3a;overflow:hidden;border:1px solid #ffffff33;border-radius:2px;pointer-events:none}
+.flag-corner::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:13px;background:#ffdf00;transform:translate(-50%,-50%) rotate(45deg)}
+.story-layout{align-items:start;gap:clamp(28px,5vw,84px);grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr)}
+.story-image{position:sticky;top:28px}
+.story-generated-art{background:radial-gradient(circle at 25% 70%,#efff0028,transparent 48%),linear-gradient(160deg,#151515,#090909);min-height:620px;position:relative;overflow:hidden;border:1px solid #2c2f31}
+.story-art-grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:42px 42px}
+.story-floating-logo{position:absolute;right:4%;top:10%;width:62%;height:75%;object-fit:contain;opacity:.82;filter:drop-shadow(0 0 40px #efff0030)}
+.story-art-label{position:absolute;left:32px;top:28px;font-size:10px;letter-spacing:.19em;font-weight:800;color:#d6d6d1}
+.story-art-label span{color:var(--yellow);margin:0 8px}
+.story-copy{max-width:760px}
+.story-copy h3{font-size:clamp(44px,4.3vw,68px);line-height:.97;margin:24px 0 34px}
+.story-copy h3 span{color:var(--yellow)}
+.story-copy p{font-size:14px;line-height:2;letter-spacing:.003em;margin-bottom:22px;color:#afb2b4}
+.story-copy p strong{color:#f8f8f5;font-weight:750}
+.story-copy .story-closing{font-size:16px;line-height:1.6;padding:22px 24px;border-left:3px solid var(--yellow);background:linear-gradient(90deg,#f2ff000d,transparent);margin:30px 0 22px}
+.story-copy .story-closing strong{color:var(--yellow)}
+.media-card:not(:first-child):before{background:url("assets/logo-white.webp") center/contain no-repeat;opacity:.06}
+.player-modal{width:min(1080px,calc(100% - 40px));max-height:90vh}
+#modalContent{display:grid;grid-template-columns:minmax(290px,36%) 1fr;min-height:640px}
+.modal-art{height:auto;min-height:640px;position:sticky;top:0}
+.modal-art img{height:100%;width:100%;object-fit:cover}
+.modal-body{padding:44px 42px}
+@media(max-width:760px){.story-layout{grid-template-columns:1fr;gap:30px}.story-image{position:relative;top:auto}.story-generated-art{height:330px;min-height:330px}.story-copy h3{font-size:clamp(42px,9vw,62px)}.story-copy p{font-size:13px;line-height:1.85}.flag-corner{top:82px;right:20px}#modalContent{grid-template-columns:1fr}.modal-art{position:relative;min-height:260px;height:300px}.modal-body{padding:28px 22px}}
