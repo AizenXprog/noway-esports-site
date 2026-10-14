@@ -303,3 +303,10 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   #nowayOwnerTicketControls{align-items:stretch;flex-direction:column}
   #nowayTicketStatus{width:100%}
 }
+
+.noway-account-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.noway-name-form{padding:22px;background:#1a1c1d;border:1px solid #3a3c3d}
+.noway-name-form input{max-width:440px}
+.noway-name-form .btn{max-width:265px}
+.noway-refresh-inbox{margin:0 0 15px;padding:9px 12px;font-size:9px}
+@media(max-width:760px){.noway-account-actions{width:100%;align-items:stretch}.noway-account-actions button{flex:1 1 auto}}
