@@ -249,3 +249,26 @@ setInterval(async()=>{
     }
   }catch{ /* Sem resposta do serviço, o fluxo normal continua disponível. */ }
 })();
+
+
+// Nome exibido na comunidade para usuários com ou sem perfil Google.
+$id("nowayEditName").addEventListener("click",()=>{
+  const form=$id("nowayDisplayNameForm");
+  form.hidden=!form.hidden;
+  $id("nowayDisplayName").value=profile?.display_name==="Membro"?"":(profile?.display_name||"");
+  if(!form.hidden)$id("nowayDisplayName").focus();
+});
+$id("nowayDisplayNameForm").addEventListener("submit",async(event)=>{
+  event.preventDefault();
+  if(!signedUser)return;
+  const form=event.currentTarget;
+  const name=$id("nowayDisplayName").value.trim();
+  if(name.length<1||name.length>80)return feedback("Informe um nome de até 80 caracteres.",true);
+  setBusy(form,true);
+  const {error}=await supabase.rpc("noway_update_display_name",{new_name:name});
+  setBusy(form,false);
+  if(error)return feedback("Não foi possível mudar o nome: "+error.message,true);
+  form.hidden=true;
+  await refreshAuth();
+  feedback("Seu nome na comunidade foi atualizado.");
+});
