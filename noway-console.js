@@ -57,6 +57,43 @@ const viewPermitted=name=>{
   return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
+
+// Avisos reais por área: comparação de versões de registros por conta e navegador.
+// O primeiro acesso cria uma linha-base; não inventa notificações antigas.
+const nowayAreaRevisions=new Map();
+function nowayRevisionKey(tab){return "noway:seen:"+me?.id+":"+tab;}
+function nowayFingerprint(text){
+  let hash=2166136261;
+  for(let i=0;i<text.length;i++){hash=Math.imul(hash^text.charCodeAt(i),16777619);}
+  return (hash>>>0).toString(36);
+}
+function nowayNavDot(tab,visible){
+  const el=document.querySelector('[data-console-tab="'+tab+'"]');
+  if(!el)return;
+  el.classList.toggle("has-new",Boolean(visible));
+  if(visible)el.title="Há atualizações que você ainda não abriu";
+  else el.removeAttribute("title");
+}
+function nowayObserveArea(tab,items){
+  if(!me?.id||!Array.isArray(items))return;
+  const fingerprint=nowayFingerprint(items.join("|"));
+  nowayAreaRevisions.set(tab,fingerprint);
+  const key=nowayRevisionKey(tab);
+  let previous=null;
+  try{previous=localStorage.getItem(key);}catch{}
+  if(previous===null||currentTab===tab){
+    try{localStorage.setItem(key,fingerprint);}catch{}
+    nowayNavDot(tab,false);
+  }else nowayNavDot(tab,previous!==fingerprint);
+}
+function nowayMarkAreaSeen(tab){
+  const version=nowayAreaRevisions.get(tab);
+  if(version!==undefined&&me?.id){
+    try{localStorage.setItem(nowayRevisionKey(tab),version);}catch{}
+  }
+  nowayNavDot(tab,false);
+}
+
 function syncConsoleNavigationGroups(){
   document.querySelectorAll("[data-console-nav-group]").forEach(group=>{
     const buttons=[...group.querySelectorAll("[data-console-tab]")];
@@ -70,6 +107,7 @@ function syncConsoleNavigationGroups(){
 function setTab(name){
   if(!signed()||!viewPermitted(name))name="overview";
   currentTab=name;
+  nowayMarkAreaSeen(name);
   const root=$("nowayDashboard");
   root.dataset.consoleActive=name;
   document.querySelectorAll("[data-console-tab]").forEach(btn=>{
@@ -132,6 +170,10 @@ async function loadAccount(){
     if(res.error)throw res.error;
     account=res.data||{id:me.id,role:"membro",display_name:me.user_metadata?.full_name||"Membro",avatar_url:null};
     if(hqIdentity!==me.id){hqSnapshot=null;hqActivity=[];hqInbox=[];hqLoadedAt=0;hqIdentity=me.id;}
+    nowayAreaRevisions.clear();
+    document.querySelectorAll("[data-console-tab]").forEach(button=>{
+      button.classList.remove("has-new");button.removeAttribute("title");
+    });
     if(playerStatsState.userId&&playerStatsState.userId!==me.id){
       playerStatsState.rows=[];playerStatsState.people=[];playerStatsState.roster=[];playerStatsState.matches=[];
       playerStatsState.userId=null;playerStatsState.loadedAt=0;
@@ -251,7 +293,7 @@ async function refreshHQ(force=false){
     }
     if(owner)tasks.push(db.from("noway_contacts")
       .select("id,subject,status,updated_at,created_at").order("updated_at",{ascending:false}).limit(10));
-    else if(!active)tasks.push(db.from("noway_contacts")
+    else tasks.push(db.from("noway_contacts")
       .select("id,subject,status,updated_at,created_at").eq("user_id",currentId)
       .order("updated_at",{ascending:false}).limit(5));
     const responses=await Promise.all(tasks);
@@ -263,6 +305,7 @@ async function refreshHQ(force=false){
     if(active){
       const news=responses[index++];
       const messages=responses[index++];
+      if(!news.error)nowayObserveArea("team",(news.data||[]).map(a=>a.created_at+"::"+a.title));
       if(!news.error)for(const a of news.data||[])items.push({
         type:"news",icon:"▣",title:"Comunicado: "+a.title,description:a.author_name+" · "+a.body.slice(0,100),
         created_at:a.created_at,tab:"team"
@@ -276,6 +319,7 @@ async function refreshHQ(force=false){
     const contacts=responses[index];
     if(contacts&&!contacts.error){
       const contactList=contacts.data||[];
+      nowayObserveArea("contacts",contactList.map(a=>[a.id,a.updated_at,a.status].join(":")));
       hqInbox=owner?contactList:[];
       for(const t of contactList.slice(0,6))items.push({
         type:"contact",icon:"✉",title:"Contato: "+t.subject,
@@ -308,6 +352,10 @@ async function refreshEvents(){
       .gte("start_at",start).order("start_at",{ascending:true}).limit(1000);
     if(error){notice("Não foi possível carregar a agenda: "+error.message,true);return;}
     events=data||[];renderCalendar();renderEvents();renderOverview();
+    const signature=events.slice(-150).map(e=>[e.id,e.kind,e.start_at,e.status,e.opponent,e.competition].join(":"));
+    nowayObserveArea("agenda",signature);
+    nowayObserveArea("competitive",events.filter(e=>e.kind==="partida"||e.kind==="treino")
+      .map(e=>[e.id,e.start_at,e.status,e.opponent].join(":")));
     if(currentTab==="competitive")renderCompetitive();
     if(currentTab==="stats")renderPlayerStats();
   })();
