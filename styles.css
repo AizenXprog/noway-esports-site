@@ -795,7 +795,7 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   transform:rotate(-7deg);transition:transform .5s cubic-bezier(.2,.8,.2,1)
 }
 .discord-shell:hover .discord-symbol{transform:rotate(0deg) translateY(-5px)}
-.discord-symbol svg{width:83px;height:83px;color:#f2ff00}
+.discord-symbol img{display:block;width:98px;height:98px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(242,255,0,.2))}
 .discord-display-caption{font:900 10px/1.4 Inter,sans-serif;letter-spacing:.23em;color:#c2c7c0;margin-top:36px}
 .discord-display-center>strong{font:900 clamp(52px,5.5vw,84px)/.85 'Barlow Condensed',sans-serif;letter-spacing:-.02em;color:#fff;margin:14px 0 0}
 .discord-display-center>strong span{color:#f2ff00}
@@ -832,7 +832,7 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   .discord-display-top,.discord-display-bottom{padding:15px 18px}
   .discord-display-center{padding:29px 12px}
   .discord-symbol{width:91px;height:91px;border-radius:21px}
-  .discord-symbol svg{width:60px;height:60px}
+  .discord-symbol img{width:69px;height:69px}
   .discord-display-caption{margin-top:21px;font-size:8px}
   .discord-display-center>strong{font-size:54px}
   .discord-display-sub{margin-top:11px}
