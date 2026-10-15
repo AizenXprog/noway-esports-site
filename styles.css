@@ -870,3 +870,9 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   .noway-home-console-banner{flex-direction:column;align-items:stretch;padding:21px 18px}
   .noway-home-console-banner>b{text-align:center}
 }
+
+
+@media(max-width:760px){
+  /* Logado: o atalho substitui o botão Entrar no cabeçalho estreito. */
+  .header:has(.noway-portal-quick:not([hidden])) #nowayHeaderLogin{display:none}
+}
