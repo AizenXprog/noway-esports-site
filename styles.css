@@ -393,3 +393,54 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
       linear-gradient(180deg,transparent 60%,rgba(20,21,22,.28) 81%,#141516 100%);
   }
 }
+
+/* NOWAY — microinterações desktop guiadas pelo mouse v1 */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  /* Cards reagem com luz localizada e inclinação mínima, sem cobrir os textos. */
+  .player-card {
+    --noway-mouse-x:50%;
+    --noway-mouse-y:50%;
+    --noway-tilt-x:0deg;
+    --noway-tilt-y:0deg;
+    transform-style:preserve-3d;
+    will-change:auto;
+    transition:transform .24s cubic-bezier(.2,.8,.2,1),border-color .24s ease,box-shadow .24s ease;
+  }
+  .player-card::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:5;
+    border-radius:inherit;
+    opacity:0;
+    background:radial-gradient(
+      270px circle at var(--noway-mouse-x) var(--noway-mouse-y),
+      rgba(242,255,0,.105),rgba(242,255,0,.028) 37%,transparent 74%
+    );
+    transition:opacity .28s ease;
+  }
+  .player-card:hover {
+    transform:perspective(1100px) translateY(-6px) rotateX(var(--noway-tilt-x)) rotateY(var(--noway-tilt-y));
+    border-color:rgba(242,255,0,.68);
+    box-shadow:0 15px 35px rgba(0,0,0,.24),0 0 0 1px rgba(242,255,0,.07);
+  }
+  .player-card:hover::after {opacity:1}
+  /* O logo do topo acompanha o cursor quase imperceptivelmente. */
+  .hero-symbol {
+    transform:translate3d(var(--noway-hero-x,0px),var(--noway-hero-y,0px),0) rotate(-9deg);
+    transition:transform .4s cubic-bezier(.18,.75,.25,1);
+    will-change:transform;
+  }
+  /* Botões magnéticos apenas nas chamadas principais, com deslocamento contido. */
+  .hero-cta .btn,.contact-actions .btn {
+    transform:translate3d(var(--noway-btn-x,0px),var(--noway-btn-y,0px),0);
+    transition:transform .2s cubic-bezier(.2,.75,.25,1),background-color .2s ease,color .2s ease,border-color .2s ease;
+  }
+  .hero-cta .btn:hover,.contact-actions .btn:hover {
+    filter:brightness(1.045);
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .hero-symbol,.player-card,.hero-cta .btn,.contact-actions .btn {will-change:auto;transition-duration:.01ms}
+}
