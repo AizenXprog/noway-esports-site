@@ -76,6 +76,13 @@ async function refreshAuth() {
   $id("nowayHeaderLogin").textContent=signedUser?"MINHA CONTA ↗":"ENTRAR / NOWAY ID ↗";
   const quick=$id("nowayPortalQuick");
   if(quick)quick.hidden=!signedUser;
+  const startAccess=$id("nowayStartAccountLink");
+  if(startAccess){
+    startAccess.href=signedUser?"painel.html":"#community";
+    const title=$id("nowayStartAccountTitle"),note=$id("nowayStartAccountNote");
+    if(title)title.textContent=signedUser?"ABRIR MEU PAINEL.":"ENTRAR NO NOWAY ID.";
+    if(note)note.textContent=signedUser?"CONTA CONECTADA · ACESSAR ÁREA PESSOAL":"LOGIN GOOGLE OU E-MAIL";
+  }
   $id("nowayThreadSection").hidden=true;
   $id("nowayTeamWorkspace").hidden=true;
   stopTeamFeed();
