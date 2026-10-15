@@ -444,3 +444,60 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
 @media (prefers-reduced-motion:reduce) {
   .hero-symbol,.player-card,.hero-cta .btn,.contact-actions .btn {will-change:auto;transition-duration:.01ms}
 }
+
+
+/* NOWAY — fidelidade de cor no mobile / evita auto-darkening */
+/* Site é escuro por design, mas cores são DEFINIDAS pelo projeto, não pelo tema do telefone.
+   Chrome Android e WebViews podem escurecer superfícies claras em sites sem esta indicação. */
+:root {
+  color-scheme: only light;
+  --yellow:#f2ff00;
+  --noway-brand-yellow:#f2ff00;
+}
+@media (max-width:760px), (hover:none) and (pointer:coarse) {
+  /* Evita filtros de ruído em tela inteira escurecendo ou tingindo camadas GPU no mobile. */
+  .noise{display:none!important}
+  /* Amarelo institucional puro — sem transparência, gradiente oliva ou mistura. */
+  .ticker,
+  .manifesto,
+  .store-banner,
+  .btn-yellow,
+  .filter.is-active,
+  .player-mgmt,
+  .header-login,
+  .noway-role,
+  .noway-form .btn-yellow {
+    background-color:#f2ff00!important;
+    color:#08090a;
+  }
+  .ticker {
+    position:relative;
+    isolation:isolate;
+    opacity:1;
+    filter:none;
+    -webkit-filter:none;
+    background-image:none!important;
+  }
+  .ticker-track,
+  .ticker-track b {
+    color:#08090a;
+    opacity:1;
+    filter:none;
+    -webkit-filter:none;
+  }
+  .manifesto,
+  .store-banner{
+    opacity:1;
+    filter:none;
+    -webkit-filter:none;
+    background-image:none!important;
+  }
+  .manifesto h2,
+  .manifesto p,
+  .store-banner h2,
+  .store-banner p{color:#08090a}
+  /* Evita tom verde-musgo nos cards pares do elenco. */
+  .player-card:nth-child(even) .player-art{
+    background:linear-gradient(155deg,#222426,#0c0d0e);
+  }
+}
