@@ -876,3 +876,19 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   /* Logado: o atalho substitui o botão Entrar no cabeçalho estreito. */
   .header:has(.noway-portal-quick:not([hidden])) #nowayHeaderLogin{display:none}
 }
+
+
+/* NOWAY — identidade verificada de autores nas conversas */
+.noway-role-message-badge{
+  display:inline-flex;align-items:center;gap:5px;white-space:nowrap;vertical-align:middle;
+  padding:4px 8px;border:1px solid rgba(242,255,0,.48);border-radius:3px;
+  background:rgba(242,255,0,.085);color:#f2ff00;
+  font:900 9px/1.3 Inter,sans-serif;letter-spacing:.075em
+}
+.noway-role-message-badge.is-manager{border-color:rgba(112,199,243,.43);background:rgba(112,199,243,.09);color:#bfe7ff}
+.noway-team-msg-meta,.noway-chat-author-line,.noway-team-news-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.noway-chat-author-line{margin:0 0 7px;gap:7px 9px}
+.noway-chat-author-line time{font:700 10px/1.5 Inter,sans-serif;color:#979f9d}
+.noway-chat-message p{margin-top:6px}
+.noway-team-msg-meta time{margin-left:auto}
+@media(max-width:760px){.noway-role-message-badge{padding:3px 6px;font-size:8px;letter-spacing:.025em}.noway-chat-author-line{gap:6px}}
