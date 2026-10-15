@@ -37,6 +37,7 @@
     <button type="button" data-console-tab="team">EQUIPE</button>
     <button type="button" data-console-tab="agenda">AGENDA</button>
     <button type="button" data-console-tab="competitive">COMPETITIVE</button>
+    <button type="button" data-console-tab="stats">ESTATÍSTICAS</button>
     <button type="button" data-console-tab="chat">CHAT DA EQUIPE <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
     <button type="button" data-console-tab="contacts">CONTATOS</button>
     <button type="button" data-console-tab="users">USUÁRIOS</button>
@@ -280,6 +281,46 @@
           </form>
         </section>
       </div>
+    </section>
+    <section id="nowayConsolePlayerStats" class="noway-console-view noway-player-stats" data-console-view="stats" hidden>
+      <div class="noway-stats-header"><div><span class="noway-tiny">NOWAY / PERFORMANCE DE RAINBOW SIX SIEGE</span>
+          <h3>PLAYER <em>STATS.</em></h3><p>Estatísticas verificáveis, registradas por confronto. Evolução individual sem números estimados.</p></div>
+        <button id="nowayStatsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div>
+      <div id="nowayStatsOverview" class="noway-stats-overview" aria-live="polite"></div>
+      <div class="noway-stats-grid">
+        <section class="noway-panel noway-stats-ranking">
+          <div class="noway-stats-panel-heading"><div><span class="noway-tiny">01 / TIME</span><h4>JOGADORES.</h4></div>
+            <label class="noway-stats-filter-label" for="nowayStatsSeason">PERÍODO
+              <select id="nowayStatsSeason"><option value="all">TODAS AS TEMPORADAS</option></select></label></div>
+          <p class="noway-stats-help">Selecione um integrante para ver seu histórico. Só entram no cálculo partidas com estatísticas registradas.</p>
+          <div id="nowayStatsPlayers" class="noway-stats-players"><p class="noway-muted">Carregando equipe...</p></div>
+        </section>
+        <section class="noway-panel noway-stats-player-detail">
+          <div id="nowayStatsPlayerDetail"><div class="noway-comp-empty"><span>NW / STATS</span><h4>ESCOLHA UM JOGADOR.</h4><p>Veja desempenho individual, K/D, KOST e estatísticas por confronto.</p></div></div>
+        </section>
+      </div>
+      <section id="nowayStatsAdmin" class="noway-panel noway-stats-admin" hidden>
+        <div class="noway-stats-panel-heading"><div><span class="noway-tiny">02 / FUNDADOR E GESTÃO</span><h4>REGISTRAR DESEMPENHO.</h4></div></div>
+        <p class="noway-stats-help">Preencha os números após a partida. É necessário um confronto finalizado e o jogador convocado no Competitive. KOST significa quantos rounds tiveram Kill, Objective, Survival ou Trade (contar cada round apenas uma vez).</p>
+        <form id="nowayStatsForm">
+          <div class="noway-stats-form-choices">
+            <div><label for="nowayStatsPlayerSelect">JOGADOR</label><select id="nowayStatsPlayerSelect" required></select></div>
+            <div><label for="nowayStatsMatchSelect">CONFRONTO FINALIZADO</label><select id="nowayStatsMatchSelect" required></select></div>
+          </div>
+          <div class="noway-stats-form-values">
+            <div><label for="nowayStatsKills">KILLS</label><input id="nowayStatsKills" type="number" min="0" max="200" required value="0"></div>
+            <div><label for="nowayStatsDeaths">DEATHS</label><input id="nowayStatsDeaths" type="number" min="0" max="100" required value="0"></div>
+            <div><label for="nowayStatsAssists">ASSISTS</label><input id="nowayStatsAssists" type="number" min="0" max="200" required value="0"></div>
+            <div><label for="nowayStatsRounds">ROUNDS JOGADOS</label><input id="nowayStatsRounds" type="number" min="1" max="100" required placeholder="Ex.: 12"></div>
+            <div><label for="nowayStatsSurvived">ROUNDS SOBREVIVIDOS</label><input id="nowayStatsSurvived" type="number" min="0" max="100" required value="0"></div>
+            <div><label for="nowayStatsKost">ROUNDS KOST</label><input id="nowayStatsKost" type="number" min="0" max="100" required value="0"></div>
+            <div><label for="nowayStatsEntryKills">ENTRY KILLS</label><input id="nowayStatsEntryKills" type="number" min="0" max="200" required value="0"></div>
+            <div><label for="nowayStatsEntryDeaths">ENTRY DEATHS</label><input id="nowayStatsEntryDeaths" type="number" min="0" max="100" required value="0"></div>
+          </div>
+          <div class="noway-stats-form-actions"><button type="submit" id="nowayStatsSave" class="btn btn-yellow">SALVAR ESTATÍSTICAS ↗</button>
+            <button type="button" id="nowayStatsOpenCompetitive" class="noway-outline-action">ABRIR COMPETITIVE ↗</button></div>
+        </form>
+      </section>
     </section>
     <section id="nowayConsoleUsers" class="noway-panel noway-console-view" data-console-view="users" hidden>
       <div class="noway-console-view-header"><div><span class="noway-tiny">05 / EXCLUSIVO DO FOUNDER</span><h3>CONTROLE DE CONTAS.</h3><p>Todos os cadastros autenticados, últimos acessos e atribuição manual de cargos.</p></div><button id="nowayAccountsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div>
