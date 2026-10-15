@@ -282,13 +282,13 @@ $id("nowayDisplayNameForm").addEventListener("submit",async(event)=>{
 // O servidor valida todos os papéis em RPC e RLS. Esconder painéis não dá permissão.
 const teamRoles=new Set(["jogador","manager","owner"]);
 let teamChannel=null,teamPollCounter=0;
-let teamDirectory=[],teamMessageSignature="",teamNewsSignature="";
+let teamDirectory=[],teamMessageSignature=null,teamNewsSignature=null;
 
 function stopTeamFeed(){
   if(teamChannel){supabase.removeChannel(teamChannel);teamChannel=null;}
   teamDirectory=[];
-  teamMessageSignature="";
-  teamNewsSignature="";
+  teamMessageSignature=null;
+  teamNewsSignature=null;
 }
 function canReadTeam(){return Boolean(signedUser&&teamRoles.has(profile?.role));}
 function canManageTeam(){return profile?.role==="manager"||profile?.role==="owner";}
@@ -385,7 +385,7 @@ async function refreshTeamNews(){
     button.disabled=true;
     const res=await supabase.rpc("noway_remove_team_announcement",{p_announcement_id:button.dataset.teamRemove});
     if(res.error){button.disabled=false;feedback("Não foi possível excluir: "+res.error.message,true);return;}
-    teamNewsSignature="";
+    teamNewsSignature=null;
     await refreshTeamNews();
     feedback("Comunicado removido da equipe.");
   }));
@@ -429,7 +429,7 @@ $id("nowayAnnouncementForm").addEventListener("submit",async event=>{
   });
   setBusy(form,false);
   if(error)return feedback("Falha ao publicar: "+error.message,true);
-  form.reset();teamNewsSignature="";await refreshTeamNews();
+  form.reset();teamNewsSignature=null;await refreshTeamNews();
   feedback("Comunicado publicado para a equipe.");
 });
 $id("nowayTeamChatForm").addEventListener("submit",async event=>{
@@ -444,7 +444,7 @@ $id("nowayTeamChatForm").addEventListener("submit",async event=>{
   setBusy(form,false);
   if(error)return feedback("Não foi possível enviar no chat: "+error.message,true);
   input.value="";
-  teamMessageSignature="";
+  teamMessageSignature=null;
   await refreshTeamChat();
   input.focus();
 });
