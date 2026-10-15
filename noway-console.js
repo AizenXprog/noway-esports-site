@@ -107,6 +107,11 @@ function syncConsoleNavigationGroups(){
 function setTab(name){
   if(!signed()||!viewPermitted(name))name="overview";
   currentTab=name;
+  if(name!=="chat"&&document.body.classList.contains("noway-chat-focus")){
+    document.body.classList.remove("noway-chat-focus");
+    const expand=$("nowayChatExpand");
+    if(expand){expand.textContent="EXPANDIR ↗";expand.setAttribute("aria-pressed","false");}
+  }
   nowayMarkAreaSeen(name);
   const root=$("nowayDashboard");
   root.dataset.consoleActive=name;
