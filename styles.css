@@ -909,3 +909,55 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
 .noway-chat-message p{margin-top:6px}
 .noway-team-msg-meta time{margin-left:auto}
 @media(max-width:760px){.noway-role-message-badge{padding:3px 6px;font-size:8px;letter-spacing:.025em}.noway-chat-author-line{gap:6px}}
+
+
+/* Ace — celebração de paternidade temporária: 15 a 22 outubro de 2026 */
+.player-modal.has-ace-celebration{isolation:isolate}
+.player-modal.has-ace-celebration .close-modal{z-index:9}
+.ace-celebration-card{
+  position:relative;overflow:hidden;margin:22px 0 29px;padding:clamp(20px,2.9vw,31px);
+  border:1px solid #d8e95f;background:
+    radial-gradient(ellipse at 98% -4%,rgba(242,255,0,.16),transparent 52%),
+    linear-gradient(145deg,#20261a,#151a16 65%,#111413);
+  box-shadow:inset 0 1px 0 #f2ff0030,0 16px 55px #0006
+}
+.ace-celebration-card::before,.ace-celebration-card::after{
+  content:"";pointer-events:none;position:absolute;width:110px;height:110px;border:1px solid #f2ff001f;
+  transform:rotate(45deg)
+}
+.ace-celebration-card::before{right:-50px;top:-52px}
+.ace-celebration-card::after{right:-73px;top:-75px}
+.ace-celebration-eyebrow{
+  display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+  color:#ecf7a9;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.13em
+}
+.ace-celebration-star{color:#f2ff00;font-size:16px;filter:drop-shadow(0 0 7px #f2ff005c)}
+.ace-celebration-card h3{
+  font:900 clamp(41px,4.5vw,65px)/.91 'Barlow Condensed',sans-serif;
+  color:#fff;margin:21px 0 15px;letter-spacing:-.018em
+}
+.ace-celebration-card h3 span{color:#f2ff00}
+.ace-celebration-line{height:2px;width:92px;background:#f2ff00;box-shadow:0 0 17px #f2ff0066}
+.ace-celebration-card p{font:500 12px/1.85 Inter,sans-serif;color:#d2d9cf;margin:16px 0 0}
+.ace-celebration-card p.ace-celebration-lead{
+  color:#f4f9d7;font:800 13px/1.7 Inter,sans-serif;margin-top:21px
+}
+.ace-celebration-signature{
+  display:block;color:#f2ff00;font:800 11px/1.7 Inter,sans-serif;
+  letter-spacing:.01em;margin:24px 0 2px
+}
+.ace-celebration-signature span{font-size:17px;vertical-align:middle}
+.ace-celebration-effects{
+  position:absolute;inset:0;overflow:hidden;z-index:5;
+  pointer-events:none;user-select:none;-webkit-user-select:none
+}
+.ace-celebration-effects canvas{display:block;width:100%;height:100%;pointer-events:none}
+@media(max-width:760px){
+  .ace-celebration-card{margin:19px 0 25px;padding:21px 18px}
+  .ace-celebration-card h3{font-size:clamp(40px,10.5vw,58px)}
+  .ace-celebration-card p{font-size:11.5px;line-height:1.85}
+  .ace-celebration-eyebrow{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ace-celebration-effects{display:none!important}
+}
