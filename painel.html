@@ -40,6 +40,12 @@
     <button type="button" data-console-tab="users">USUÁRIOS</button>
     <button type="button" data-console-tab="profile">MEU PERFIL</button>
   </nav>
+        <div id="nowayChatToast" class="noway-chat-toast" role="status" aria-live="polite" hidden>
+          <span id="nowayChatToastAvatar" class="noway-chat-toast-avatar">NW</span>
+          <div><strong id="nowayChatToastTitle">NOVA MENSAGEM NA EQUIPE</strong><p id="nowayChatToastBody">Clique para ver no chat.</p></div>
+          <button id="nowayChatToastOpen" type="button">VER ↗</button>
+          <button id="nowayChatToastClose" type="button" aria-label="Fechar notificação">✕</button>
+        </div>
   <div id="nowayConsoleOverview" class="noway-console-view" data-console-view="overview">
     <div class="noway-console-overview-heading"><span class="noway-tiny">NOWAY / CENTRAL DE OPERAÇÕES</span><h3 id="nowayOverviewGreeting">BEM-VINDO AO SEU ESPAÇO.</h3><p id="nowayOverviewDesc">Suas ferramentas, eventos e contatos em um só lugar.</p></div>
     <div id="nowayConsoleStats" class="noway-console-stats"></div>
@@ -122,12 +128,7 @@
             <div id="nowayChatEventItems"></div>
           </div>
         </form>
-        <div id="nowayChatToast" class="noway-chat-toast" role="status" aria-live="polite" hidden>
-          <span id="nowayChatToastAvatar" class="noway-chat-toast-avatar">NW</span>
-          <div><strong id="nowayChatToastTitle">NOVA MENSAGEM NA EQUIPE</strong><p id="nowayChatToastBody">Clique para ver no chat.</p></div>
-          <button id="nowayChatToastOpen" type="button">VER ↗</button>
-          <button id="nowayChatToastClose" type="button" aria-label="Fechar notificação">✕</button>
-        </div>
+
       </section>
     </section>
     <div class="noway-dash-grid">
