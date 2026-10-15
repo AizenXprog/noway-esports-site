@@ -305,6 +305,16 @@ $id("nowayDisplayNameForm").addEventListener("submit",async(event)=>{
 });
 
 
+// HQ 2.0: abrir a solicitação selecionada pela central do Founder, sem expor dados.
+if(document.body.dataset.nowayConsole==="true"){
+  window.addEventListener("noway:open-contact",async event=>{
+    const id=event.detail?.id;
+    if(!id||!signedUser)return;
+    if(!tickets.some(t=>t.id===id))await refreshTickets();
+    if(tickets.some(t=>t.id===id))await openTicket(id);
+  });
+}
+
 // NOWAY Team Hub v1 — espaços de Jogador, Gerência e Owner.
 // O servidor valida todos os papéis em RPC e RLS. Esconder painéis não dá permissão.
 const teamRoles=new Set(["jogador","manager","owner"]);
