@@ -1,4 +1,4 @@
-/* NOWAY / Interações v4 — cursor imediato, rastro leve e inclinação dos cards.
+/* NOWAY / Interações v4.1 — cursor imediato, rastro curto e inclinação dos cards.
    Usa RAF apenas enquanto há movimento; nenhuma biblioteca, sem interferir em touch. */
 (() => {
   'use strict';
@@ -60,7 +60,7 @@
     if(isInteractive!==wasInteractive){
       wasInteractive=isInteractive;
       host.classList.toggle('is-interactive',isInteractive);
-      reticle.style.scale=isInteractive?'1.17':'1';
+      // Realce via CSS, sem escalar a mira e afetar o ponto de referência.
     }
     if(isEditing!==wasEditing){
       wasEditing=isEditing;
@@ -74,8 +74,14 @@
   function pointerMove(event){
     if(!enabled||!visible||event.pointerType==='touch')return;
     const x=event.clientX,y=event.clientY;
+    // Ao entrar no navegador após sair ou ocorrer salto brusco do cursor,
+    // o rastro se reagrupa em vez de deixar partículas perdidas pelo caminho.
+    if(active && Math.hypot(x-currentX,y-currentY)>95){
+      glowX=x;glowY=y;
+      dots.forEach(dot=>{dot.x=x;dot.y=y;position(dot.element,x,y);});
+    }
     currentX=x;currentY=y;
-    // Ponteiro principal sem easing: não atrasa em relação ao mouse físico.
+    // A mira fica exatamente nas coordenadas do mouse real.
     position(reticle,x,y);
     if(!active){
       active=true;glowX=x;glowY=y;
@@ -91,27 +97,40 @@
   function frame(time){
     raf=0;
     if(!enabled||!active||!visible)return;
-    const dt=Math.max(8,Math.min(40,lastFrame?time-lastFrame:16));
+    const dt=Math.max(8,Math.min(36,lastFrame?time-lastFrame:16));
     lastFrame=time;
-    // A luz responde rapidamente; somente as partículas têm atraso deliberado.
-    const glowGain=1-Math.pow(.50,dt/16);
+
+    // O centro da mira é imediato; o brilho e o rastro permanecem próximos.
+    // Limites de distância independem do alvo (jogador, botão, link ou fundo).
+    const glowGain=1-Math.pow(.38,dt/16);
     glowX+=(currentX-glowX)*glowGain;
     glowY+=(currentY-glowY)*glowGain;
+    const glowDistance=Math.hypot(currentX-glowX,currentY-glowY);
+    if(glowDistance>15){
+      glowX=currentX+(glowX-currentX)*15/glowDistance;
+      glowY=currentY+(glowY-currentY)*15/glowDistance;
+    }
     position(glow,glowX,glowY);
-    let aheadX=currentX,aheadY=currentY;
+
     let unsettled=Math.abs(currentX-glowX)+Math.abs(currentY-glowY);
     for(let i=0;i<dots.length;i++){
       const dot=dots[i];
-      const rate=.60-i*.035;
-      const gain=1-Math.pow(1-rate,dt/16);
-      dot.x+=(aheadX-dot.x)*gain;
-      dot.y+=(aheadY-dot.y)*gain;
+      // Não perseguir a partícula anterior: isso provocava o rastro se soltar
+      // da mira, especialmente durante transições entre áreas clicáveis.
+      const response=.69-i*.038;
+      const gain=1-Math.pow(1-response,dt/16);
+      dot.x+=(currentX-dot.x)*gain;
+      dot.y+=(currentY-dot.y)*gain;
+      const distance=Math.hypot(currentX-dot.x,currentY-dot.y);
+      const limit=9+i*3.0; // comprimento máximo do rastro: 27px
+      if(distance>limit){
+        dot.x=currentX+(dot.x-currentX)*limit/distance;
+        dot.y=currentY+(dot.y-currentY)*limit/distance;
+      }
       position(dot.element,dot.x,dot.y);
-      unsettled+=Math.abs(aheadX-dot.x)+Math.abs(aheadY-dot.y);
-      aheadX=dot.x;aheadY=dot.y;
+      unsettled+=Math.abs(currentX-dot.x)+Math.abs(currentY-dot.y);
     }
-    // Sem loop infinito quando o cursor para: reduz gasto de GPU/CPU.
-    if(unsettled>.9)start();
+    if(unsettled>.8)start();
     else lastFrame=0;
   }
 
@@ -119,7 +138,6 @@
     active=false;lastFrame=0;
     host.classList.remove('is-visible','is-interactive','is-editing');
     wasInteractive=false;wasEditing=false;
-    reticle.style.scale='1';
     resetCard();
     if(raf){cancelAnimationFrame(raf);raf=0;}
   }
