@@ -364,6 +364,18 @@
  <details class="noway-desk-candidate"><summary>DADOS DA CANDIDATURA ⌄</summary><div id="nowayDeskCandidateData"></div></details>
  <div id="nowayDeskClosed" class="noway-desk-closed" hidden></div>
  <div id="nowayDeskMessages" class="noway-desk-messages" role="log" aria-label="Mensagens do recrutamento" tabindex="0"></div>
+<section class="noway-desk-reviews" aria-labelledby="nowayDeskReviewsHeading">
+ <div class="noway-desk-reviews-head"><span>ANÁLISE INTERNA / APENAS RECRUTAMENTO</span><h5 id="nowayDeskReviewsHeading">PARECERES DA EQUIPE.</h5>
+ <p>Estas notas não são enviadas ao candidato.</p></div>
+ <div id="nowayDeskReviews" class="noway-desk-reviews-list"><p class="noway-muted">Carregando avaliações...</p></div>
+ <form id="nowayDeskReviewForm" class="noway-desk-review-form">
+ <label for="nowayDeskRecommendation">RECOMENDAÇÃO</label>
+ <select id="nowayDeskRecommendation"><option value="em_analise">Continuar análise</option><option value="indicar_teste">Indicar para testes</option><option value="recomendar">Recomendar aprovação</option><option value="nao_recomendar">Não recomendar</option></select>
+ <label for="nowayDeskReviewNote">OBSERVAÇÕES INTERNAS</label>
+ <textarea id="nowayDeskReviewNote" rows="3" required minlength="10" maxlength="1600" placeholder="Análise objetiva: função, experiência, comunicação, disponibilidade..."></textarea>
+ <button id="nowayDeskReviewSave" class="noway-outline-action" type="submit">REGISTRAR PARECER ↗</button>
+ </form>
+ </section>
  <form id="nowayDeskReplyForm" class="noway-desk-reply"><label for="nowayDeskReply">MENSAGEM AO CANDIDATO</label>
  <div><textarea id="nowayDeskReply" rows="2" maxlength="3500" required placeholder="Escreva sua resposta..."></textarea>
  <button type="submit" id="nowayDeskSend" class="btn btn-yellow">ENVIAR ↗</button></div></form>
