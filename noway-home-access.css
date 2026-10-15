@@ -30,9 +30,14 @@
 .noway-home-google:hover{background:#fff;transform:translateY(-2px)}
 .noway-home-google.is-loading{opacity:.65;pointer-events:none;cursor:wait}
 .noway-home-google:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.noway-google-letter{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;
- border-radius:50%;background:#f8faf7;font:900 16px/1 Inter,sans-serif;
- color:#4285f4}
+.noway-google-letter{display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px;
+ border-radius:0;background:transparent;font:900 25px/1 Inter,sans-serif;
+ color:#080c06}
+.noway-home-google #nowayHomeGoogleText{flex:1;min-width:0;text-align:center;font-size:9px;line-height:1.35}
+.noway-home-google #nowayHomeGoogleGlyph[hidden],.noway-home-other-login[hidden]{display:none!important}
+.noway-home-access.is-authenticated .noway-home-google{gap:8px}
+.noway-home-access.is-authenticated .noway-home-google #nowayHomeGoogleText{font-size:11px}
+.noway-home-access.is-checking .noway-home-google{opacity:.8}
 .noway-home-other-login{font:800 9px/1.6 Inter,sans-serif;color:#d0d9c9;text-decoration:none;text-align:center}
 .noway-home-other-login:hover{color:#f2ff00;text-decoration:underline}
 .noway-home-auth-status{max-width:670px;color:#ffd8ab;font:700 11px/1.6 Inter,sans-serif;
