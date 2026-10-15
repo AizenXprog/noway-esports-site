@@ -91,7 +91,7 @@ function renderActive(){
  $("nowayDeskClosed").innerHTML=a.closed_at?
  '<strong>CONVERSA ENCERRADA / SOMENTE LEITURA</strong><p>Motivo: '+escape(a.closure_reason||"Não informado")+'</p>':"";
  $("nowayDeskReplyForm").hidden=Boolean(a.closed_at);
- $("nowayDeskActions").hidden=Boolean(a.closed_at);
+ $("nowayDeskActions").hidden=Boolean(a.closed_at)||(accountRole==="gri"&&["aprovada","recusada","arquivada","encerrada"].includes(a.status));
  $("nowayDeskCloseDetails").hidden=Boolean(a.closed_at)||accountRole==="gri";
  $("nowayDeskStatus").querySelectorAll("option").forEach(opt=>opt.disabled=accountRole==="gri"&&!["em_analise","teste"].includes(opt.value));
  renderList();
