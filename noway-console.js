@@ -11,6 +11,7 @@ const kinds={partida:"PARTIDA",treino:"TREINO",reuniao:"REUNIÃO",evento:"EVENTO
 const activeRoles=new Set(["owner","manager","jogador"]);
 let me=null,account=null,events=[],calendar=new Date(),selectedDay=null;
 let accountsOffset=0,accountSearch="",accountPages=0,accountFetchRun=0,searchTimer=0,loadEventsPromise=null;
+let hqSnapshot=null,hqActivity=[],hqInbox=[],hqLoadedAt=0,hqLoading=false,hqRun=0,hqIdentity=null;
 calendar=new Date(calendar.getFullYear(),calendar.getMonth(),1);
 const signed=()=>Boolean(me&&account);
 const isStaff=()=>activeRoles.has(account?.role);
@@ -52,8 +53,8 @@ const safeLink=url=>{
 };
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
-  if(name==="chat"||name==="agenda")return isStaff();
-  return true;
+  if(name==="chat"||name==="agenda"||name==="team")return isStaff();
+  return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
 function setTab(name){
@@ -79,7 +80,10 @@ function setTab(name){
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
   if(name==="agenda"){renderCalendar();renderEvents();}
   if(name==="users")refreshAccounts();
-  if(name==="overview")renderOverview();
+  if(name==="overview"){
+    renderOverview();
+    if(Date.now()-hqLoadedAt>60000)refreshHQ();
+  }
   if(name==="profile")renderProfile();
   if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
@@ -97,10 +101,11 @@ function syncRoles(){
   $("nowayConsoleWelcomeText").textContent=isStaff()?
     "O chat da equipe é privado. Todos os jogadores e gestores autorizados podem conversar aqui.":
     "Você pode enviar uma mensagem diretamente à organização e acompanhar a resposta.";
-  document.querySelectorAll('[data-console-open="chat"]').forEach(el=>el.hidden=!isStaff());
-  document.querySelectorAll('[data-console-open="agenda"]').forEach(el=>el.hidden=!isStaff());
+  document.querySelectorAll("[data-console-open]").forEach(el=>el.hidden=!viewPermitted(el.dataset.consoleOpen));
+  $("nowayHQNewEvent").hidden=!isManager();
+  $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab(viewPermitted(requested)&&["overview","agenda","chat","contacts","users","profile"].includes(requested)?requested:"overview");
+  setTab(viewPermitted(requested)&&["overview","team","agenda","chat","contacts","users","profile"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
@@ -109,8 +114,10 @@ async function loadAccount(){
     const res=await db.from("noway_profiles").select("id,display_name,role,avatar_url").eq("id",me.id).maybeSingle();
     if(res.error)throw res.error;
     account=res.data||{id:me.id,role:"membro",display_name:me.user_metadata?.full_name||"Membro",avatar_url:null};
+    if(hqIdentity!==me.id){hqSnapshot=null;hqActivity=[];hqInbox=[];hqLoadedAt=0;hqIdentity=me.id;}
     syncRoles();renderProfile();
     if(isStaff())await refreshEvents();
+    await refreshHQ();
   }catch(err){notice("Falha ao carregar seu painel: "+err.message,true);}
 }
 function renderProfile(){
@@ -124,22 +131,139 @@ function renderProfile(){
   $("nowayProfileRemoveAvatar").hidden=!url;
   // A mudança de nome usa o fluxo já existente do NOWAY ID.
 }
+
+function hqStat(label,value,annotation,kind="standard"){
+  const formatted=typeof value==="number"?new Intl.NumberFormat("pt-BR").format(value):value??"—";
+  return '<article class="noway-hq-stat is-'+kind+'">'+
+      '<small>'+escapeHTML(label)+'</small><strong>'+escapeHTML(formatted)+'</strong>'+
+      '<span>'+escapeHTML(annotation)+'</span></article>';
+}
 function renderOverview(){
   if(!signed())return;
-  const upcoming=events.filter(e=>new Date(e.start_at).getTime()>=Date.now()-3600000&&e.status!=="cancelado").slice(0,3);
-  const labelNum=isStaff()?events.filter(e=>new Date(e.start_at).getTime()>=Date.now()&&e.status!=="cancelado").length:"—";
-  $("nowayConsoleStats").innerHTML=
-    '<article><small>SEU CARGO</small><strong>'+escapeHTML(roles[account.role]||"MEMBRO")+'</strong></article>'+
-    '<article><small>PRÓXIMOS COMPROMISSOS</small><strong>'+escapeHTML(labelNum)+'</strong></article>'+
-    '<article><small>ÁREA PRIVADA</small><strong>'+escapeHTML(isStaff()?"LIBERADA":"CONTATO")+'</strong></article>';
-  $("nowayConsoleUpcoming").innerHTML=!isStaff()?
-    '<p class="noway-muted">Entre em contato com a organização pelo painel de mensagens.</p>':
-    upcoming.length?upcoming.map(e=>
-      '<div class="noway-upcoming-mini"><time>'+escapeHTML(fmtDate(e.start_at))+'</time><strong>'+
-      escapeHTML(e.title)+'</strong><span>'+escapeHTML(fmtTime(e.start_at))+'</span></div>').join("")+
-      '<p class="noway-muted">Confira todos os detalhes na agenda.</p>':
-    '<p class="noway-muted">Nenhum compromisso próximo ainda.</p>';
+  const snapshot=hqSnapshot;
+  const atLeastOneRole=isStaff();
+  const isLoading=!snapshot;
+  const metrics=isOwner()?[
+    ["CONTAS NOWAY",snapshot?.accounts,"Usuários cadastrados no NOWAY ID"],
+    ["CONTATOS PENDENTES",snapshot?.pending_contacts,"Solicitações que precisam de atenção","priority"],
+    ["INTEGRANTES",snapshot?.members,"Jogadores, TM e Founder"],
+    ["PRÓXIMOS EVENTOS",snapshot?.upcoming_events,"Agenda da equipe"]
+  ]:atLeastOneRole?[
+    ["EQUIPE",snapshot?.members,"Integrantes autorizados"],
+    ["JOGADORES",snapshot?.players,"Elenco com acesso interno"],
+    ["AGENDA",snapshot?.upcoming_events,"Compromissos futuros"],
+    ["CHAT / 24H",snapshot?.chat_last_24h,"Mensagens nas últimas 24 horas"]
+  ]:[
+    ["SEU CARGO",roles[account.role]||"MEMBRO","Nível de acesso"],
+    ["CONTATOS",snapshot?.my_contacts,"Solicitações na sua conta"],
+    ["MINHA CONTA","ATIVA","Sessão NOWAY ID"],
+    ["ÁREA", "PESSOAL","Perfil e conversas"]
+  ];
+  $("nowayConsoleStats").innerHTML=metrics.map(m=>hqStat(m[0],isLoading?"—":m[1],m[2],m[3]||"standard")).join("");
+  const upcoming=atLeastOneRole?events.filter(e=>
+    new Date(e.start_at).getTime()>=Date.now()-3600000&&e.status!=="cancelado"
+  ).slice(0,4):[];
+  $("nowayConsoleUpcoming").innerHTML=!atLeastOneRole?
+      '<div class="noway-hq-empty"><span>◈</span><strong>SEU ESPAÇO PESSOAL.</strong><p>Entre em contato com a NOWAY e acompanhe as respostas na aba Contatos.</p></div>':
+    upcoming.length?upcoming.map(e=>{
+      const date=fmtDate(e.start_at);
+      const kind=kinds[e.kind]||"EVENTO";
+      return '<button type="button" class="noway-hq-next-item" data-hq-event="'+escapeHTML(e.id)+'">'+
+        '<span class="noway-hq-next-date">'+escapeHTML(date)+'<small>'+escapeHTML(fmtTime(e.start_at))+'</small></span>'+
+        '<span class="noway-hq-next-name"><small>'+escapeHTML(kind)+'</small><strong>'+escapeHTML(e.title)+'</strong>'+
+        (e.opponent?'<em>VS. '+escapeHTML(e.opponent)+'</em>':'')+'</span><b>↗</b></button>';
+    }).join(""):'<div class="noway-hq-empty"><span>◇</span><strong>SEM EVENTOS PRÓXIMOS.</strong><p>Quando a gerência marcar um treino ou partida, aparecerá aqui.</p></div>';
+  $("nowayConsoleUpcoming").querySelectorAll("[data-hq-event]").forEach(button=>button.addEventListener("click",()=>{
+    const e=events.find(x=>x.id===button.dataset.hqEvent);
+    if(!e)return;
+    const d=new Date(e.start_at);calendar=new Date(d.getFullYear(),d.getMonth(),1);
+    selectedDay=spDateKey(e.start_at);setTab("agenda");
+  }));
+  const act=$("nowayHQActivity");
+  act.innerHTML=hqActivity.length?hqActivity.slice(0,6).map(a=>
+    '<button type="button" class="noway-hq-activity-item" data-hq-tab="'+escapeHTML(a.tab)+'">'+
+      '<span class="noway-hq-activity-icon is-'+escapeHTML(a.type)+'">'+escapeHTML(a.icon)+'</span>'+
+      '<span class="noway-hq-activity-copy"><strong>'+escapeHTML(a.title)+'</strong><span>'+escapeHTML(a.description)+'</span></span>'+
+      '<time>'+escapeHTML(fmtDate(a.created_at))+'</time></button>'
+  ).join(""):'<div class="noway-hq-empty compact"><strong>SEM ATIVIDADES RECENTES.</strong><p>As atualizações da equipe aparecerão aqui.</p></div>';
+  act.querySelectorAll("[data-hq-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.hqTab)));
+  if(isOwner()){
+    const list=$("nowayHQInboxList");
+    list.innerHTML=hqInbox.length?hqInbox.slice(0,4).map(t=>
+      '<button class="noway-hq-contact" type="button" data-hq-contact="'+escapeHTML(t.id)+'">'+
+      '<div><small>'+escapeHTML(String(t.status||"").replaceAll("_"," ").toUpperCase())+'</small>'+
+      '<strong>'+escapeHTML(t.subject)+'</strong></div>'+
+      '<span>'+escapeHTML(fmtDate(t.updated_at))+' ↗</span></button>'
+    ).join(""):'<div class="noway-hq-empty compact"><strong>CAIXA ORGANIZADA.</strong><p>Nenhuma solicitação registrada até agora.</p></div>';
+    list.querySelectorAll("[data-hq-contact]").forEach(b=>b.addEventListener("click",()=>{
+      setTab("contacts");
+      window.dispatchEvent(new CustomEvent("noway:open-contact",{detail:{id:b.dataset.hqContact}}));
+    }));
+  }
 }
+async function refreshHQ(force=false){
+  if(!signed())return;
+  if(hqLoading&&!force)return;
+  const currentId=me.id;
+  const run=++hqRun;
+  hqLoading=true;
+  const refresh=$("nowayHQRefresh");
+  if(refresh)refresh.disabled=true;
+  try{
+    const tasks=[db.rpc("noway_hq_overview")];
+    const active=isStaff(),owner=isOwner();
+    if(active){
+      tasks.push(db.from("noway_team_announcements")
+        .select("title,body,author_name,created_at").order("created_at",{ascending:false}).limit(5));
+      tasks.push(db.from("noway_team_messages")
+        .select("sender_name,body,image_path,event_id,created_at").order("created_at",{ascending:false}).limit(5));
+    }
+    if(owner)tasks.push(db.from("noway_contacts")
+      .select("id,subject,status,updated_at,created_at").order("updated_at",{ascending:false}).limit(10));
+    else if(!active)tasks.push(db.from("noway_contacts")
+      .select("id,subject,status,updated_at,created_at").eq("user_id",currentId)
+      .order("updated_at",{ascending:false}).limit(5));
+    const responses=await Promise.all(tasks);
+    if(!signed()||me.id!==currentId||run!==hqRun)return;
+    let index=0,metrics=responses[index++];
+    if(metrics.error)throw metrics.error;
+    hqSnapshot=metrics.data;
+    const items=[];
+    if(active){
+      const news=responses[index++];
+      const messages=responses[index++];
+      if(!news.error)for(const a of news.data||[])items.push({
+        type:"news",icon:"▣",title:"Comunicado: "+a.title,description:a.author_name+" · "+a.body.slice(0,100),
+        created_at:a.created_at,tab:"team"
+      });
+      if(!messages.error)for(const m of messages.data||[])items.push({
+        type:"chat",icon:"↗",title:m.sender_name+" enviou uma mensagem",
+        description:(m.body|| (m.image_path?"Imagem compartilhada":m.event_id?"Evento da agenda":"Nova mensagem")).slice(0,120),
+        created_at:m.created_at,tab:"chat"
+      });
+    }
+    const contacts=responses[index];
+    if(contacts&&!contacts.error){
+      const contactList=contacts.data||[];
+      hqInbox=owner?contactList:[];
+      for(const t of contactList.slice(0,6))items.push({
+        type:"contact",icon:"✉",title:"Contato: "+t.subject,
+        description:"Status: "+String(t.status||"").replaceAll("_"," "),
+        created_at:t.updated_at||t.created_at,tab:"contacts"
+      });
+    }else hqInbox=[];
+    hqActivity=items.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,8);
+    hqLoadedAt=Date.now();
+    $("nowayHQLastUpdated").textContent="Atualizado às "+new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"}).format(new Date());
+    renderOverview();
+  }catch(err){
+    notice("Não foi possível atualizar a central: "+(err?.message||"erro inesperado"),true);
+    $("nowayHQLastUpdated").textContent="Erro ao sincronizar os dados";
+  }finally{
+    if(run===hqRun){hqLoading=false;if(refresh)refresh.disabled=false;}
+  }
+}
+
 async function refreshEvents(){
   if(!isStaff())return;
   if(loadEventsPromise)return loadEventsPromise;
@@ -430,6 +554,11 @@ function bind(){
     clearTimeout(searchTimer);searchTimer=setTimeout(refreshAccounts,320);
   });
   $("nowayAccountsRefresh").addEventListener("click",refreshAccounts);
+  $("nowayHQRefresh").addEventListener("click",()=>refreshHQ(true));
+  $("nowayHQNewEvent").addEventListener("click",()=>{
+    if(!isManager())return;
+    setTab("agenda");openEventEditor();
+  });
   $("nowayAccountsPrev").addEventListener("click",()=>{accountsOffset=Math.max(0,accountsOffset-25);refreshAccounts();});
   $("nowayAccountsNext").addEventListener("click",()=>{accountsOffset+=25;refreshAccounts();});
   $("nowayAvatarTrigger").addEventListener("click",()=>$("nowayAvatarInput").click());
