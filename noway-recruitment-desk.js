@@ -15,6 +15,7 @@ const avatar=(path,name)=>{const img=photo(path);return img?
 const crown='<svg viewBox="0 0 28 28" aria-hidden="true" fill="none"><path d="M3.8 10.1 8.8 13.5 14 5.8l5.2 7.7 5-3.4-2.1 11.7H5.9L3.8 10.1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M6.1 18.5h15.8M7 24h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m12 15 2-2.5 2 2.5-2 2.5Z" fill="currentColor"/></svg>';
 const shield='<svg viewBox="0 0 28 28" aria-hidden="true" fill="none"><path d="M14 2.8 23 6.1v7.2c0 5.7-3.6 9.1-9 11.8-5.4-2.7-9-6.1-9-11.8V6.1L14 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 16.9V10l4.5 5.2 4.5-5.2v6.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/></svg>';
 const badge=(role,name)=>{
+ if(role==="gri")return '<span class="noway-desk-badge is-gri" title="Gestor de Recrutamento e Indicação" aria-label="Gestor de Recrutamento e Indicação">GRI</span>';
  if(!["owner","manager"].includes(role))return "";
  const who=role==="owner"?"Niel - founder":(name||"Team Manager")+" - Team Manager";
  const symbol=role==="owner"?crown:shield;
