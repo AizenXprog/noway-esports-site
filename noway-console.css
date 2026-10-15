@@ -451,3 +451,8 @@ body[data-noway-console="true"]{background:#0c0d0e;min-height:100vh}
 .noway-hq-live-pill b{font:inherit;letter-spacing:inherit}
 .noway-hq-live-pill.is-error{border-color:#a86d6d;color:#ffb6b6;background:#322220}
 .noway-hq-live-pill.is-error>span{background:#ff9f9f;box-shadow:none}
+
+
+/* NOWAY HQ — atalho ao recrutamento externo, mesmo comportamento visual dos módulos. */
+.noway-hq-shortcut.noway-hq-recruitment-link{text-decoration:none}
+.noway-hq-shortcut.noway-hq-recruitment-link:focus-visible{outline:2px solid #f2ff00;outline-offset:3px}
