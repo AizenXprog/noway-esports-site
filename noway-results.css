@@ -1,0 +1,49 @@
+/* NOWAY / CONFRONTOS PÚBLICOS — apenas resultados oficiais finalizados */
+.noway-public-results{margin:30px 0 55px;border-top:1px solid #4d5841;padding-top:32px;min-width:0}
+.noway-results-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:21px}
+.noway-results-kicker{display:block;color:#f2ff00;font:900 10px/1.5 Inter,sans-serif;letter-spacing:.14em}
+.noway-results-head h3{font:900 clamp(45px,5vw,74px)/.93 "Barlow Condensed",sans-serif;margin:14px 0 12px;letter-spacing:-.012em}
+.noway-results-head h3 em{color:#f2ff00;font-style:normal}
+.noway-results-head p{font:500 12px/1.8 Inter,sans-serif;color:#abb3ac;margin:0}
+.noway-results-refresh{color:#f2ff00;background:#1b201b;border:1px solid #647454;padding:13px 18px;font:900 10px/1.5 Inter,sans-serif;letter-spacing:.06em;cursor:pointer;white-space:nowrap}
+.noway-results-refresh:hover{background:#f2ff00;color:#11150e}
+.noway-results-refresh:disabled{opacity:.45;cursor:wait}
+.noway-results-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.noway-results-card{border:1px solid #455444;background:radial-gradient(ellipse at 50% 0%,#f2ff000c,transparent 70%),#191e1b;padding:23px;min-width:0;position:relative}
+.noway-results-card:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#f2ff003f}
+.noway-results-card.vitoria:before{background:#f2ff00}
+.noway-results-card.derrota:before{background:#da8b78}
+.noway-results-card.empate:before{background:#aab6ba}
+.noway-results-card-top,.noway-results-card-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.noway-results-card-top>span{font:900 9px/1.6 Inter,sans-serif;color:#aebba9;letter-spacing:.07em}
+.noway-results-card-top>strong{color:#f2ff00;border:1px solid #708547;padding:6px 9px;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.09em}
+.noway-results-card.derrota .noway-results-card-top>strong{color:#efad96;border-color:#9b6052}
+.noway-results-card.empate .noway-results-card-top>strong{color:#c3cdd1;border-color:#778589}
+.noway-results-scoreboard{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:27px 0}
+.noway-results-team{display:flex;flex-direction:column;gap:8px;min-width:0}
+.noway-results-team.rival{text-align:right}
+.noway-results-team span{font:900 9px/1.4 Inter,sans-serif;color:#8f9b90;letter-spacing:.09em}
+.noway-results-team b{font:900 clamp(24px,3vw,37px)/.95 "Barlow Condensed",sans-serif;overflow-wrap:anywhere;color:#f7faf1}
+.noway-results-final{display:flex;flex-direction:column;align-items:center;gap:6px}
+.noway-results-final strong{font:900 clamp(32px,3.7vw,49px)/1 "Barlow Condensed",sans-serif;color:#f2ff00;white-space:nowrap}
+.noway-results-final span{font:800 9px/1.4 Inter,sans-serif;color:#b5bfaf;white-space:nowrap;letter-spacing:.05em}
+.noway-results-card-bottom{border-top:1px solid #38483d;padding-top:15px;align-items:flex-start}
+.noway-results-card-bottom>span{font:800 10px/1.5 Inter,sans-serif;color:#c2ccbe}
+.noway-results-card-bottom>div{display:flex;flex-wrap:wrap;gap:6px}
+.noway-results-map{border:1px solid #435543;padding:4px 7px;font:700 9px/1.5 Inter,sans-serif;color:#aebda8}
+.noway-results-map b{color:#f2ff00;margin-left:5px}
+.noway-results-footer{font:600 10px/1.7 Inter,sans-serif;color:#758276;margin:14px 0 0}
+.noway-results-empty{min-height:190px;grid-column:1/-1;border:1px dashed #4b5a49;padding:37px 26px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:13px;background:#181d19}
+.noway-results-empty>span{color:#f2ff00;font:900 33px/1 "Barlow Condensed",sans-serif}
+.noway-results-empty strong{font:900 clamp(24px,3vw,35px)/1 "Barlow Condensed",sans-serif;color:#f5f8ef}
+.noway-results-empty p{max-width:460px;font:500 12px/1.75 Inter,sans-serif;color:#aab5ac;margin:0}
+@media(max-width:980px){.noway-results-list{grid-template-columns:1fr}}
+@media(max-width:680px){
+ .noway-results-head{flex-direction:column;align-items:flex-start}
+ .noway-results-head h3{font-size:clamp(42px,9.5vw,63px)}
+ .noway-results-card{padding:18px 13px}.noway-results-scoreboard{gap:7px}
+ .noway-results-team b{font-size:clamp(19px,6vw,32px)}
+ .noway-results-final strong{font-size:clamp(29px,8vw,43px)}
+ .noway-results-team span{font-size:8px}.noway-results-final span{font-size:8px}
+ .noway-results-card-top>span{font-size:8px}
+}
