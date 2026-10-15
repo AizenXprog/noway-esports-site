@@ -47,7 +47,7 @@ async function loadAuth(){
  if(token!==loadRun)return;
  if(perr)notify("Não foi possível buscar seu perfil NOWAY: "+perr.message,true);
  profile=own||{display_name:user.user_metadata?.full_name||"Candidato",role:"membro"};
- staff=["manager","owner"].includes(profile.role);
+ staff=["manager","owner","gri"].includes(profile.role);
  $("nowayRecruitAccountName").textContent=profile.display_name||user.email||"CANDIDATO";
  $("nowayRecruitName").value=profile.display_name==="Membro"?"":profile.display_name||"";
  $("nowayRecruitInboxHeading").innerHTML=staff?"CANDIDATURAS <em>RECEBIDAS.</em>":"SUAS <em>INSCRIÇÕES.</em>";
@@ -116,8 +116,9 @@ function renderApplicationDetails(){
  $("nowayRecruitClosure").hidden=!a.closed_at;
  if(a.closed_at)$("nowayRecruitClosure").innerHTML='<strong>CONVERSA ENCERRADA / SOMENTE LEITURA</strong><p>Motivo: '+safe(a.closure_reason||"Não informado")+'</p>';
  $("nowayRecruitReplyForm").hidden=Boolean(a.closed_at);
- $("nowayRecruitClosePanel").hidden=Boolean(a.closed_at);
+ $("nowayRecruitClosePanel").hidden=Boolean(a.closed_at)||profile?.role==="gri";
  $("nowayRecruitStatus").value=a.closed_at?"recebida":a.status;
+ $("nowayRecruitStatus").querySelectorAll("option").forEach(option=>option.disabled=profile?.role==="gri"&&!["em_analise","teste"].includes(option.value));
  renderApps();
 }
 async function openThread(id){
@@ -196,6 +197,7 @@ async function reply(ev){
 }
 async function updateStatus(){
  if(!isManager()||!activeId||activeApp()?.closed_at)return;
+ if(profile?.role==="gri"&&!["em_analise","teste"].includes($("nowayRecruitStatus").value))return notify("GRI só pode encaminhar para análise ou testes.",true);
  const b=$("nowayRecruitSaveStatus");b.disabled=true;
  const {error}=await db.rpc("noway_recruitment_set_status",{
   p_application_id:activeId,p_status:$("nowayRecruitStatus").value
@@ -208,7 +210,7 @@ async function updateStatus(){
 async function closeRecruitmentThread(event){
  event.preventDefault();
  const app=activeApp();
- if(!user||!app||app.closed_at)return;
+ if(!user||!app||app.closed_at||profile?.role==="gri")return;
  const reason=$("nowayRecruitCloseReason").value.trim();
  if(reason.length<10||reason.length>1000)return notify("Escreva um motivo entre 10 e 1000 caracteres.",true);
  if(!confirm("Encerrar definitivamente esta conversa? O motivo será enviado e ninguém poderá responder depois."))return;
