@@ -73,7 +73,7 @@ async function refreshAuth() {
   }
   $id("nowayLoginSurface").hidden=Boolean(signedUser);
   $id("nowayDashboard").hidden=!signedUser;
-  $id("nowayHeaderLogin").textContent=signedUser?"MINHA CONTA ↗":"ENTRAR ↗";
+  $id("nowayHeaderLogin").textContent=signedUser?"MINHA CONTA ↗":"ENTRAR / NOWAY ID ↗";
   const quick=$id("nowayPortalQuick");
   if(quick)quick.hidden=!signedUser;
   $id("nowayThreadSection").hidden=true;
