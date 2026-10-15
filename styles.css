@@ -501,3 +501,55 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
     background:linear-gradient(155deg,#222426,#0c0d0e);
   }
 }
+
+
+/* NOWAY — proteção Samsung Internet: amarelo como imagem SVG repetida sem escala */
+/* Samsung Internet com Force Dark pode trocar backgrounds sólidos amarelos por
+   verde-oliva e deixar a tipografia branca. Cores CSS e !important não bastam.
+   Uma textura SVG 10x10 NÃO ampliada resiste melhor à conversão automática.
+   Isto é um fallback progressivo: o navegador ainda pode impor transformações. */
+:root{
+  --noway-yellow-tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23F2FF00'/%3E%3C/svg%3E");
+}
+@media (max-width:760px), (hover:none) and (pointer:coarse) {
+  .ticker,
+  .manifesto,
+  .store-banner,
+  .btn-yellow,
+  .filter.is-active,
+  .player-mgmt,
+  .header-login,
+  .noway-role,
+  .player-stream-play,
+  .media-card:first-child{
+    background-color:#f2ff00!important;
+    background-image:var(--noway-yellow-tile)!important;
+    background-size:10px 10px!important;
+    background-repeat:repeat!important;
+    background-position:0 0!important;
+    background-blend-mode:normal!important;
+  }
+  /* Preserve texto escuro sobre o amarelo vivo, mesmo nos elementos animados. */
+  .ticker,.ticker .ticker-track,.ticker .ticker-track b,
+  .btn-yellow,.btn-yellow span,.filter.is-active,.filter.is-active span,
+  .player-mgmt,.header-login,.noway-role,.player-stream-play,
+  .media-card:first-child,.media-card:first-child h3,.media-card:first-child p,
+  .media-card:first-child .media-tag,.media-card:first-child .media-link,
+  .store-banner h2,.store-banner p,.store-banner .store-coming,
+  .manifesto h2,.manifesto p{
+    color:#08090a!important;
+    -webkit-text-fill-color:#08090a!important;
+  }
+  /* O título vazado é intencional no manifesto da NOWAY. */
+  .manifesto h2 span{
+    color:transparent!important;
+    -webkit-text-fill-color:transparent!important;
+  }
+  /* Evita que o Samsung Browser pinte sombras escuras sobre a textura amarela. */
+  .ticker,.manifesto,.store-banner{
+    background-attachment:scroll!important;
+    mix-blend-mode:normal!important;
+  }
+  /* Placeholders e bordas continuam definidos pelo tema do projeto. */
+  .media-card:first-child::before{content:none!important}
+}
