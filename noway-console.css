@@ -319,3 +319,11 @@ body[data-noway-console="true"]{background:#0c0d0e;min-height:100vh}
   .noway-chat-event-quote strong{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){.noway-chat-toast{animation:none}}
+
+
+/* NOWAY HQ: retorno imediato e legível ao trocar a foto. */
+.noway-avatar-status{max-width:430px;color:#d3e18d;font:700 11px/1.6 Inter,sans-serif;letter-spacing:.015em;margin:9px 0 0;overflow-wrap:anywhere}
+.noway-avatar-status.is-error{color:#ff9f9f}
+.noway-avatar-status[hidden]{display:none!important}
+.noway-avatar-trigger:disabled{filter:grayscale(.28)}
+.noway-profile-action-row button:disabled{opacity:.5;cursor:wait}
