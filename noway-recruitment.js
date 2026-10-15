@@ -9,7 +9,7 @@ const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"
 const roles={jogador:"JOGADOR",coach:"COACH",manager:"GERÊNCIA",
  discord_staff:"STAFF DISCORD",analista:"ANALISTA",designer:"DESIGN / MÍDIA",criador:"CRIADOR",outro:"OUTRA FUNÇÃO"};
 const statuses={recebida:"RECEBIDA",em_analise:"EM ANÁLISE",teste:"CONVOCADO PARA TESTES",
- aprovada:"APROVADA",recusada:"NÃO SELECIONADA",arquivada:"ARQUIVADA"};
+ aprovada:"APROVADA",recusada:"NÃO SELECIONADA",arquivada:"ARQUIVADA",encerrada:"ENCERRADA"};
 const date=ts=>{try{return new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(new Date(ts));}catch{return "—";}};
 const notify=(message,error=false)=>{const el=$("nowayRecruitNotice");el.hidden=false;el.textContent=message;el.classList.toggle("is-error",error);if(error)el.scrollIntoView({behavior:"smooth",block:"nearest"});};
 const setBusy=(el,state)=>el.querySelectorAll("button").forEach(b=>b.disabled=state);
@@ -63,7 +63,7 @@ async function loadApps(manual=false){
  if(manual)$("nowayRecruitRefresh").disabled=true;
  try{
    const {data,error}=await db.from("noway_recruitment_applications")
-    .select("id,applicant_id,desired_role,display_name,discord_contact,alternative_contact,ubisoft_handle,tracker_url,experience,availability,motivation,status,created_at,updated_at")
+    .select("id,applicant_id,desired_role,display_name,discord_contact,alternative_contact,ubisoft_handle,tracker_url,experience,availability,motivation,status,created_at,updated_at,closed_at,closure_reason,closed_by")
     .order("updated_at",{ascending:false}).limit(300);
    if(version!==loadRun||uid!==user?.id)return;
    if(error)throw error;
@@ -112,8 +112,12 @@ function renderApplicationDetails(){
   '<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong></div>').join("")+
   (link?'<div><small>R6 TRACKER · REFERÊNCIA MANUAL</small><a href="'+safe(link)+
     '" target="_blank" rel="noopener noreferrer">ABRIR PERFIL DO TRACKER ↗</a></div>':"");
- $("nowayRecruitManagerTools").hidden=!staff;
- $("nowayRecruitStatus").value=a.status;
+ $("nowayRecruitManagerTools").hidden=!staff||Boolean(a.closed_at);
+ $("nowayRecruitClosure").hidden=!a.closed_at;
+ if(a.closed_at)$("nowayRecruitClosure").innerHTML='<strong>CONVERSA ENCERRADA / SOMENTE LEITURA</strong><p>Motivo: '+safe(a.closure_reason||"Não informado")+'</p>';
+ $("nowayRecruitReplyForm").hidden=Boolean(a.closed_at);
+ $("nowayRecruitClosePanel").hidden=Boolean(a.closed_at);
+ $("nowayRecruitStatus").value=a.closed_at?"recebida":a.status;
  renderApps();
 }
 async function openThread(id){
@@ -131,9 +135,7 @@ async function refreshThread(force=false){
  const id=activeId,version=++threadRun;
  const list=$("nowayRecruitMessages");
  const bottom=list.scrollHeight-list.scrollTop-list.clientHeight<100;
- const {data,error}=await db.from("noway_recruitment_messages")
-  .select("id,application_id,sender_id,sender_name,sender_role,sender_avatar_path,body,created_at")
-  .eq("application_id",id).order("created_at",{ascending:true}).limit(200);
+ const {data,error}=await db.rpc("noway_recruitment_get_messages",{p_application_id:id});
  if(id!==activeId||version!==threadRun)return;
  if(error)return notify("Falha ao abrir conversa: "+error.message,true);
  const incoming=data||[];
@@ -183,6 +185,7 @@ async function sendApplication(ev){
 }
 async function reply(ev){
  ev.preventDefault();if(!user||!activeId)return;
+ if(activeApp()?.closed_at)return notify("Esta conversa já foi encerrada.",true);
  const form=$("nowayRecruitReplyForm"),text=$("nowayRecruitReplyBody").value.trim();
  if(!text)return;setBusy(form,true);
  const {error}=await db.rpc("noway_recruitment_reply",{p_application_id:activeId,p_body:text});
@@ -192,7 +195,7 @@ async function reply(ev){
  await refreshThread(true);await loadApps();
 }
 async function updateStatus(){
- if(!isManager()||!activeId)return;
+ if(!isManager()||!activeId||activeApp()?.closed_at)return;
  const b=$("nowayRecruitSaveStatus");b.disabled=true;
  const {error}=await db.rpc("noway_recruitment_set_status",{
   p_application_id:activeId,p_status:$("nowayRecruitStatus").value
@@ -202,6 +205,27 @@ async function updateStatus(){
  notify("Etapa da candidatura atualizada.");
  await loadApps(true);
 }
+async function closeRecruitmentThread(event){
+ event.preventDefault();
+ const app=activeApp();
+ if(!user||!app||app.closed_at)return;
+ const reason=$("nowayRecruitCloseReason").value.trim();
+ if(reason.length<10||reason.length>1000)return notify("Escreva um motivo entre 10 e 1000 caracteres.",true);
+ if(!confirm("Encerrar definitivamente esta conversa? O motivo será enviado e ninguém poderá responder depois."))return;
+ const button=$("nowayRecruitCloseSubmit");button.disabled=true;
+ try{
+  const {error}=await db.rpc("noway_recruitment_close",{p_application_id:app.id,p_reason:reason});
+  if(error)throw error;
+  $("nowayRecruitCloseForm").reset();
+  $("nowayRecruitClosePanel").open=false;
+  notify("Conversa encerrada. O motivo foi registrado e o canal ficou somente para leitura.");
+  await loadApps(true);
+  await refreshThread(true);
+ }catch(err){notify("Não foi possível encerrar: "+err.message,true);}
+ finally{button.disabled=false;}
+}
+$("nowayRecruitCloseForm").addEventListener("submit",closeRecruitmentThread);
+
 document.querySelectorAll("[data-role]").forEach(el=>el.addEventListener("click",()=>{
  $("nowayRecruitRole").value=el.dataset.role;populateExperience();
  document.getElementById("inscricao")?.scrollIntoView({behavior:"smooth"});
