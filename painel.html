@@ -60,8 +60,8 @@
       </button>
       <div><span class="noway-tiny">CONTA AUTENTICADA</span>
       <h3 id="nowayAccountName">MEMBRO NOWAY</h3>
-      <span class="noway-role" id="nowayAccountRole">MEMBRO</span></div>
-    </div><input id="nowayAvatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+      <span class="noway-role" id="nowayAccountRole">MEMBRO</span><p id="nowayAvatarStatus" class="noway-avatar-status" role="status" aria-live="polite" hidden></p></div>
+    </div><input id="nowayAvatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" hidden>
     <div class="noway-account-actions"><button type="button" id="nowayEditName" class="noway-outline-action">EDITAR NOME</button><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></div>
     <form id="nowayDisplayNameForm" class="noway-form noway-name-form" hidden><label for="nowayDisplayName">SEU NOME NA COMUNIDADE</label><input id="nowayDisplayName" type="text" minlength="1" maxlength="80" autocomplete="name" required placeholder="Como devemos chamar você?"><button type="submit" class="btn btn-yellow">SALVAR NOME <span>↗</span></button></form>
     <section id="nowayTeamWorkspace" class="noway-team-space" aria-label="Área interna da equipe NOWAY" hidden>
@@ -205,7 +205,7 @@
     </section>
     <section id="nowayConsoleProfile" class="noway-panel noway-console-view" data-console-view="profile" hidden>
       <div class="noway-console-view-header"><div><span class="noway-tiny">06 / IDENTIDADE</span><h3>MEU PERFIL.</h3><p>Seu nome e sua foto dentro do NOWAY ID.</p></div></div>
-      <div class="noway-console-profile-body"><div id="nowayProfileAvatar" class="noway-profile-avatar-preview">N</div><div><h4>PERSONALIZE SUA CONTA.</h4><p class="noway-muted">Use uma imagem PNG, JPG ou WebP (até 8 MB). Nós a ajustamos automaticamente em um quadrado para seu perfil.</p><div class="noway-profile-action-row"><button id="nowayProfileChangeAvatar" class="btn btn-yellow" type="button">ALTERAR FOTO ↗</button><button id="nowayProfileRemoveAvatar" class="noway-outline-action" type="button">REMOVER FOTO</button><button id="nowayProfileChangeName" class="noway-outline-action" type="button">EDITAR NOME</button></div></div></div>
+      <div class="noway-console-profile-body"><div id="nowayProfileAvatar" class="noway-profile-avatar-preview">N</div><div><h4>PERSONALIZE SUA CONTA.</h4><p class="noway-muted">Use JPG, PNG ou WebP (até 24 MB). Ajustamos a foto automaticamente, sem filtros. Arquivos HEIC também podem funcionar se o navegador conseguir abri-los.</p><div class="noway-profile-action-row"><button id="nowayProfileChangeAvatar" class="btn btn-yellow" type="button">ALTERAR FOTO ↗</button><button id="nowayProfileRemoveAvatar" class="noway-outline-action" type="button">REMOVER FOTO</button><button id="nowayProfileChangeName" class="noway-outline-action" type="button">EDITAR NOME</button></div></div></div>
     </section>
   </div>
 </div>
