@@ -712,7 +712,7 @@ function renderCompetitive(){
  });
  const all=events.filter(e=>["partida","treino"].includes(e.kind));
  const finished=all.filter(e=>compGetSetup(e.id)?.result&&compGetSetup(e.id).result!=="pendente");
- const future=all.filter(e=>e.status!=="cancelado"&&new Date(e.start_at)>new Date()&&compGetSetup(e.id)?.result!=="vitoria"&&compGetSetup(e.id)?.result!=="derrota");
+ const future=all.filter(e=>e.status!=="cancelado"&&new Date(e.start_at)>new Date()&&(!compGetSetup(e.id)?.result||compGetSetup(e.id).result==="pendente"));
  const mine=competitiveState.roster.filter(r=>r.player_id===me.id);
  const stats=[
    ["CONFRONTOS",all.filter(e=>e.kind==="partida").length,"partidas registradas"],
@@ -793,8 +793,13 @@ function renderCompetitiveDetail(){
      '<p class="noway-comp-description">'+compEsc(config.preparation)+'</p></section>':"")+
    '<div class="noway-comp-detail-actions">'+
      (compCanEdit()?'<button type="button" id="nowayCompManage" class="btn btn-yellow">GERENCIAR PARTIDA ↗</button>':'')+
+     '<button type="button" id="nowayCompShareChat" class="noway-outline-action">▣ MARCAR NO CHAT ↗</button>'+
      '<button type="button" id="nowayCompOpenAgenda" class="noway-outline-action">VER NA AGENDA ↗</button></div>';
  wrap.querySelector("#nowayCompManage")?.addEventListener("click",openCompetitiveEditor);
+ wrap.querySelector("#nowayCompShareChat")?.addEventListener("click",()=>{
+   setTab("chat");
+   window.dispatchEvent(new CustomEvent("noway:attach-event",{detail:{id:event.id}}));
+ });
  wrap.querySelector("#nowayCompOpenAgenda")?.addEventListener("click",()=>{
    const date=new Date(event.start_at);calendar=new Date(date.getFullYear(),date.getMonth(),1);
    selectedDay=spDateKey(event.start_at);setTab("agenda");
