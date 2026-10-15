@@ -68,7 +68,7 @@
  <div class="nw-rec-inbox-panel">
   <div class="nw-rec-panel-head"><span id="nowayRecruitInboxKicker">CANDIDATURAS / ACOMPANHAMENTO</span><h3 id="nowayRecruitInboxHeading">SUAS <em>INSCRIÇÕES.</em></h3></div>
   <p class="nw-rec-hint" id="nowayRecruitInboxHelp">Escolha uma inscrição para acompanhar as respostas da NOWAY.</p>
-  <div class="nw-rec-filter" id="nowayRecruitManagerFilters" hidden><label for="nowayRecruitFilter">FILTRAR STATUS</label><select id="nowayRecruitFilter"><option value="all">Todas</option><option value="recebida">Recebidas</option><option value="em_analise">Em análise</option><option value="teste">Em testes</option><option value="aprovada">Aprovadas</option><option value="recusada">Não selecionadas</option><option value="arquivada">Arquivadas</option></select></div>
+  <div class="nw-rec-filter" id="nowayRecruitManagerFilters" hidden><label for="nowayRecruitFilter">FILTRAR STATUS</label><select id="nowayRecruitFilter"><option value="all">Todas</option><option value="recebida">Recebidas</option><option value="em_analise">Em análise</option><option value="teste">Em testes</option><option value="aprovada">Aprovadas</option><option value="recusada">Não selecionadas</option><option value="arquivada">Arquivadas</option><option value="encerrada">Encerradas</option></select></div>
   <button type="button" id="nowayRecruitRefresh" class="nw-rec-refresh">ATUALIZAR CONVERSAS ↻</button>
   <div id="nowayRecruitList" class="nw-rec-application-list"><p class="nw-rec-hint">Carregando candidaturas...</p></div>
  </div>
@@ -76,8 +76,19 @@
  <section id="nowayRecruitThread" class="nw-rec-thread" hidden>
   <div class="nw-rec-thread-head"><div><span>CANAL PRIVADO / NOWAY RECRUITMENT</span><h3 id="nowayRecruitThreadTitle">CONVERSA.</h3><p id="nowayRecruitThreadSub"></p></div><button id="nowayRecruitThreadClose" type="button">FECHAR ×</button></div>
   <div id="nowayRecruitDetails" class="nw-rec-details"></div>
+  <div id="nowayRecruitClosure" class="nw-rec-closure" hidden role="status"></div>
   <div id="nowayRecruitMessages" class="nw-rec-messages" role="log" aria-label="Conversa privada sobre candidatura" tabindex="0"><p>Carregando conversa...</p></div>
   <form id="nowayRecruitReplyForm" class="nw-rec-reply"><label for="nowayRecruitReplyBody">RESPONDER NA CONVERSA</label><div><textarea id="nowayRecruitReplyBody" maxlength="3500" rows="2" required placeholder="Escreva para a NOWAY ou para o candidato..."></textarea><button type="submit" class="nw-rec-main-button">ENVIAR ↗</button></div><span>Enter envia · Shift+Enter quebra linha</span></form>
+  <details id="nowayRecruitClosePanel" class="nw-rec-close-panel">
+    <summary>ENCERRAR ESTA CONVERSA <span>⌄</span></summary>
+    <form id="nowayRecruitCloseForm">
+      <label for="nowayRecruitCloseReason">MOTIVO DO ENCERRAMENTO *</label>
+      <textarea id="nowayRecruitCloseReason" minlength="10" maxlength="1000" rows="3"
+       placeholder="Explique o motivo para que o candidato e a gestão tenham um registro claro." required></textarea>
+      <button type="submit" id="nowayRecruitCloseSubmit">CONFIRMAR ENCERRAMENTO DEFINITIVO ↗</button>
+      <p>Após o encerramento, a conversa ficará somente para leitura. Essa ação não pode ser desfeita.</p>
+    </form>
+  </details>
   <div id="nowayRecruitManagerTools" class="nw-rec-management" hidden><label for="nowayRecruitStatus">ETAPA DE AVALIAÇÃO</label><select id="nowayRecruitStatus">
    <option value="recebida">Recebida</option><option value="em_analise">Em análise</option>
    <option value="teste">Convocado para testes</option><option value="aprovada">Aprovada</option>
