@@ -57,6 +57,16 @@ const viewPermitted=name=>{
   return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
+function syncConsoleNavigationGroups(){
+  document.querySelectorAll("[data-console-nav-group]").forEach(group=>{
+    const buttons=[...group.querySelectorAll("[data-console-tab]")];
+    group.hidden=!buttons.some(button=>!button.hidden);
+  });
+  document.querySelectorAll("[data-shortcut-group]").forEach(group=>{
+    const items=[...group.querySelectorAll("[data-console-open]")];
+    group.hidden=!items.some(item=>!item.hidden)&&!group.querySelector('a[href]:not([hidden])');
+  });
+}
 function setTab(name){
   if(!signed()||!viewPermitted(name))name="overview";
   currentTab=name;
@@ -79,6 +89,7 @@ function setTab(name){
   $("nowayConsolePlayerStats").hidden=name!=="stats";
   $("nowayConsoleProfile").hidden=name!=="profile";
   $("nowayConsoleOverview").hidden=name!=="overview";
+  syncConsoleNavigationGroups();
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
   if(name==="agenda"){renderCalendar();renderEvents();}
   if(name==="users")refreshAccounts();
@@ -107,6 +118,7 @@ function syncRoles(){
     "O chat da equipe é privado. Todos os jogadores e gestores autorizados podem conversar aqui.":
     "Você pode enviar uma mensagem diretamente à organização e acompanhar a resposta.";
   document.querySelectorAll("[data-console-open]").forEach(el=>el.hidden=!viewPermitted(el.dataset.consoleOpen));
+  syncConsoleNavigationGroups();
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
