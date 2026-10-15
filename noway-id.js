@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 const $id = id => document.getElementById(id);
 const clean = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const labels={membro:"MEMBRO",jogador:"JOGADOR NOWAY",manager:"GESTÃO NOWAY",owner:"FOUNDER / OWNER"};
+const labels={membro:"MEMBRO",jogador:"JOGADOR NOWAY",manager:"GESTÃO NOWAY",gri:"GRI / RECRUTAMENTO",owner:"FOUNDER / OWNER"};
 const statusText={aberta:"ABERTA",aguardando:"AGUARDANDO",respondida:"RESPONDIDA",resolvida:"RESOLVIDA"};
 let signedUser=null, profile=null, tickets=[], members=[], activeId=null, running=0;
 
