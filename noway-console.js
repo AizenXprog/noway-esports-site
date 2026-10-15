@@ -53,6 +53,7 @@ const safeLink=url=>{
 };
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
+  if(name==="recruitment")return isManager();
   if(["chat","agenda","team","competitive","stats"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
@@ -131,6 +132,7 @@ function setTab(name){
   $("nowayConsoleCompetitive").hidden=name!=="competitive";
   $("nowayConsolePlayerStats").hidden=name!=="stats";
   $("nowayConsoleProfile").hidden=name!=="profile";
+  $("nowayConsoleRecruitment").hidden=name!=="recruitment";
   $("nowayConsoleOverview").hidden=name!=="overview";
   syncConsoleNavigationGroups();
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
@@ -144,6 +146,7 @@ function setTab(name){
   if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
   if(name==="competitive")refreshCompetitive();
   if(name==="stats")refreshPlayerStats();
+  if(name==="recruitment")window.dispatchEvent(new Event("noway:recruitment-open"));
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
   // Abrir o chat na conversa, sem obrigar o jogador a descer toda a página.
   if(name==="chat"){
@@ -170,7 +173,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab(viewPermitted(requested)&&["overview","team","agenda","competitive","stats","chat","contacts","users","profile"].includes(requested)?requested:"overview");
+  setTab(viewPermitted(requested)&&["overview","team","agenda","competitive","stats","chat","contacts","recruitment","users","profile"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
