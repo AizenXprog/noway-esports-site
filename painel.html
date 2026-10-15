@@ -36,6 +36,7 @@
     <button type="button" data-console-tab="overview" class="is-active">INÍCIO</button>
     <button type="button" data-console-tab="team">EQUIPE</button>
     <button type="button" data-console-tab="agenda">AGENDA</button>
+    <button type="button" data-console-tab="competitive">COMPETITIVE</button>
     <button type="button" data-console-tab="chat">CHAT DA EQUIPE <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
     <button type="button" data-console-tab="contacts">CONTATOS</button>
     <button type="button" data-console-tab="users">USUÁRIOS</button>
@@ -231,6 +232,53 @@
         </div>
         <div class="noway-cal-form-actions"><button type="submit" class="btn btn-yellow">SALVAR EVENTO ↗</button><button type="button" id="nowayEventDelete" class="noway-outline-action" hidden>EXCLUIR EVENTO</button></div>
       </form>
+    </section>
+    <section id="nowayConsoleCompetitive" class="noway-console-view noway-competitive" data-console-view="competitive" hidden>
+      <div class="noway-comp-head">
+        <div><span class="noway-tiny">NOWAY / DEPARTAMENTO COMPETITIVO</span><h3>NOWAY <em>COMPETITIVE.</em></h3><p>Partidas, escalações, confirmações, map pool e histórico. Tudo integrado à Agenda.</p></div>
+        <div class="noway-comp-head-actions"><button type="button" id="nowayCompRefresh" class="noway-outline-action">ATUALIZAR ↻</button><button type="button" id="nowayCompCreate" class="btn btn-yellow" hidden>+ AGENDAR PARTIDA ↗</button></div>
+      </div>
+      <div id="nowayCompStats" class="noway-comp-stats" aria-live="polite">
+        <article><small>PARTIDAS</small><strong>—</strong></article><article><small>VITÓRIAS</small><strong>—</strong></article><article><small>PRÓXIMAS</small><strong>—</strong></article><article><small>MINHAS CONVOCAÇÕES</small><strong>—</strong></article>
+      </div>
+      <div class="noway-comp-layout">
+        <section class="noway-panel noway-comp-list-panel">
+          <div class="noway-comp-panel-title"><div><span class="noway-tiny">01 / PARTIDAS E TREINOS</span><h4>CONFRONTOS.</h4></div></div>
+          <div class="noway-comp-filters" role="group" aria-label="Filtrar confrontos">
+            <button type="button" class="is-active" data-noway-comp-filter="upcoming">PRÓXIMOS</button>
+            <button type="button" data-noway-comp-filter="history">HISTÓRICO</button>
+            <button type="button" data-noway-comp-filter="mine">MINHAS CONVOCAÇÕES</button>
+            <button type="button" data-noway-comp-filter="all">TODOS</button>
+          </div>
+          <div id="nowayCompList" class="noway-comp-list"><p class="noway-muted">Carregando compromissos competitivos...</p></div>
+        </section>
+        <section class="noway-panel noway-comp-detail-panel" id="nowayCompDetailPanel">
+          <div id="nowayCompDetail"><div class="noway-comp-empty"><span>NW / VS.</span><h4>SELECIONE UM CONFRONTO.</h4><p>Escolha uma partida ou treino para consultar escalação, disponibilidade e planejamento.</p></div></div>
+          <form id="nowayCompForm" class="noway-comp-form" hidden>
+            <input id="nowayCompEventId" type="hidden">
+            <div class="noway-comp-editor-title"><div><span class="noway-tiny">GERENCIAR PARTIDA</span><h4>PREPARAÇÃO E RESULTADOS.</h4></div><button id="nowayCompClose" type="button" class="noway-outline-action">FECHAR ×</button></div>
+            <div class="noway-comp-form-grid">
+              <div><label for="nowayCompBestOf">FORMATO</label><select id="nowayCompBestOf"><option value="1">MD1 · Melhor de 1</option><option value="3">MD3 · Melhor de 3</option><option value="5">MD5 · Melhor de 5</option></select></div>
+              <div><label for="nowayCompResult">RESULTADO</label><select id="nowayCompResult"><option value="pendente">Ainda não finalizado</option><option value="vitoria">Vitória</option><option value="derrota">Derrota</option><option value="empate">Empate</option></select></div>
+              <div><label for="nowayCompOurScore">MAPAS DA NOWAY</label><input id="nowayCompOurScore" type="number" min="0" max="3" placeholder="—"></div>
+              <div><label for="nowayCompOpponentScore">MAPAS DO ADVERSÁRIO</label><input id="nowayCompOpponentScore" type="number" min="0" max="3" placeholder="—"></div>
+            </div>
+            <div class="noway-comp-editor-section">
+              <div class="noway-comp-editor-heading"><div><span class="noway-tiny">02 / EQUIPE</span><h5>CONVOCAÇÃO E LINE-UP.</h5></div><small>Selecione até 5 titulares</small></div>
+              <div id="nowayCompRosterEditor" class="noway-comp-roster-editor"></div>
+            </div>
+            <div class="noway-comp-editor-section">
+              <div class="noway-comp-editor-heading"><div><span class="noway-tiny">03 / TÁTICA</span><h5>MAP POOL / VETO.</h5></div><button type="button" id="nowayCompAddMap" class="noway-outline-action">+ MAPA</button></div>
+              <div id="nowayCompMapsEditor" class="noway-comp-maps-editor"></div>
+              <datalist id="nowayCompMapSuggestions">
+                <option value="Banco"><option value="Clube"><option value="Fronteira"><option value="Café Dostoiévski"><option value="Consulado"><option value="Chalé"><option value="Oregon"><option value="Litoral"><option value="Villa"><option value="Arranha-céu"><option value="Covil"><option value="Laboratórios Nighthaven"><option value="Planícies Esmeralda"><option value="Parque Temático"><option value="Outback">
+              </datalist>
+            </div>
+            <div class="noway-comp-editor-section"><label for="nowayCompPreparation">ANOTAÇÕES E ESTRATÉGIAS DA EQUIPE</label><textarea id="nowayCompPreparation" rows="4" maxlength="4000" placeholder="Planos de jogo, prioridades, adversário, comunicação e observações..."></textarea></div>
+            <div class="noway-comp-form-actions"><button type="submit" class="btn btn-yellow">SALVAR PREPARAÇÃO ↗</button><button id="nowayCompEditEvent" type="button" class="noway-outline-action">EDITAR NA AGENDA ↗</button></div>
+          </form>
+        </section>
+      </div>
     </section>
     <section id="nowayConsoleUsers" class="noway-panel noway-console-view" data-console-view="users" hidden>
       <div class="noway-console-view-header"><div><span class="noway-tiny">05 / EXCLUSIVO DO FOUNDER</span><h3>CONTROLE DE CONTAS.</h3><p>Todos os cadastros autenticados, últimos acessos e atribuição manual de cargos.</p></div><button id="nowayAccountsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div>
