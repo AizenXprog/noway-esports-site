@@ -6,7 +6,7 @@ const db=createClient("https://vdipsufzlqmnprbjiojb.supabase.co","sb_publishable
   {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-const roles={owner:"FOUNDER / OWNER",manager:"TEAM MANAGER",jogador:"JOGADOR",membro:"MEMBRO"};
+const roles={owner:"FOUNDER / OWNER",manager:"TEAM MANAGER",gri:"GRI / RECRUTAMENTO",jogador:"JOGADOR",membro:"MEMBRO"};
 const kinds={partida:"PARTIDA",treino:"TREINO",reuniao:"REUNIÃO",evento:"EVENTO"};
 const activeRoles=new Set(["owner","manager","jogador"]);
 let me=null,account=null,events=[],calendar=new Date(),selectedDay=null;
@@ -17,6 +17,7 @@ const signed=()=>Boolean(me&&account);
 const isStaff=()=>activeRoles.has(account?.role);
 const isManager=()=>account?.role==="owner"||account?.role==="manager";
 const isOwner=()=>account?.role==="owner";
+const canRecruit=()=>isManager()||account?.role==="gri";
 const notice=(message,error=false)=>{
   const box=$("nowaySystemNotice");
   if(!box)return;
@@ -53,7 +54,7 @@ const safeLink=url=>{
 };
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
-  if(name==="recruitment")return isManager();
+  if(name==="recruitment")return canRecruit();
   if(["chat","agenda","team","competitive","stats"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
@@ -157,12 +158,14 @@ function setTab(name){
 }
 function syncRoles(){
   document.querySelectorAll("[data-console-tab]").forEach(btn=>btn.hidden=!viewPermitted(btn.dataset.consoleTab));
+  document.documentElement.dataset.nowayRecruitRole=account?.role||"membro";
   $("nowayEventCreate").hidden=!isManager();
   $("nowayCompCreate").hidden=!isManager();
-  const greet={owner:"CENTRAL DO FOUNDER.",manager:"CENTRAL DA GESTÃO.",jogador:"ÁREA DO JOGADOR.",membro:"SUA CONTA NOWAY."};
+  const greet={owner:"CENTRAL DO FOUNDER.",manager:"CENTRAL DA GESTÃO.",gri:"GESTÃO DE RECRUTAMENTO.",jogador:"ÁREA DO JOGADOR.",membro:"SUA CONTA NOWAY."};
   $("nowayOverviewGreeting").textContent=greet[account.role]||"NOWAY ID.";
   $("nowayOverviewDesc").textContent=isOwner()?"Controle o elenco, eventos, contatos e as contas cadastradas.":
     isManager()?"Agenda, comunicados e conversas da equipe em um só lugar.":
+    account?.role==="gri"?"Analise candidaturas e converse com candidatos, sem acesso administrativo geral.":
     isStaff()?"Confira seus compromissos, comunicados e mensagens da equipe.":
     "Sua identidade e suas conversas com a NOWAY, sem complicação.";
   $("nowayConsoleWelcomeText").textContent=isStaff()?
@@ -516,7 +519,7 @@ async function refreshAccounts(){
       '<div class="noway-console-account-control">'+
       (u.role==="owner"?'<b>FOUNDER / OWNER</b>':
         '<select data-account-role="'+escapeHTML(u.id)+'" aria-label="Cargo de '+escapeHTML(u.display_name)+'">'+
-          ["membro","jogador","manager"].map(role=>
+          ["membro","jogador","gri","manager"].map(role=>
             '<option value="'+role+'"'+(role===u.role?' selected':'')+'>'+escapeHTML(roles[role])+'</option>').join("")+
         '</select><button class="noway-mini-action" type="button" data-account-save="'+escapeHTML(u.id)+'">SALVAR CARGO</button>')+
       '</div></article>'
