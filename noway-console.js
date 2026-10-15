@@ -53,7 +53,7 @@ const safeLink=url=>{
 };
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
-  if(["chat","agenda","team","competitive"].includes(name))return isStaff();
+  if(["chat","agenda","team","competitive","stats"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
@@ -76,6 +76,7 @@ function setTab(name){
   $("nowayConsoleUsers").hidden=name!=="users";
   $("nowayConsoleAgenda").hidden=name!=="agenda";
   $("nowayConsoleCompetitive").hidden=name!=="competitive";
+  $("nowayConsolePlayerStats").hidden=name!=="stats";
   $("nowayConsoleProfile").hidden=name!=="profile";
   $("nowayConsoleOverview").hidden=name!=="overview";
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
@@ -88,6 +89,7 @@ function setTab(name){
   if(name==="profile")renderProfile();
   if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
   if(name==="competitive")refreshCompetitive();
+  if(name==="stats")refreshPlayerStats();
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
   document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -108,7 +110,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab(viewPermitted(requested)&&["overview","team","agenda","competitive","chat","contacts","users","profile"].includes(requested)?requested:"overview");
+  setTab(viewPermitted(requested)&&["overview","team","agenda","competitive","stats","chat","contacts","users","profile"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
@@ -118,6 +120,11 @@ async function loadAccount(){
     if(res.error)throw res.error;
     account=res.data||{id:me.id,role:"membro",display_name:me.user_metadata?.full_name||"Membro",avatar_url:null};
     if(hqIdentity!==me.id){hqSnapshot=null;hqActivity=[];hqInbox=[];hqLoadedAt=0;hqIdentity=me.id;}
+    if(playerStatsState.userId&&playerStatsState.userId!==me.id){
+      playerStatsState.rows=[];playerStatsState.people=[];playerStatsState.roster=[];playerStatsState.matches=[];
+      playerStatsState.userId=null;playerStatsState.loadedAt=0;
+      playerStatsState.selectedPlayer=null;playerStatsState.selectedMatch=null;
+    }
     if(competitiveState.userId&&competitiveState.userId!==me.id){
       competitiveState.matches.clear();competitiveState.roster=[];competitiveState.maps=[];
       competitiveState.people=[];competitiveState.selected=null;competitiveState.lastLoaded=0;
@@ -127,6 +134,7 @@ async function loadAccount(){
     if(isStaff())await refreshEvents();
     await refreshHQ();
     if(isStaff()&&currentTab==="competitive")await refreshCompetitive(true);
+    if(isStaff()&&currentTab==="stats")await refreshPlayerStats(true);
   }catch(err){notice("Falha ao carregar seu painel: "+err.message,true);}
 }
 function renderProfile(){
@@ -581,6 +589,22 @@ function bind(){
   $("nowayAccountsRefresh").addEventListener("click",refreshAccounts);
   $("nowayHQRefresh").addEventListener("click",()=>refreshHQ(true));
   $("nowayCompRefresh").addEventListener("click",()=>refreshCompetitive(true));
+  $("nowayStatsRefresh").addEventListener("click",()=>refreshPlayerStats(true));
+  $("nowayStatsSeason").addEventListener("change",event=>{
+    playerStatsState.season=event.currentTarget.value;
+    renderPlayerStats();
+  });
+  $("nowayStatsPlayerSelect").addEventListener("change",event=>{
+    playerStatsState.selectedPlayer=event.currentTarget.value;
+    playerStatsState.selectedMatch=null;renderPlayerStats();
+  });
+  $("nowayStatsMatchSelect").addEventListener("change",event=>{
+    playerStatsState.selectedMatch=event.currentTarget.value;
+    renderPlayerStatsEditor();
+  });
+  $("nowayStatsOpenCompetitive").addEventListener("click",()=>setTab("competitive"));
+  $("nowayStatsForm").addEventListener("submit",savePlayerMatchStats);
+
   $("nowayCompCreate").addEventListener("click",()=>{
     if(!isManager())return;
     setTab("agenda");openEventEditor();
