@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a"><meta name="description" content="NOWAY ID — painel pessoal para membros, jogadores e gestão da NOWAY Esports."><title>NOWAY ID — Central da Equipe</title><link rel="icon" type="image/webp" href="assets/logo-white.webp"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-console.css"></head><body data-noway-console="true">
+<div class="reading-line"></div><div class="noise"></div>
+<header class="noway-console-header"><a href="/" class="noway-console-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ID.</b></span></a><div class="noway-console-header-right"><a href="/" class="noway-console-back">← VOLTAR AO SITE</a><button type="button" id="nowayHeaderLogin" class="header-login">MINHA CONTA ↗</button></div></header>
+<main class="noway-console-main">
+<div class="noway-console-intro wrap"><div><span class="noway-tiny">NOWAY ESPORTS / PORTAL PRIVADO</span><h1>ÁREA <em>INTERNA.</em></h1><p>Um espaço para cuidar do que acontece dentro da NOWAY.</p></div><span class="noway-console-intro-mark" aria-hidden="true">NW / 26</span></div>
+<section class="section noway-id-section noway-console-section" id="community">
+<div class="wrap">
+  <div class="section-heading"><div>
+    <div class="kicker">05 / COMUNIDADE NOWAY</div>
+    <h2>NOWAY <span>ID.</span></h2>
+    <p>Uma conexão direta com a NOWAY. Entre com sua conta para enviar solicitações, conversar com a organização e acompanhar respostas.</p>
+  </div><div class="section-side">COMUNIDADE / ACESSO SEGURO<br><strong>BRASIL</strong></div></div>
+  <div id="nowaySystemNotice" class="noway-system-notice" role="status" aria-live="polite" hidden></div>
+  <div class="noway-auth-surface" id="nowayLoginSurface">
+    <div class="noway-auth-intro"><span class="noway-tiny">ACESSO À COMUNIDADE</span>
+      <h3>SUA IDENTIDADE<br>NA NOWAY.</h3>
+      <p>Entre para falar diretamente com a organização. Seus contatos e respostas ficam privados na sua conta.</p>
+      <div class="noway-auth-points"><span>01 / IDENTIDADE VERIFICADA</span><span>02 / MENSAGENS PRIVADAS</span><span>03 / RESPOSTAS ACOMPANHADAS</span></div>
+    </div>
+    <div class="noway-auth-form">
+      <span class="noway-tiny">ACESSAR NOWAY ID</span>
+      <h3>ENTRAR.</h3>
+      <button id="nowayGoogleLogin" type="button" class="noway-google-button"><span class="noway-google-mark">G</span> CONTINUAR COM GOOGLE ↗</button>
+      <div class="noway-auth-divider"><span>OU ENTRE POR E-MAIL</span></div>
+      <form id="nowayEmailForm" class="noway-form">
+        <label for="nowayLoginEmail">E-MAIL</label>
+        <input id="nowayLoginEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com" maxlength="254" required>
+        <button type="submit" class="btn btn-yellow">RECEBER LINK DE ACESSO <span>↗</span></button>
+      </form>
+      <p class="noway-auth-help">Sem senha. Ao entrar, você concorda em utilizar a central de contato de maneira respeitosa.</p>
+    </div>
+  </div>
+  <div id="nowayDashboard" class="noway-dashboard" hidden>
+  <nav class="noway-console-tabs" id="nowayConsoleTabs" aria-label="Áreas do painel">
+    <button type="button" data-console-tab="overview" class="is-active">INÍCIO</button>
+    <button type="button" data-console-tab="agenda">AGENDA</button>
+    <button type="button" data-console-tab="chat">CHAT DA EQUIPE</button>
+    <button type="button" data-console-tab="contacts">CONTATOS</button>
+    <button type="button" data-console-tab="users">USUÁRIOS</button>
+    <button type="button" data-console-tab="profile">MEU PERFIL</button>
+  </nav>
+  <div id="nowayConsoleOverview" class="noway-console-view" data-console-view="overview">
+    <div class="noway-console-overview-heading"><span class="noway-tiny">NOWAY / CENTRAL DE OPERAÇÕES</span><h3 id="nowayOverviewGreeting">BEM-VINDO AO SEU ESPAÇO.</h3><p id="nowayOverviewDesc">Suas ferramentas, eventos e contatos em um só lugar.</p></div>
+    <div id="nowayConsoleStats" class="noway-console-stats"></div>
+    <div class="noway-console-overview-grid">
+      <section class="noway-panel"><div class="noway-panel-top"><span class="noway-tiny">PRÓXIMAS DATAS</span><h3>NO HORIZONTE.</h3></div><div id="nowayConsoleUpcoming"></div><button class="noway-outline-action" data-console-open="agenda" type="button">ABRIR AGENDA ↗</button></section>
+      <section class="noway-panel"><div class="noway-panel-top"><span class="noway-tiny">COMUNICAÇÃO</span><h3>SEU ESPAÇO.</h3></div><p id="nowayConsoleWelcomeText" class="noway-muted"></p><div class="noway-console-overview-actions"><button class="noway-outline-action" data-console-open="chat" type="button">CHAT INTERNO ↗</button><button class="noway-outline-action" data-console-open="contacts" type="button">VER CONTATOS ↗</button></div></section>
+    </div>
+  </div>
+    <div class="noway-account-strip"><div class="noway-account-identity">
+      <button type="button" id="nowayAvatarTrigger" class="noway-avatar-trigger" aria-label="Alterar sua foto de perfil">
+        <img id="nowayAvatarPhoto" alt="" hidden><span id="nowayAvatarLetter">N</span><i aria-hidden="true">✎</i>
+      </button>
+      <div><span class="noway-tiny">CONTA AUTENTICADA</span>
+      <h3 id="nowayAccountName">MEMBRO NOWAY</h3>
+      <span class="noway-role" id="nowayAccountRole">MEMBRO</span></div>
+    </div><input id="nowayAvatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+    <div class="noway-account-actions"><button type="button" id="nowayEditName" class="noway-outline-action">EDITAR NOME</button><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></div>
+    <form id="nowayDisplayNameForm" class="noway-form noway-name-form" hidden><label for="nowayDisplayName">SEU NOME NA COMUNIDADE</label><input id="nowayDisplayName" type="text" minlength="1" maxlength="80" autocomplete="name" required placeholder="Como devemos chamar você?"><button type="submit" class="btn btn-yellow">SALVAR NOME <span>↗</span></button></form>
+    <section id="nowayTeamWorkspace" class="noway-team-space" aria-label="Área interna da equipe NOWAY" hidden>
+      <div class="noway-team-head">
+        <div><span class="noway-tiny">NOWAY ID / ACESSO INTERNO</span>
+          <h3 id="nowayTeamTitle">ESPAÇO DA EQUIPE.</h3>
+          <p id="nowayTeamSubtitle">Comunicados e conversas exclusivos da organização.</p>
+        </div>
+        <span class="noway-team-private"><span class="noway-team-private-dot"></span> ACESSO RESTRITO</span>
+      </div>
+      <div class="noway-team-grid">
+        <section class="noway-panel noway-team-announcements" aria-labelledby="nowayTeamNewsTitle">
+          <div class="noway-team-panel-head"><div><span class="noway-tiny">01 / INFORMAÇÕES INTERNAS</span><h4 id="nowayTeamNewsTitle">MURAL DA EQUIPE.</h4></div></div>
+          <form id="nowayAnnouncementForm" class="noway-form noway-team-news-form" hidden>
+            <label for="nowayAnnouncementTitle">TÍTULO DO COMUNICADO</label>
+            <input id="nowayAnnouncementTitle" minlength="3" maxlength="100" required placeholder="Ex.: Treino de sexta-feira">
+            <label for="nowayAnnouncementBody">MENSAGEM PARA A EQUIPE</label>
+            <textarea id="nowayAnnouncementBody" minlength="2" maxlength="1600" rows="3" required placeholder="Compartilhe um recado com jogadores e gestão..."></textarea>
+            <button type="submit" class="btn btn-yellow">PUBLICAR COMUNICADO <span>↗</span></button>
+          </form>
+          <div id="nowayTeamNewsList" class="noway-team-news-list"><p class="noway-muted">Carregando mural...</p></div>
+        </section>
+        <section class="noway-panel noway-team-directory" aria-labelledby="nowayTeamDirectoryTitle">
+          <div class="noway-team-panel-head"><div><span class="noway-tiny">02 / NOSSA EQUIPE</span><h4 id="nowayTeamDirectoryTitle">INTEGRANTES.</h4></div></div>
+          <p class="noway-muted">Somente contas autorizadas pela NOWAY aparecem aqui.</p>
+          <div id="nowayTeamDirectoryList" class="noway-team-directory-list"><p class="noway-muted">Carregando equipe...</p></div>
+        </section>
+      </div>
+      <section class="noway-panel noway-team-chat" aria-labelledby="nowayTeamChatTitle">
+        <div class="noway-team-panel-head noway-team-chat-head"><div><span class="noway-tiny">03 / CANAL PRIVADO</span><h4 id="nowayTeamChatTitle">CHAT DA NOWAY<span class="noway-team-online">●</span></h4>
+          <p class="noway-muted">Um só espaço para jogadores, Team Manager e Founder.</p></div>
+          <button id="nowayRefreshTeamChat" class="noway-outline-action" type="button">ATUALIZAR ↻</button>
+        </div>
+        <div id="nowayTeamChatList" class="noway-team-chat-list" role="log" aria-label="Mensagens do chat interno" tabindex="0"><p class="noway-muted">Carregando mensagens...</p></div>
+        <form id="nowayTeamChatForm" class="noway-team-chat-form">
+          <label for="nowayTeamChatBody" class="noway-tiny">SUA MENSAGEM / EQUIPE NOWAY</label>
+          <div class="noway-team-chat-compose">
+            <textarea id="nowayTeamChatBody" rows="2" maxlength="1200" minlength="1" required placeholder="Enviar mensagem para a equipe..."></textarea>
+            <button class="btn btn-yellow" type="submit">ENVIAR <span>↗</span></button>
+          </div>
+          <span class="noway-team-chat-tip">ENTER envia · SHIFT + ENTER quebra linha</span>
+        </form>
+      </section>
+    </section>
+    <div class="noway-dash-grid">
+      <section class="noway-panel">
+        <div class="noway-panel-top"><span class="noway-tiny">01 / NOVO CONTATO</span><h3>MANDE SUA MENSAGEM.</h3></div>
+        <form id="nowayNewContact" class="noway-form">
+          <label for="nowayContactType">ASSUNTO DO CONTATO</label>
+          <select id="nowayContactType" required><option value="geral">Contato geral</option><option value="fa">Mensagem de fã</option><option value="parceria">Parcerias</option><option value="recrutamento">Recrutamento / testes</option><option value="outro">Outro assunto</option></select>
+          <label for="nowayContactSubject">TÍTULO</label>
+          <input id="nowayContactSubject" maxlength="180" minlength="4" required placeholder="Sobre o que quer conversar?">
+          <label for="nowayContactBody">SUA MENSAGEM</label>
+          <textarea id="nowayContactBody" maxlength="5000" minlength="2" rows="6" required placeholder="Escreva aqui sua solicitação..."></textarea>
+          <button type="submit" class="btn btn-yellow">ENVIAR SOLICITAÇÃO <span>↗</span></button>
+        </form>
+      </section>
+      <section class="noway-panel">
+        <div class="noway-panel-top"><span class="noway-tiny">02 / MENSAGENS</span><h3 id="nowayInboxTitle">SUAS CONVERSAS.</h3></div>
+        <p class="noway-inbox-description" id="nowayInboxDescription">Acompanhe suas solicitações e as respostas da equipe.</p>
+        <button type="button" id="nowayRefreshInbox" class="noway-outline-action noway-refresh-inbox">ATUALIZAR MENSAGENS ↻</button><div id="nowayContactsList" class="noway-contact-list"><p class="noway-muted">Carregando solicitações...</p></div>
+      </section>
+    </div>
+    <section id="nowayThreadSection" class="noway-panel noway-thread-panel" hidden>
+      <div class="noway-panel-top"><span class="noway-tiny">03 / CONVERSA PRIVADA</span>
+        <h3 id="nowayThreadTitle">SOLICITAÇÃO.</h3><p id="nowayThreadMeta" class="noway-muted"></p></div>
+      <div id="nowayThreadMessages" class="noway-thread-messages"></div>
+      <form id="nowayReplyForm" class="noway-form">
+        <label for="nowayReplyBody">RESPONDER</label>
+        <textarea id="nowayReplyBody" rows="3" maxlength="5000" required placeholder="Escreva sua resposta..."></textarea>
+        <button type="submit" class="btn btn-yellow">ENVIAR RESPOSTA <span>↗</span></button>
+      </form>
+      <div id="nowayOwnerTicketControls" hidden><label for="nowayTicketStatus">STATUS DA SOLICITAÇÃO</label>
+        <select id="nowayTicketStatus"><option value="aberta">Aberta</option><option value="aguardando">Aguardando resposta</option><option value="respondida">Respondida</option><option value="resolvida">Resolvida</option></select>
+        <button type="button" class="noway-outline-action" id="nowaySaveStatus">ATUALIZAR STATUS</button>
+      </div>
+    </section>
+    <section id="nowayOwnerMembers" class="noway-panel noway-team-admin" hidden>
+      <div class="noway-panel-top"><span class="noway-tiny">EXCLUSIVO / FOUNDER</span><h3>GESTÃO DE CONTAS.</h3></div>
+      <p class="noway-muted">Autorize membros como jogadores ou gestores. Alterações de permissões são protegidas no servidor.</p>
+      <div id="nowayMembersList" class="noway-members-list"></div>
+    </section>
+    <section id="nowayConsoleAgenda" class="noway-console-view noway-calendar-view" data-console-view="agenda" hidden>
+      <div class="noway-console-view-header"><div><span class="noway-tiny">02 / PLANEJAMENTO</span><h3>AGENDA DA NOWAY.</h3><p>Treinos, partidas, reuniões e eventos, organizados em um calendário compartilhado.</p></div><button id="nowayEventCreate" type="button" class="btn btn-yellow" hidden>+ NOVO EVENTO</button></div>
+      <div class="noway-cal-layout">
+        <div class="noway-panel noway-cal-frame">
+          <div class="noway-cal-controls"><button type="button" id="nowayCalPrev" aria-label="Mês anterior">←</button><strong id="nowayCalTitle"></strong><button type="button" id="nowayCalNext" aria-label="Próximo mês">→</button><button type="button" id="nowayCalToday" class="noway-outline-action">HOJE</button></div>
+          <div class="noway-cal-weekdays"><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span><span>DOM</span></div>
+          <div class="noway-cal-days" id="nowayCalDays"></div>
+          <div class="noway-cal-key"><span>● PARTIDAS</span><span>● TREINOS</span><span>● EVENTOS</span></div>
+        </div>
+        <div class="noway-panel noway-cal-agenda"><div class="noway-panel-top"><span class="noway-tiny">COMPROMISSOS / EQUIPE</span><h3 id="nowayCalEventsHeading">PRÓXIMAS DATAS.</h3></div><div id="nowayCalEvents" class="noway-cal-event-list"></div></div>
+      </div>
+      <form id="nowayEventForm" class="noway-panel noway-form noway-cal-editor" hidden>
+        <div class="noway-cal-editor-top"><div><span class="noway-tiny">GERENCIAR AGENDA</span><h3 id="nowayEventFormTitle">NOVO EVENTO.</h3></div><button type="button" id="nowayEventClose" class="noway-outline-action">FECHAR ×</button></div>
+        <input type="hidden" id="nowayEventId">
+        <div class="noway-cal-fields">
+          <div><label for="nowayEventKind">TIPO</label><select id="nowayEventKind"><option value="partida">Partida</option><option value="treino">Treino</option><option value="reuniao">Reunião</option><option value="evento">Evento</option></select></div>
+          <div><label for="nowayEventStatus">STATUS</label><select id="nowayEventStatus"><option value="confirmado">Confirmado</option><option value="pendente">A confirmar</option><option value="cancelado">Cancelado</option></select></div>
+          <div class="noway-cal-fields-wide"><label for="nowayEventTitle">TÍTULO</label><input id="nowayEventTitle" maxlength="120" minlength="3" required placeholder="Ex.: NOWAY vs Adversário"></div>
+          <div><label for="nowayEventStart">INÍCIO</label><input id="nowayEventStart" type="datetime-local" required></div>
+          <div><label for="nowayEventEnd">TÉRMINO (OPCIONAL)</label><input id="nowayEventEnd" type="datetime-local"></div>
+          <div><label for="nowayEventOpponent">ADVERSÁRIO</label><input id="nowayEventOpponent" maxlength="100" placeholder="Se houver"></div>
+          <div><label for="nowayEventCompetition">COMPETIÇÃO / JOGO</label><input id="nowayEventCompetition" maxlength="120" placeholder="Ex.: Rainbow Six Siege"></div>
+          <div class="noway-cal-fields-wide"><label for="nowayEventLink">LINK (HTTPS)</label><input id="nowayEventLink" type="url" maxlength="500" placeholder="https://..."></div>
+          <div class="noway-cal-fields-wide"><label for="nowayEventDescription">OBSERVAÇÕES</label><textarea id="nowayEventDescription" maxlength="2000" rows="3" placeholder="Informações para a equipe..."></textarea></div>
+        </div>
+        <div class="noway-cal-form-actions"><button type="submit" class="btn btn-yellow">SALVAR EVENTO ↗</button><button type="button" id="nowayEventDelete" class="noway-outline-action" hidden>EXCLUIR EVENTO</button></div>
+      </form>
+    </section>
+    <section id="nowayConsoleUsers" class="noway-panel noway-console-view" data-console-view="users" hidden>
+      <div class="noway-console-view-header"><div><span class="noway-tiny">05 / EXCLUSIVO DO FOUNDER</span><h3>CONTROLE DE CONTAS.</h3><p>Todos os cadastros autenticados, últimos acessos e atribuição manual de cargos.</p></div><button id="nowayAccountsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div>
+      <div class="noway-console-account-filter"><label for="nowayAccountsSearch">BUSCAR MEMBRO / E-MAIL</label><input id="nowayAccountsSearch" placeholder="Pesquise por nome ou endereço de e-mail..." maxlength="80" autocomplete="off"><span id="nowayAccountsCount"></span></div>
+      <div id="nowayAccountsList" class="noway-console-accounts"></div>
+      <div class="noway-console-pagination"><button id="nowayAccountsPrev" class="noway-outline-action" type="button">← ANTERIOR</button><span id="nowayAccountsPage"></span><button id="nowayAccountsNext" class="noway-outline-action" type="button">PRÓXIMA →</button></div>
+    </section>
+    <section id="nowayConsoleProfile" class="noway-panel noway-console-view" data-console-view="profile" hidden>
+      <div class="noway-console-view-header"><div><span class="noway-tiny">06 / IDENTIDADE</span><h3>MEU PERFIL.</h3><p>Seu nome e sua foto dentro do NOWAY ID.</p></div></div>
+      <div class="noway-console-profile-body"><div id="nowayProfileAvatar" class="noway-profile-avatar-preview">N</div><div><h4>PERSONALIZE SUA CONTA.</h4><p class="noway-muted">Use uma imagem PNG, JPG ou WebP (até 8 MB). Nós a ajustamos automaticamente em um quadrado para seu perfil.</p><div class="noway-profile-action-row"><button id="nowayProfileChangeAvatar" class="btn btn-yellow" type="button">ALTERAR FOTO ↗</button><button id="nowayProfileRemoveAvatar" class="noway-outline-action" type="button">REMOVER FOTO</button><button id="nowayProfileChangeName" class="noway-outline-action" type="button">EDITAR NOME</button></div></div></div>
+    </section>
+  </div>
+</div>
+</section>
+</main><footer class="noway-console-footer"><div class="wrap"><span>© NOWAY ESPORTS / PAINEL DE CONTROLE</span><a href="https://discord.gg/USZvdCUAEb" target="_blank" rel="noopener noreferrer">DISCORD DA COMUNIDADE ↗</a></div></footer>
+<script type="module" src="noway-id.js"></script><script type="module" src="noway-console.js"></script></body></html>
