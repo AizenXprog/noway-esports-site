@@ -35,7 +35,7 @@
   <nav class="noway-console-tabs" id="nowayConsoleTabs" aria-label="Áreas do painel">
     <button type="button" data-console-tab="overview" class="is-active">INÍCIO</button>
     <button type="button" data-console-tab="agenda">AGENDA</button>
-    <button type="button" data-console-tab="chat">CHAT DA EQUIPE</button>
+    <button type="button" data-console-tab="chat">CHAT DA EQUIPE <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
     <button type="button" data-console-tab="contacts">CONTATOS</button>
     <button type="button" data-console-tab="users">USUÁRIOS</button>
     <button type="button" data-console-tab="profile">MEU PERFIL</button>
@@ -87,17 +87,47 @@
       <section class="noway-panel noway-team-chat" aria-labelledby="nowayTeamChatTitle">
         <div class="noway-team-panel-head noway-team-chat-head"><div><span class="noway-tiny">03 / CANAL PRIVADO</span><h4 id="nowayTeamChatTitle">CHAT DA NOWAY<span class="noway-team-online">●</span></h4>
           <p class="noway-muted">Um só espaço para jogadores, Team Manager e Founder.</p></div>
-          <button id="nowayRefreshTeamChat" class="noway-outline-action" type="button">ATUALIZAR ↻</button>
+          <div class="noway-chat-header-actions">
+            <button id="nowayChatSound" class="noway-outline-action" type="button" aria-pressed="true" title="Ativar ou silenciar avisos sonoros">SOM: ATIVO ♪</button>
+            <button id="nowayChatDesktop" class="noway-outline-action" type="button" title="Receber alertas quando o navegador estiver em segundo plano">AVISOS DESKTOP</button>
+            <button id="nowayRefreshTeamChat" class="noway-outline-action" type="button">ATUALIZAR ↻</button>
+          </div>
         </div>
         <div id="nowayTeamChatList" class="noway-team-chat-list" role="log" aria-label="Mensagens do chat interno" tabindex="0"><p class="noway-muted">Carregando mensagens...</p></div>
         <form id="nowayTeamChatForm" class="noway-team-chat-form">
+          <div id="nowayChatReference" class="noway-chat-reference" hidden>
+            <div><span id="nowayChatReferenceType">RESPONDENDO</span><strong id="nowayChatReferenceLabel">Mensagem selecionada</strong></div>
+            <button id="nowayChatReferenceClose" type="button" aria-label="Remover referência">✕</button>
+          </div>
+          <div id="nowayChatMediaPreview" class="noway-chat-upload-preview" hidden>
+            <img id="nowayChatMediaThumb" alt="Imagem selecionada para envio">
+            <span id="nowayChatMediaName">Imagem selecionada</span>
+            <button id="nowayChatMediaClear" type="button" aria-label="Remover imagem">✕</button>
+          </div>
           <label for="nowayTeamChatBody" class="noway-tiny">SUA MENSAGEM / EQUIPE NOWAY</label>
           <div class="noway-team-chat-compose">
-            <textarea id="nowayTeamChatBody" rows="2" maxlength="1200" minlength="1" required placeholder="Enviar mensagem para a equipe..."></textarea>
+            <textarea id="nowayTeamChatBody" rows="2" maxlength="1200" placeholder="Escreva para sua equipe..."></textarea>
             <button class="btn btn-yellow" type="submit">ENVIAR <span>↗</span></button>
           </div>
-          <span class="noway-team-chat-tip">ENTER envia · SHIFT + ENTER quebra linha</span>
+          <div class="noway-chat-tools">
+            <div class="noway-chat-tool-buttons">
+              <button id="nowayChatAttachButton" type="button" class="noway-chat-tool" title="Enviar imagem">▧ ADICIONAR IMAGEM</button>
+              <input id="nowayChatImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              <button id="nowayChatEventButton" type="button" class="noway-chat-tool" title="Citar uma partida, treino ou reunião">▣ VINCULAR EVENTO</button>
+            </div>
+            <span class="noway-team-chat-tip">ENTER envia · SHIFT + ENTER pula linha</span>
+          </div>
+          <div id="nowayChatEventPicker" class="noway-chat-event-picker" hidden>
+            <div class="noway-chat-event-picker-head"><strong>ESCOLHER EVENTO DA AGENDA</strong><button id="nowayChatEventPickerClose" type="button" aria-label="Fechar">✕</button></div>
+            <div id="nowayChatEventItems"></div>
+          </div>
         </form>
+        <div id="nowayChatToast" class="noway-chat-toast" role="status" aria-live="polite" hidden>
+          <span id="nowayChatToastAvatar" class="noway-chat-toast-avatar">NW</span>
+          <div><strong id="nowayChatToastTitle">NOVA MENSAGEM NA EQUIPE</strong><p id="nowayChatToastBody">Clique para ver no chat.</p></div>
+          <button id="nowayChatToastOpen" type="button">VER ↗</button>
+          <button id="nowayChatToastClose" type="button" aria-label="Fechar notificação">✕</button>
+        </div>
       </section>
     </section>
     <div class="noway-dash-grid">
