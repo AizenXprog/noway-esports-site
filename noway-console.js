@@ -817,8 +817,8 @@ function renderCompetitiveDetail(){
 }
 function addCompetitiveMapRow(m=null){
  const target=$("nowayCompMapsEditor");
- if(target.querySelectorAll(".noway-comp-map-edit").length>=5)
-   return notice("O limite é de cinco mapas por série.",true);
+ if(target.querySelectorAll(".noway-comp-map-edit").length>=12)
+   return notice("O limite é de 12 mapas para picks, bans e preparação.",true);
  const n=target.querySelectorAll(".noway-comp-map-edit").length+1;
  const row=document.createElement("div");
  row.className="noway-comp-map-edit";
