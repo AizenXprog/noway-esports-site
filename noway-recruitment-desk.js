@@ -20,7 +20,7 @@ const badge=(role,name)=>{
  const symbol=role==="owner"?crown:shield;
  return '<span class="noway-desk-badge" title="'+escape(who)+'" aria-label="'+escape(who)+'">'+symbol+'</span>';
 };
-let authUser=null,manager=false,applications=[],selected=null,messages=[],appVersion=0,threadVersion=0,busy=false;
+let authUser=null,manager=false,accountRole="membro",applications=[],selected=null,messages=[],appVersion=0,threadVersion=0,busy=false;
 const active=()=>applications.find(a=>a.id===selected);
 const showing=()=>!document.hidden&&$("nowayConsoleRecruitment")&&!$("nowayConsoleRecruitment").hidden;
 function note(msg,bad=false){
@@ -32,7 +32,8 @@ async function verifyManagement(){
  authUser=error?null:data?.user||null;manager=false;
  if(!authUser)return false;
  const r=await db.from("noway_profiles").select("role").eq("id",authUser.id).maybeSingle();
- manager=!r.error&&["owner","manager"].includes(r.data?.role);
+ accountRole=r.data?.role||"membro";
+ manager=!r.error&&["owner","manager","gri"].includes(accountRole);
  return manager;
 }
 async function loadApplications(force=false){
@@ -41,7 +42,7 @@ async function loadApplications(force=false){
  const version=++appVersion;
  try{
   if(!await verifyManagement()){
-   $("nowayDeskList").innerHTML='<p class="noway-muted">Somente Founder e Team Manager podem acessar candidaturas.</p>';
+   $("nowayDeskList").innerHTML='<p class="noway-muted">Acesso exclusivo do Founder, Team Manager e GRI.</p>';
    $("nowayDeskActive").hidden=true;$("nowayDeskEmpty").hidden=false;return;
   }
   const {data,error}=await db.from("noway_recruitment_applications")
@@ -52,7 +53,7 @@ async function loadApplications(force=false){
   applications=data||[];
   renderList();
   if(selected){
-   if(active()){renderActive();if(force)await readMessages();}
+   if(active()){renderActive();if(force){await readMessages();await loadReviews(selected);}}
    else hideActive();
   }
  }catch(err){note("Não foi possível carregar candidaturas: "+err.message,true);}
@@ -90,7 +91,8 @@ function renderActive(){
  '<strong>CONVERSA ENCERRADA / SOMENTE LEITURA</strong><p>Motivo: '+escape(a.closure_reason||"Não informado")+'</p>':"";
  $("nowayDeskReplyForm").hidden=Boolean(a.closed_at);
  $("nowayDeskActions").hidden=Boolean(a.closed_at);
- $("nowayDeskCloseDetails").hidden=Boolean(a.closed_at);
+ $("nowayDeskCloseDetails").hidden=Boolean(a.closed_at)||accountRole==="gri";
+ $("nowayDeskStatus").querySelectorAll("option").forEach(opt=>opt.disabled=accountRole==="gri"&&!["em_analise","teste"].includes(opt.value));
  renderList();
 }
 async function openApplication(id){
@@ -99,6 +101,7 @@ async function openApplication(id){
  renderActive();
  $("nowayDeskMessages").innerHTML='<p class="noway-muted">Carregando mensagens...</p>';
  await readMessages(true);
+ await loadReviews(id);
 }
 async function readMessages(force=false){
  if(!manager||!selected||!showing())return;
@@ -136,6 +139,7 @@ async function sendReply(event){
 }
 async function saveStatus(){
  const a=active();if(!manager||!a||a.closed_at)return;
+ if(accountRole==="gri"&&!["em_analise","teste"].includes($("nowayDeskStatus").value))return note("GRI pode encaminhar apenas para análise ou testes.",true);
  const btn=$("nowayDeskSaveStatus");btn.disabled=true;
  try{
   const {error}=await db.rpc("noway_recruitment_set_status",
@@ -147,7 +151,7 @@ async function saveStatus(){
 }
 async function closeApplication(event){
  event.preventDefault();
- const a=active();if(!manager||!a||a.closed_at)return;
+ const a=active();if(!manager||!a||a.closed_at||accountRole==="gri")return;
  const reason=$("nowayDeskCloseReason").value.trim();
  if(reason.length<10||reason.length>1000)return note("Informe um motivo de 10 a 1000 caracteres.",true);
  if(!confirm("Encerrar esta conversa definitivamente? O candidato receberá o motivo e não poderá mais responder."))return;
@@ -161,6 +165,39 @@ async function closeApplication(event){
  }catch(err){note("Falha ao encerrar conversa: "+err.message,true);}
  finally{btn.disabled=false;}
 }
+
+const recommendationLabels={em_analise:"EM ANÁLISE",indicar_teste:"INDICAR TESTES",recomendar:"RECOMENDAR APROVAÇÃO",nao_recomendar:"NÃO RECOMENDAR"};
+async function loadReviews(id){
+ if(!manager||!id||!showing())return;
+ const panel=$("nowayDeskReviews");
+ const {data,error}=await db.from("noway_recruitment_reviews")
+ .select("id,reviewer_id,recommendation,note,created_at").eq("application_id",id)
+ .order("created_at",{ascending:false}).limit(60);
+ if(id!==selected)return;
+ if(error){panel.textContent="Não foi possível carregar os pareceres: "+error.message;return;}
+ panel.innerHTML=(data||[]).length?(data||[]).map(r=>
+  '<article class="noway-desk-review"><span>'+escape(recommendationLabels[r.recommendation]||r.recommendation)+
+  ' · '+escape(formatDate(r.created_at))+'</span><p>'+escape(r.note)+'</p></article>'
+ ).join(""):'<p class="noway-muted">Ainda não há pareceres sobre este candidato.</p>';
+}
+async function saveReview(event){
+ event.preventDefault();
+ const a=active();if(!manager||!a)return;
+ const noteText=$("nowayDeskReviewNote").value.trim();
+ if(noteText.length<10)return note("O parecer deve ter no mínimo dez caracteres.",true);
+ const button=$("nowayDeskReviewSave");button.disabled=true;
+ try{
+  const {error}=await db.rpc("noway_recruitment_add_review",{
+   p_application_id:a.id,p_recommendation:$("nowayDeskRecommendation").value,p_note:noteText
+  });
+  if(error)throw error;
+  $("nowayDeskReviewForm").reset();
+  await loadReviews(a.id);
+  note("Parecer interno registrado. O candidato não pode visualizar esta anotação.");
+ }catch(e){note("Erro ao registrar parecer: "+e.message,true);}
+ finally{button.disabled=false;}
+}
+$("nowayDeskReviewForm").addEventListener("submit",saveReview);
 $("nowayDeskRefresh").addEventListener("click",()=>loadApplications(true));
 $("nowayDeskFilter").addEventListener("change",renderList);
 $("nowayDeskCloseView").addEventListener("click",hideActive);
