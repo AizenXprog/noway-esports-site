@@ -13,3 +13,8 @@
 .noway-desk-review-form label{font:900 9px Inter,sans-serif;color:#d5e3c9}
 .noway-desk-review-form select,.noway-desk-review-form textarea{width:100%;border:1px solid #687a5d;background:#121b14;color:#fff;padding:11px;font:600 12px/1.5 Inter,sans-serif;resize:vertical}
 .noway-desk-review-form button{align-self:flex-start}
+
+/* Identificação GRI na central de recrutamento, sem distintivo de Founder/TM. */
+.noway-desk-badge.is-gri{display:inline-flex;align-items:center;justify-content:center;
+ padding:3px 6px;border:1px solid #d0da5c;border-radius:4px;color:#f2ff00;
+ font:900 9px/1 Inter,sans-serif;letter-spacing:.05em}
