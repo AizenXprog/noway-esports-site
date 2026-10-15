@@ -17,6 +17,7 @@
   async function loadResults(){
     if(refreshing)return;
     refreshing=true;
+    loadResults.lastRun=Date.now();
     if(refresh)refresh.disabled=true;
     root.setAttribute("aria-busy","true");
     root.innerHTML='<div class="noway-results-empty">Atualizando resultados oficiais...</div>';
