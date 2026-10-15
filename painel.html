@@ -152,14 +152,14 @@
       </div>
       <section class="noway-panel noway-team-chat" aria-labelledby="nowayTeamChatTitle">
         <div class="noway-team-panel-head noway-team-chat-head"><div><span class="noway-tiny">03 / CANAL PRIVADO</span><h4 id="nowayTeamChatTitle">CHAT DA NOWAY<span class="noway-team-online">●</span></h4>
-          <p class="noway-muted">Um só espaço para jogadores, Team Manager e Founder.</p></div>
+          <p class="noway-muted">Converse sem sair do painel. Role para ler o histórico; a conversa fica fixa aqui.</p></div>
           <div class="noway-chat-header-actions">
             <button id="nowayChatSound" class="noway-outline-action" type="button" aria-pressed="true" title="Ativar ou silenciar avisos sonoros">SOM: ATIVO ♪</button>
             <button id="nowayChatDesktop" class="noway-outline-action" type="button" title="Receber alertas quando o navegador estiver em segundo plano">AVISOS DESKTOP</button>
             <button id="nowayRefreshTeamChat" class="noway-outline-action" type="button">ATUALIZAR ↻</button>
           </div>
         </div>
-        <div id="nowayTeamChatList" class="noway-team-chat-list" role="log" aria-label="Mensagens do chat interno" tabindex="0"><p class="noway-muted">Carregando mensagens...</p></div>
+        <div class="noway-chat-scroll-shell"><div id="nowayTeamChatList" class="noway-team-chat-list" role="log" aria-label="Mensagens do chat interno" tabindex="0"><p class="noway-muted">Carregando mensagens...</p></div><button type="button" id="nowayChatJumpBottom" class="noway-chat-jump" aria-label="Ir para as mensagens mais recentes" title="Ir para as mensagens mais recentes" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14m-6-6 6 6 6-6M4 21h16"/></svg><span id="nowayChatJumpCount" hidden>0</span></button></div>
         <form id="nowayTeamChatForm" class="noway-team-chat-form">
           <div id="nowayChatReference" class="noway-chat-reference" hidden>
             <div><span id="nowayChatReferenceType">RESPONDENDO</span><strong id="nowayChatReferenceLabel">Mensagem selecionada</strong></div>
