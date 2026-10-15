@@ -69,3 +69,17 @@
  .noway-profile-destinations>a,.noway-profile-destinations>button{flex:1}
 }
 @media(prefers-reduced-motion:reduce){.noway-console-tab-group button,.noway-hq-shortcut-group .noway-hq-shortcut{transition:none}}
+
+
+/* Navegação compacta na versão móvel, mantendo recrutamento dentro da HQ. */
+@media(max-width:760px){
+ .noway-console-header-right>a[href="recrutamento.html"]{display:none}
+ .noway-console-header-right>a[href="/"]{white-space:nowrap;letter-spacing:.04em}
+ .noway-console-header{gap:8px}
+ .noway-console-brand{gap:7px}
+}
+@media(max-width:380px){
+ .noway-console-brand{font-size:19px}
+ .noway-console-brand img{width:30px;height:30px}
+ .noway-console-header-right>a[href="/"]{font-size:8px}
+}
