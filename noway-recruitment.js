@@ -113,7 +113,7 @@ function renderApplicationDetails(){
   '<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong></div>').join("")+
   (link?'<div><small>R6 TRACKER · REFERÊNCIA MANUAL</small><a href="'+safe(link)+
     '" target="_blank" rel="noopener noreferrer">ABRIR PERFIL DO TRACKER ↗</a></div>':"");
- $("nowayRecruitManagerTools").hidden=!staff||Boolean(a.closed_at);
+ $("nowayRecruitManagerTools").hidden=!staff||Boolean(a.closed_at)||(profile?.role==="gri"&&["aprovada","recusada","arquivada","encerrada"].includes(a.status));
  $("nowayRecruitClosure").hidden=!a.closed_at;
  if(a.closed_at)$("nowayRecruitClosure").innerHTML='<strong>CONVERSA ENCERRADA / SOMENTE LEITURA</strong><p>Motivo: '+safe(a.closure_reason||"Não informado")+'</p>';
  $("nowayRecruitReplyForm").hidden=Boolean(a.closed_at);
