@@ -53,7 +53,7 @@ const safeLink=url=>{
 };
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
-  if(name==="chat"||name==="agenda"||name==="team")return isStaff();
+  if(["chat","agenda","team","competitive"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
@@ -75,6 +75,7 @@ function setTab(name){
   }
   $("nowayConsoleUsers").hidden=name!=="users";
   $("nowayConsoleAgenda").hidden=name!=="agenda";
+  $("nowayConsoleCompetitive").hidden=name!=="competitive";
   $("nowayConsoleProfile").hidden=name!=="profile";
   $("nowayConsoleOverview").hidden=name!=="overview";
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
@@ -86,12 +87,14 @@ function setTab(name){
   }
   if(name==="profile")renderProfile();
   if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
+  if(name==="competitive")refreshCompetitive();
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
   document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function syncRoles(){
   document.querySelectorAll("[data-console-tab]").forEach(btn=>btn.hidden=!viewPermitted(btn.dataset.consoleTab));
   $("nowayEventCreate").hidden=!isManager();
+  $("nowayCompCreate").hidden=!isManager();
   const greet={owner:"CENTRAL DO FOUNDER.",manager:"CENTRAL DA GESTÃO.",jogador:"ÁREA DO JOGADOR.",membro:"SUA CONTA NOWAY."};
   $("nowayOverviewGreeting").textContent=greet[account.role]||"NOWAY ID.";
   $("nowayOverviewDesc").textContent=isOwner()?"Controle o elenco, eventos, contatos e as contas cadastradas.":
@@ -105,7 +108,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab(viewPermitted(requested)&&["overview","team","agenda","chat","contacts","users","profile"].includes(requested)?requested:"overview");
+  setTab(viewPermitted(requested)&&["overview","team","agenda","competitive","chat","contacts","users","profile"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
@@ -118,6 +121,7 @@ async function loadAccount(){
     syncRoles();renderProfile();
     if(isStaff())await refreshEvents();
     await refreshHQ();
+    if(isStaff()&&currentTab==="competitive")await refreshCompetitive(true);
   }catch(err){notice("Falha ao carregar seu painel: "+err.message,true);}
 }
 function renderProfile(){
@@ -279,6 +283,7 @@ async function refreshEvents(){
       .gte("start_at",start).order("start_at",{ascending:true}).limit(500);
     if(error){notice("Não foi possível carregar a agenda: "+error.message,true);return;}
     events=data||[];renderCalendar();renderEvents();renderOverview();
+    if(currentTab==="competitive")renderCompetitive();
   })();
   try{await loadEventsPromise;}finally{loadEventsPromise=null;}
 }
@@ -331,10 +336,14 @@ function renderEvents(){
       (e.description?'<p>'+escapeHTML(e.description)+'</p>':'')+
       (link?'<a target="_blank" rel="noopener noreferrer" href="'+escapeHTML(link)+'">ACESSAR LINK ↗</a>':'')+
       '<button type="button" data-chat-share-event="'+escapeHTML(e.id)+'" class="noway-mini-action noway-cal-share">▣ MARCAR NO CHAT ↗</button>'+
+      (["partida","treino"].includes(e.kind)?'<button type="button" data-comp-from-agenda="'+escapeHTML(e.id)+'" class="noway-mini-action noway-cal-share">⚔ ABRIR NO COMPETITIVE ↗</button>':'')+
       (canEdit?'<button type="button" data-edit-event="'+escapeHTML(e.id)+'" class="noway-mini-action">EDITAR ↗</button>':'')+
       '</div></article>';
   }).join(""):'<p class="noway-muted">Nenhum evento neste período. Use as setas para navegar pelos meses.</p>';
   box.querySelectorAll("[data-edit-event]").forEach(b=>b.addEventListener("click",()=>openEventEditor(events.find(e=>e.id===b.dataset.editEvent))));
+  box.querySelectorAll("[data-comp-from-agenda]").forEach(b=>b.addEventListener("click",()=>{
+    competitiveState.selected=b.dataset.compFromAgenda;competitiveState.filter="all";setTab("competitive");
+  }));
   box.querySelectorAll("[data-chat-share-event]").forEach(b=>b.addEventListener("click",()=>{
     const ev=events.find(e=>e.id===b.dataset.chatShareEvent);
     if(!ev)return;
@@ -368,7 +377,7 @@ async function saveEvent(ev){
   const start=new Date($("nowayEventStart").value),end=$("nowayEventEnd").value?new Date($("nowayEventEnd").value):null;
   if(Number.isNaN(start.getTime())||(end&&Number.isNaN(end.getTime())))return notice("Informe uma data e hora válidas.",true);
   btn.disabled=true;
-  const {error}=await db.rpc("noway_save_team_event",{
+  const {data:savedEventId,error}=await db.rpc("noway_save_team_event",{
     p_id:$("nowayEventId").value||null,p_kind:$("nowayEventKind").value,
     p_title:$("nowayEventTitle").value.trim(),p_start:start.toISOString(),
     p_end:end?.toISOString()||null,p_description:$("nowayEventDescription").value.trim(),
@@ -379,6 +388,11 @@ async function saveEvent(ev){
   if(error)return notice("Erro ao salvar: "+error.message,true);
   closeEventEditor();selectedDay=null;calendar=new Date(start.getFullYear(),start.getMonth(),1);
   await refreshEvents();notice("Compromisso salvo na agenda da equipe.");
+  if(["partida","treino"].includes($("nowayEventKind").value) && savedEventId){
+    competitiveState.filter="all";
+    competitiveState.selected=savedEventId;
+    setTab("competitive");
+  }
 }
 async function deleteEvent(){
   if(!isManager()||!$("nowayEventId").value||!confirm("Excluir este evento da agenda?"))return;
@@ -386,7 +400,7 @@ async function deleteEvent(){
   const {error}=await db.rpc("noway_delete_team_event",{p_id:$("nowayEventId").value});
   btn.disabled=false;
   if(error)return notice("Não foi possível excluir: "+error.message,true);
-  closeEventEditor();await refreshEvents();notice("Evento excluído.");
+  closeEventEditor();await refreshEvents();await refreshCompetitive(true);notice("Evento excluído.");
 }
 async function refreshAccounts(){
   if(!isOwner())return;
@@ -560,6 +574,26 @@ function bind(){
   });
   $("nowayAccountsRefresh").addEventListener("click",refreshAccounts);
   $("nowayHQRefresh").addEventListener("click",()=>refreshHQ(true));
+  $("nowayCompRefresh").addEventListener("click",()=>refreshCompetitive(true));
+  $("nowayCompCreate").addEventListener("click",()=>{
+    if(!isManager())return;
+    setTab("agenda");openEventEditor();
+  });
+  $("nowayCompClose").addEventListener("click",()=>{$("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;});
+  $("nowayCompEditEvent").addEventListener("click",()=>{
+    const match=events.find(e=>e.id===competitiveState.selected);
+    if(match&&!isManager())return;
+    if(match){setTab("agenda");openEventEditor(match);}
+  });
+  $("nowayCompAddMap").addEventListener("click",()=>addCompetitiveMapRow());
+  $("nowayCompForm").addEventListener("submit",saveCompetitiveSetup);
+  document.querySelectorAll("[data-noway-comp-filter]").forEach(b=>b.addEventListener("click",()=>{
+    competitiveState.filter=b.dataset.nowayCompFilter;
+    $("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;
+    renderCompetitive();
+  }));
+  setInterval(()=>{if(isStaff()&&currentTab==="competitive"&&!document.hidden)refreshCompetitive(true);},45000);
+
   $("nowayHQNewEvent").addEventListener("click",()=>{
     if(!isManager())return;
     setTab("agenda");openEventEditor();
@@ -576,6 +610,11 @@ function bind(){
   db.auth.onAuthStateChange(()=>setTimeout(loadAccount,0));
   window.addEventListener("focus",()=>{if(isStaff())refreshEvents();});
 }
+window.addEventListener("noway:open-competitive",e=>{
+  if(!isStaff())return;
+  competitiveState.filter="all";competitiveState.selected=e.detail?.id||null;
+  setTab("competitive");
+});
 window.addEventListener("noway:go-to-event",event=>{
   const ev=events.find(e=>e.id===event.detail?.id);
   if(ev){const date=new Date(ev.start_at);calendar=new Date(date.getFullYear(),date.getMonth(),1);
