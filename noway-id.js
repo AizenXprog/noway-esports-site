@@ -26,10 +26,27 @@ function displayDate(date) {
   try {return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(date))}
   catch{return ""}
 }
-function nowayRoleBadge(role){
-  if(role==="owner")return '<span class="noway-role-message-badge is-founder" aria-label="Founder / Owner" title="Founder da NOWAY">👑 <span>FOUNDER</span></span>';
-  if(role==="manager")return '<span class="noway-role-message-badge is-manager" aria-label="Team Manager" title="Gestão NOWAY">🛡️ <span>TEAM MANAGER</span></span>';
-  return "";
+function nowayRoleBadge(role,senderName=""){
+  if(role!=="owner"&&role!=="manager")return "";
+  const isFounder=role==="owner";
+  const name=isFounder?"Niel":(/prado/i.test(senderName)?"Prado":String(senderName||"Team Manager").trim().split(/\s+/)[0]);
+  const description=name+(isFounder?" - Founder":" - Team Manager");
+  // Desenhos SVG autorais para os dois cargos da NOWAY; o cargo vem do servidor.
+  const icon=isFounder?
+    '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
+      '<path d="M3.8 10.1 8.8 13.5 14 5.8l5.2 7.7 5-3.4-2.1 11.7H5.9L3.8 10.1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
+      '<path d="M6.1 18.5h15.8M7 24h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'+
+      '<path d="m12 15 2-2.5 2 2.5-2 2.5-2-2.5Z" fill="currentColor"/>'+
+      '<circle cx="14" cy="4.1" r="1.1" fill="currentColor"/>'+
+    '</svg>':
+    '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
+      '<path d="M14 2.8 23 6.1v7.2c0 5.7-3.6 9.1-9 11.8-5.4-2.7-9-6.1-9-11.8V6.1L14 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
+      '<path d="M9.5 16.9V10l4.5 5.2 4.5-5.2v6.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="round"/>'+
+      '<path d="M11 6.9h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'+
+    '</svg>';
+  return '<span class="noway-role-message-badge '+(isFounder?'is-founder':'is-manager')+
+    '" tabindex="0" role="img" aria-label="'+clean(description)+'" title="'+clean(description)+
+    '" data-tooltip="'+clean(description)+'">'+icon+'</span>';
 }
 function contactName(item) {
   if(item.user_id===signedUser?.id)return "VOCÊ";
@@ -136,7 +153,7 @@ async function openTicket(id) {
     return '<article class="noway-chat-message'+(own?' is-own':'')+'">'+
       '<div class="noway-chat-author-line"><span class="noway-chat-author">'+
         clean(own?"VOCÊ":(profile?.role==="owner"?contactName(ticket):"NOWAY ESPORTS"))+
-      '</span>'+nowayRoleBadge(authorRole)+
+      '</span>'+nowayRoleBadge(authorRole,own?(profile?.display_name||""):(authorRole==="owner"?"Niel":authorRole==="manager"?"Prado":""))+
       '<time>'+clean(displayDate(m.created_at))+'</time></div>'+
       '<p>'+clean(m.body)+'</p></article>';
   }).join(""):'<p class="noway-muted">Sem mensagens.</p>';
@@ -433,7 +450,7 @@ async function refreshTeamNews(){
     const mayRemove=profile.role==="owner"||(profile.role==="manager"&&a.author_id===signedUser.id);
     return '<article class="noway-team-news-item">'+
       '<div class="noway-team-news-meta"><span>'+clean(a.author_name)+' · '+clean(teamDate(a.created_at))+'</span>'+
-      nowayRoleBadge(teamDirectory.find(p=>p.id===a.author_id)?.role||(a.author_id===signedUser.id?profile?.role:null))+
+      nowayRoleBadge(teamDirectory.find(p=>p.id===a.author_id)?.role||(a.author_id===signedUser.id?profile?.role:null),a.author_name)+
       (mayRemove?'<button type="button" class="noway-team-delete" data-team-remove="'+clean(a.id)+'" aria-label="Excluir comunicado: '+clean(a.title)+'">EXCLUIR ×</button>':'')+
       '</div><h5>'+clean(a.title)+'</h5><p>'+clean(a.body)+'</p></article>';
   }).join(""):'<p class="noway-muted">Nenhum comunicado ainda. A gestão pode publicar os primeiros recados aqui.</p>';
@@ -517,7 +534,7 @@ async function refreshTeamChat(){
       avatarFor(m)+
       '<div class="noway-chat-message-content">'+
         '<div class="noway-team-msg-meta"><strong>'+clean(m.sender_name)+'</strong>'+
-          nowayRoleBadge(teamDirectory.find(p=>p.id===m.sender_id)?.role||(m.sender_id===signedUser.id?profile?.role:null))+
+          nowayRoleBadge(teamDirectory.find(p=>p.id===m.sender_id)?.role||(m.sender_id===signedUser.id?profile?.role:null),m.sender_name)+
           '<time datetime="'+clean(m.created_at)+'">'+clean(teamTime(m.created_at))+'</time></div>'+
         replyHtml+eventHtml+
         (m.body?'<p>'+clean(m.body)+'</p>':"")+imageHtml+
