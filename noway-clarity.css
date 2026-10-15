@@ -67,3 +67,9 @@
  .header .wordmark img{height:36px;width:35px}
 }
 @media(prefers-reduced-motion:reduce){.noway-start-link{transition:none}}
+
+
+/* O login do lobby agora é um link real para a página dedicada NOWAY ID. */
+.header a.header-login{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:38px}
+.header a.header-login:hover{color:#08090a}
+@media(max-width:760px){.header a.header-login{min-height:32px}}
