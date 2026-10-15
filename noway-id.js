@@ -44,7 +44,7 @@ async function refreshAuth() {
   profile=null; tickets=[]; members=[]; activeId=null;
   if(signedUser) {
     const response=await supabase.from("noway_profiles")
-      .select("id,display_name,role").eq("id",signedUser.id).maybeSingle();
+      .select("id,display_name,role,avatar_url").eq("id",signedUser.id).maybeSingle();
     if(run!==running)return;
     if(response.error)feedback("Erro ao carregar seu perfil: "+response.error.message,true);
     profile=response.data||{display_name:signedUser.user_metadata?.full_name||"Membro",role:"membro"};
@@ -52,6 +52,8 @@ async function refreshAuth() {
   $id("nowayLoginSurface").hidden=Boolean(signedUser);
   $id("nowayDashboard").hidden=!signedUser;
   $id("nowayHeaderLogin").textContent=signedUser?"MINHA CONTA ↗":"ENTRAR ↗";
+  const quick=$id("nowayPortalQuick");
+  if(quick)quick.hidden=!signedUser;
   $id("nowayThreadSection").hidden=true;
   $id("nowayTeamWorkspace").hidden=true;
   stopTeamFeed();
@@ -63,10 +65,17 @@ async function refreshAuth() {
   $id("nowayInboxDescription").textContent=owner?
     "Mensagens enviadas à NOWAY. Selecione uma para responder.":"Acompanhe as suas solicitações e as respostas da organização.";
   $id("nowayOwnerMembers").hidden=!owner;
+  // Na página pública o portal é um atalho, sem duplicar toda a área de equipe.
+  if(document.body.dataset.nowayConsole!=="true"){
+    $id("nowayTeamWorkspace").hidden=true;
+    $id("nowayOwnerMembers").hidden=true;
+    await refreshTickets();
+    return;
+  }
   await loadTeamWorkspace(run);
   if(run!==running)return;
   await refreshTickets();
-  if(owner)await refreshMembers();
+  if(owner && document.body.dataset.nowayConsole!=="true")await refreshMembers();
 }
 
 async function refreshTickets() {
@@ -339,7 +348,7 @@ async function loadTeamWorkspace(run){
 async function refreshTeamDirectory(){
   if(!canReadTeam())return;
   const currentUser=signedUser.id;
-  const result=await supabase.rpc("noway_team_directory");
+  const result=await supabase.rpc("noway_team_directory_v2");
   if(!signedUser||signedUser.id!==currentUser||!canReadTeam())return;
   if(result.error){
     $id("nowayTeamDirectoryList").innerHTML='<p class="noway-muted">Não foi possível carregar a equipe.</p>';
@@ -349,7 +358,9 @@ async function refreshTeamDirectory(){
   teamDirectory=result.data||[];
   $id("nowayTeamDirectoryList").innerHTML=teamDirectory.length?teamDirectory.map(person=>
     '<div class="noway-team-person">'+
-      '<span class="noway-team-avatar" aria-hidden="true">'+clean((person.display_name||"N").trim().charAt(0).toUpperCase())+'</span>'+
+      '<span class="noway-team-avatar" aria-hidden="true">'+
+        (person.avatar_url?'<img src="'+clean(supabase.storage.from("noway-avatars").getPublicUrl(person.avatar_url).data.publicUrl)+'" alt="" loading="lazy">':clean((person.display_name||"N").trim().charAt(0).toUpperCase()))+
+      '</span>'+
       '<span class="noway-team-person-name">'+clean(person.display_name||"Integrante NOWAY")+(person.id===signedUser.id?' <small>(VOCÊ)</small>':'')+'</span>'+
       '<span class="noway-team-person-role">'+clean(teamRoleLabel(person.role))+'</span>'+
     '</div>'
@@ -413,9 +424,19 @@ async function refreshTeamChat(){
     '<article class="noway-team-msg'+(msg.sender_id===signedUser.id?' is-own':'')+'">'+
       '<div class="noway-team-msg-meta"><strong>'+clean(msg.sender_name)+'</strong><time datetime="'+clean(msg.created_at)+'">'+clean(teamTime(msg.created_at))+'</time></div>'+
       '<p>'+clean(msg.body)+'</p>'+
+      (profile?.role==="owner" ? '<button class="noway-team-chat-delete" type="button" data-noway-chat-delete="'+clean(msg.id)+'" aria-label="Excluir mensagem">EXCLUIR ×</button>' : '')+
     '</article>'
   ).join(""):'<p class="noway-muted">O canal está pronto. Envie a primeira mensagem para a equipe NOWAY.</p>';
   if(autoScroll||list.length===1)target.scrollTop=target.scrollHeight;
+  target.querySelectorAll("[data-noway-chat-delete]").forEach(button=>button.addEventListener("click",async()=>{
+    if(profile?.role!=="owner" || !confirm("Excluir esta mensagem do chat interno?"))return;
+    button.disabled=true;
+    const {error}=await supabase.rpc("noway_delete_team_message",{p_message_id:button.dataset.nowayChatDelete});
+    if(error){button.disabled=false;feedback("Erro ao moderar chat: "+error.message,true);return;}
+    teamMessageSignature=null;
+    await refreshTeamChat();
+    feedback("Mensagem removida do canal.");
+  }));
 }
 
 $id("nowayAnnouncementForm").addEventListener("submit",async event=>{
@@ -462,7 +483,7 @@ $id("nowayRefreshTeamChat").addEventListener("click",async()=>{
 // Revalidamos o papel no banco a cada novo acesso aos dados: RLS/RPC impedem
 // contas comuns ou rebaixadas de ler/escrever mensagens e comunicados privados.
 setInterval(()=>{
-  if(!canReadTeam()||document.hidden)return;
+  if(document.body.dataset.nowayConsole!=="true"||!canReadTeam()||document.hidden)return;
   refreshTeamChat();
   if(++teamPollCounter%3===0){refreshTeamNews();refreshTeamDirectory();}
 },12000);
