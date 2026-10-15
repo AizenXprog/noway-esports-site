@@ -34,6 +34,7 @@
   <div id="nowayDashboard" class="noway-dashboard" hidden>
   <nav class="noway-console-tabs" id="nowayConsoleTabs" aria-label="Áreas do painel">
     <button type="button" data-console-tab="overview" class="is-active">INÍCIO</button>
+    <button type="button" data-console-tab="team">EQUIPE</button>
     <button type="button" data-console-tab="agenda">AGENDA</button>
     <button type="button" data-console-tab="chat">CHAT DA EQUIPE <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
     <button type="button" data-console-tab="contacts">CONTATOS</button>
@@ -46,12 +47,46 @@
           <button id="nowayChatToastOpen" type="button">VER ↗</button>
           <button id="nowayChatToastClose" type="button" aria-label="Fechar notificação">✕</button>
         </div>
-  <div id="nowayConsoleOverview" class="noway-console-view" data-console-view="overview">
-    <div class="noway-console-overview-heading"><span class="noway-tiny">NOWAY / CENTRAL DE OPERAÇÕES</span><h3 id="nowayOverviewGreeting">BEM-VINDO AO SEU ESPAÇO.</h3><p id="nowayOverviewDesc">Suas ferramentas, eventos e contatos em um só lugar.</p></div>
-    <div id="nowayConsoleStats" class="noway-console-stats"></div>
-    <div class="noway-console-overview-grid">
-      <section class="noway-panel"><div class="noway-panel-top"><span class="noway-tiny">PRÓXIMAS DATAS</span><h3>NO HORIZONTE.</h3></div><div id="nowayConsoleUpcoming"></div><button class="noway-outline-action" data-console-open="agenda" type="button">ABRIR AGENDA ↗</button></section>
-      <section class="noway-panel"><div class="noway-panel-top"><span class="noway-tiny">COMUNICAÇÃO</span><h3>SEU ESPAÇO.</h3></div><p id="nowayConsoleWelcomeText" class="noway-muted"></p><div class="noway-console-overview-actions"><button class="noway-outline-action" data-console-open="chat" type="button">CHAT INTERNO ↗</button><button class="noway-outline-action" data-console-open="contacts" type="button">VER CONTATOS ↗</button></div></section>
+  <div id="nowayConsoleOverview" class="noway-console-view noway-hq-overview" data-console-view="overview">
+    <section class="noway-hq-hero">
+      <div class="noway-hq-hero-copy">
+        <div class="noway-hq-eyebrow"><span class="noway-hq-led"></span> NOWAY HQ / CENTRAL OPERACIONAL <span class="noway-hq-version">V2.0</span></div>
+        <h3 id="nowayOverviewGreeting">SUA CENTRAL NOWAY.</h3>
+        <p id="nowayOverviewDesc">Informações e ações da organização em um único lugar.</p>
+      </div>
+      <div class="noway-hq-hero-side">
+        <div class="noway-hq-live-pill"><span></span> PAINEL CONECTADO</div>
+        <button id="nowayHQRefresh" type="button" class="noway-hq-refresh">ATUALIZAR DADOS ↻</button>
+        <small id="nowayHQLastUpdated">Aguardando carregamento</small>
+      </div>
+    </section>
+    <div id="nowayConsoleStats" class="noway-console-stats noway-hq-stats" aria-live="polite"></div>
+    <div class="noway-hq-layout">
+      <section class="noway-panel noway-hq-schedule">
+        <div class="noway-hq-panel-title"><div><span class="noway-tiny">01 / PLANEJAMENTO</span><h4>NO HORIZONTE.</h4></div><button type="button" data-console-open="agenda" class="noway-hq-textlink">AGENDA COMPLETA ↗</button></div>
+        <div id="nowayConsoleUpcoming" class="noway-hq-upcoming"><p class="noway-muted">Carregando agenda...</p></div>
+      </section>
+      <section class="noway-panel noway-hq-activity">
+        <div class="noway-hq-panel-title"><div><span class="noway-tiny">02 / ATIVIDADE</span><h4>ACONTECEU AGORA.</h4></div><span class="noway-hq-activity-mark">● REGISTROS</span></div>
+        <div id="nowayHQActivity" class="noway-hq-activity-list" aria-live="polite"><p class="noway-muted">Preparando atualizações...</p></div>
+      </section>
+      <section class="noway-panel noway-hq-shortcuts">
+        <div class="noway-hq-panel-title"><div><span class="noway-tiny">03 / ACESSO DIRETO</span><h4>ATALHOS.</h4></div></div>
+        <p id="nowayConsoleWelcomeText" class="noway-muted">Um espaço para organizar sua equipe.</p>
+        <div class="noway-hq-shortcut-grid">
+          <button type="button" class="noway-hq-shortcut" data-console-open="team"><span>01 / TIME</span><strong>EQUIPE E MURAL</strong><b>↗</b></button>
+          <button type="button" class="noway-hq-shortcut" data-console-open="agenda"><span>02 / JOGOS</span><strong>AGENDA</strong><b>↗</b></button>
+          <button type="button" class="noway-hq-shortcut" data-console-open="chat"><span>03 / COMUNICAÇÃO</span><strong>CHAT INTERNO</strong><b>↗</b></button>
+          <button type="button" class="noway-hq-shortcut" data-console-open="contacts"><span>04 / SOLICITAÇÕES</span><strong>CONTATOS</strong><b>↗</b></button>
+          <button type="button" class="noway-hq-shortcut" data-console-open="users"><span>05 / FOUNDER</span><strong>CONTAS E CARGOS</strong><b>↗</b></button>
+          <button type="button" class="noway-hq-shortcut" data-console-open="profile"><span>06 / IDENTIDADE</span><strong>MEU PERFIL</strong><b>↗</b></button>
+        </div>
+        <button id="nowayHQNewEvent" type="button" class="noway-hq-new-event" hidden>+ AGENDAR NOVO COMPROMISSO</button>
+      </section>
+      <section class="noway-panel noway-hq-inbox" id="nowayHQInboxSection" hidden>
+        <div class="noway-hq-panel-title"><div><span class="noway-tiny">04 / EXCLUSIVO FOUNDER</span><h4>CAIXA DE ENTRADA.</h4></div><button class="noway-hq-textlink" data-console-open="contacts" type="button">VER TODAS ↗</button></div>
+        <div id="nowayHQInboxList"><p class="noway-muted">Carregando solicitações...</p></div>
+      </section>
     </div>
   </div>
     <div class="noway-account-strip"><div class="noway-account-identity">
