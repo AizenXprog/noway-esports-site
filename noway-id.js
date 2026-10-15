@@ -588,3 +588,209 @@ document.addEventListener("visibilitychange",()=>{
     refreshTeamChat();refreshTeamNews();
   }
 });
+
+
+// NOWAY Chat v2 utilities and notifications
+function hideTeamToast(){
+  const toast=$id("nowayChatToast");if(toast)toast.hidden=true;
+  if(chatToastTimer){clearTimeout(chatToastTimer);chatToastTimer=null;}
+}
+function updateTeamUnread(){
+  const badge=$id("nowayChatUnread");
+  if(badge){badge.hidden=teamUnread===0;badge.textContent=teamUnread>99?"99+":String(teamUnread);}
+  const tab=document.querySelector('[data-console-tab="chat"]');
+  if(tab)tab.classList.toggle("has-unread",teamUnread>0);
+  document.title=teamUnread>0?"● ("+teamUnread+") "+originalNowayTitle:originalNowayTitle;
+}
+function resetTeamUnread(){
+  teamUnread=0;updateTeamUnread();hideTeamToast();
+  const el=$id("nowayTeamChatList");if(el)el.scrollTop=el.scrollHeight;
+}
+function primeChatSound(){
+  if(!chatSoundOn||!canReadTeam())return;
+  try{
+    const AudioCtor=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtor)return;
+    if(!chatAudioContext)chatAudioContext=new AudioCtor();
+    if(chatAudioContext.state!=="running")chatAudioContext.resume().catch(()=>{});
+  }catch(err){console.warn("NOWAY chat sound",err);}
+}
+function playChatChime(){
+  if(!chatSoundOn||!chatAudioContext||chatAudioContext.state!=="running")return;
+  try{
+    const ctx=chatAudioContext;
+    [[0,680],[.09,960]].forEach(([delay,hz])=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.type="sine";osc.frequency.setValueAtTime(hz,ctx.currentTime+delay);
+      gain.gain.setValueAtTime(.0001,ctx.currentTime+delay);
+      gain.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+.17);
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+.18);
+    });
+  }catch(err){console.warn("Aviso sonoro nao disponivel",err);}
+}
+function announceTeamMessages(messages){
+  if(!messages.length||!canReadTeam())return;
+  const msg=messages[messages.length-1];
+  const active=document.querySelector("#nowayDashboard")?.dataset.consoleActive==="chat";
+  const focused=!document.hidden&&document.hasFocus();
+  if(!active||!focused)teamUnread=Math.min(99,teamUnread+messages.length);
+  updateTeamUnread();
+  const t=$id("nowayChatToast");
+  if(t){
+    $id("nowayChatToastTitle").textContent=messages.length===1?
+      "MENSAGEM DE "+msg.sender_name.toLocaleUpperCase("pt-BR"):
+      messages.length+" NOVAS MENSAGENS NA NOWAY";
+    $id("nowayChatToastBody").textContent=msg.body?.slice(0,105)||
+      (msg.image_path?"Imagem enviada":"Evento ou resposta compartilhada");
+    const person=teamDirectory.find(p=>p.id===msg.sender_id);
+    const avatar=$id("nowayChatToastAvatar");
+    if(avatar)avatar.textContent=(person?.display_name||msg.sender_name||"NW").slice(0,2).toUpperCase();
+    t.hidden=false;
+    if(chatToastTimer)clearTimeout(chatToastTimer);
+    chatToastTimer=setTimeout(hideTeamToast,9500);
+  }
+  playChatChime();
+  if(document.hidden&&typeof Notification!=="undefined"&&Notification.permission==="granted"){
+    try{new Notification("NOWAY · "+msg.sender_name,{body:msg.body?.slice(0,100)||"Nova mensagem da equipe",
+      icon:"/assets/logo-white.webp",tag:"noway-team-chat"});}catch{}
+  }
+}
+async function refreshTeamEvents(){
+  if(!canReadTeam())return;
+  const userId=signedUser.id;
+  const cutoff=new Date(Date.now()-90*86400000).toISOString();
+  const {data,error}=await supabase.from("noway_team_events")
+    .select("id,title,kind,start_at,status").gte("start_at",cutoff)
+    .order("start_at",{ascending:true}).limit(250);
+  if(userId!==signedUser?.id||!canReadTeam())return;
+  if(error){console.warn("NOWAY calendar links",error.message);return;}
+  teamChatEvents=data||[];
+}
+function setTeamReference(type,id,label){
+  if(!canReadTeam())return;
+  chatReplyTo=type==="reply"?id:null;
+  chatEventId=type==="event"?id:null;
+  const ref=$id("nowayChatReference");if(!ref)return;
+  ref.hidden=false;
+  $id("nowayChatReferenceType").textContent=type==="event"?"▣ EVENTO COMPARTILHADO":"↳ RESPONDENDO";
+  $id("nowayChatReferenceLabel").textContent=label;
+  $id("nowayChatEventPicker").hidden=true;
+}
+function clearTeamReference(){
+  chatReplyTo=null;chatEventId=null;
+  const r=$id("nowayChatReference");if(r)r.hidden=true;
+}
+function clearChatPhoto(){
+  chatPhoto=null;
+  if(chatPhotoURL){URL.revokeObjectURL(chatPhotoURL);chatPhotoURL=null;}
+  const holder=$id("nowayChatMediaPreview");if(holder)holder.hidden=true;
+  const img=$id("nowayChatMediaThumb");if(img)img.removeAttribute("src");
+  const chooser=$id("nowayChatImageInput");if(chooser)chooser.value="";
+}
+async function prepareChatPhoto(file){
+  if(!file||!["image/webp","image/jpeg","image/png"].includes(file.type))
+    throw new Error("Use uma imagem JPG, PNG ou WebP.");
+  if(file.size>12*1024*1024)throw new Error("Imagem muito grande. O limite antes da compressão é 12 MB.");
+  const tempUrl=URL.createObjectURL(file);
+  try{
+    const image=new Image();image.src=tempUrl;await image.decode();
+    const maxDim=1600,scale=Math.min(1,maxDim/Math.max(image.naturalWidth,image.naturalHeight));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));
+    canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+    const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Não foi possível processar a imagem.");
+    ctx.drawImage(image,0,0,canvas.width,canvas.height);
+    const blob=await new Promise((resolve,reject)=>
+      canvas.toBlob(b=>b?resolve(b):reject(new Error("Não foi possível compactar a imagem.")),"image/webp",.78));
+    if(blob.type!=="image/webp"||blob.size>5*1024*1024)
+      throw new Error("Imagem incompatível ou acima de 5 MB.");
+    return blob;
+  }finally{URL.revokeObjectURL(tempUrl);}
+}
+function updateChatSoundButton(){
+  const b=$id("nowayChatSound");if(!b)return;
+  b.textContent=chatSoundOn?"♪ SOM: ATIVO":"♪ SOM: DESLIGADO";
+  b.setAttribute("aria-pressed",String(chatSoundOn));
+}
+async function showTeamEventPicker(){
+  if(!canReadTeam())return;
+  const panel=$id("nowayChatEventPicker");
+  panel.hidden=false;
+  $id("nowayChatEventItems").innerHTML='<p class="noway-muted">Carregando a agenda...</p>';
+  await refreshTeamEvents();
+  const list=teamChatEvents.filter(e=>e.status!=="cancelado").slice(-70);
+  $id("nowayChatEventItems").innerHTML=list.length?list.map(e=>
+    '<button class="noway-chat-event-option" data-pick-chat-event="'+clean(e.id)+'" type="button">'+
+      '<span>'+clean(teamDate(e.start_at))+' · '+clean(teamTime(e.start_at))+' · '+clean(e.kind.toUpperCase())+'</span>'+
+      '<strong>'+clean(e.title)+'</strong></button>').join(""):
+    '<p class="noway-muted">Nenhuma reunião, partida ou treino na agenda. A gestão pode adicionar um evento na aba Agenda.</p>';
+  $id("nowayChatEventItems").querySelectorAll("[data-pick-chat-event]").forEach(b=>b.addEventListener("click",()=>{
+    const ev=teamChatEvents.find(e=>e.id===b.dataset.pickChatEvent);
+    if(!ev)return;
+    setTeamReference("event",ev.id,ev.title+" · "+teamDate(ev.start_at));
+    $id("nowayTeamChatBody").focus();
+  }));
+}
+if(document.body.dataset.nowayConsole==="true"){
+  try{chatSoundOn=localStorage.getItem("nowayTeamSound")!=="off";}catch{}
+  updateChatSoundButton();
+  // A primeira interação autoriza o AudioContext; autoplay sem interação é bloqueado pelo navegador.
+  document.addEventListener("pointerdown",()=>primeChatSound(),{capture:true});
+  document.addEventListener("keydown",()=>primeChatSound(),{capture:true});
+  $id("nowayChatSound")?.addEventListener("click",()=>{
+    chatSoundOn=!chatSoundOn;
+    try{localStorage.setItem("nowayTeamSound",chatSoundOn?"on":"off");}catch{}
+    updateChatSoundButton();
+    if(chatSoundOn)primeChatSound();
+  });
+  const desktop=$id("nowayChatDesktop");
+  if(desktop){
+    if(typeof Notification==="undefined")desktop.hidden=true;
+    else{
+      desktop.textContent=Notification.permission==="granted"?"AVISOS: AUTORIZADOS":"AVISOS DESKTOP";
+      desktop.addEventListener("click",async()=>{
+        const result=await Notification.requestPermission();
+        desktop.textContent=result==="granted"?"AVISOS: AUTORIZADOS":"AVISOS DESKTOP";
+        feedback(result==="granted"?"Avisos de novas mensagens autorizados no navegador.":
+          "O navegador não autorizou os avisos. As notificações no painel continuam ativas.",result!=="granted");
+      });
+    }
+  }
+  $id("nowayChatToastClose")?.addEventListener("click",hideTeamToast);
+  $id("nowayChatToastOpen")?.addEventListener("click",()=>{
+    document.querySelector('[data-console-tab="chat"]')?.click();
+    resetTeamUnread();
+  });
+  $id("nowayChatReferenceClose")?.addEventListener("click",clearTeamReference);
+  $id("nowayChatAttachButton")?.addEventListener("click",()=>$id("nowayChatImageInput").click());
+  $id("nowayChatImageInput")?.addEventListener("change",event=>{
+    const file=event.currentTarget.files?.[0];
+    if(!file)return;
+    if(!["image/webp","image/png","image/jpeg"].includes(file.type)||file.size>12*1024*1024){
+      event.currentTarget.value="";return feedback("Use JPG, PNG ou WebP de até 12 MB.",true);
+    }
+    if(chatPhotoURL)URL.revokeObjectURL(chatPhotoURL);
+    chatPhoto=file;chatPhotoURL=URL.createObjectURL(file);
+    $id("nowayChatMediaThumb").src=chatPhotoURL;
+    $id("nowayChatMediaName").textContent=file.name;
+    $id("nowayChatMediaPreview").hidden=false;
+  });
+  $id("nowayChatMediaClear")?.addEventListener("click",clearChatPhoto);
+  $id("nowayChatEventButton")?.addEventListener("click",showTeamEventPicker);
+  $id("nowayChatEventPickerClose")?.addEventListener("click",()=>$id("nowayChatEventPicker").hidden=true);
+  window.addEventListener("noway:chat-open",resetTeamUnread);
+  window.addEventListener("noway:attach-event",async event=>{
+    if(!canReadTeam())return;
+    await refreshTeamEvents();
+    const ev=teamChatEvents.find(e=>e.id===event.detail?.id);
+    if(!ev)return feedback("Esse evento não está disponível no chat.",true);
+    setTeamReference("event",ev.id,ev.title+" · "+teamDate(ev.start_at));
+    $id("nowayTeamChatBody").focus();
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden&&document.querySelector("#nowayDashboard")?.dataset.consoleActive==="chat")
+      resetTeamUnread();
+  });
+}
