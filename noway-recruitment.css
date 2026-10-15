@@ -186,3 +186,8 @@
 .nw-rec-close-panel button{background:#f2ff00;border:1px solid #f2ff00;color:#151915;padding:13px 16px;cursor:pointer;font:900 10px Inter,sans-serif}
 .nw-rec-close-panel button:disabled{opacity:.5;cursor:wait}
 .nw-rec-close-panel p{font:600 10px/1.7 Inter,sans-serif;color:#b2bfa9;margin:0}
+
+/* Selo funcional, distinto da coroa Founder e do escudo Team Manager. */
+.noway-role-message-badge.is-gri{display:inline-flex;align-items:center;justify-content:center;
+ padding:3px 5px;border:1px solid #dbe96b;border-radius:4px;color:#f2ff00;
+ font:900 9px/1 Inter,sans-serif;letter-spacing:.04em}
