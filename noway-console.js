@@ -140,7 +140,12 @@ function setTab(name){
   if(name==="competitive")refreshCompetitive();
   if(name==="stats")refreshPlayerStats();
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
-  document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
+  // Abrir o chat na conversa, sem obrigar o jogador a descer toda a página.
+  if(name==="chat"){
+    requestAnimationFrame(()=>{
+      document.querySelector(".noway-team-chat")?.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  }else document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function syncRoles(){
   document.querySelectorAll("[data-console-tab]").forEach(btn=>btn.hidden=!viewPermitted(btn.dataset.consoleTab));
