@@ -202,3 +202,120 @@ body[data-noway-console="true"]{background:#0c0d0e;min-height:100vh}
  .noway-console-view-header h3{font-size:46px}
 }
 @media(prefers-reduced-motion:reduce){.noway-console-tabs button,.noway-cal-day{transition:none}}
+
+
+/* NOWAY Chat v2 / visual e notificacoes */
+.noway-chat-header-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.noway-chat-header-actions .noway-outline-action{white-space:nowrap;padding:9px 11px;font-size:9px}
+#nowayChatSound[aria-pressed="true"]{color:#f2ff00;border-color:rgba(242,255,0,.48)}
+#nowayChatDesktop{color:#c3c9c4}
+.noway-console-tabs [data-console-tab="chat"].has-unread{color:#f2ff00;border-color:#f2ff0078}
+.noway-console-tabs [data-console-tab="chat"].is-active.has-unread{color:#080909}
+.noway-chat-unread{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;padding:0 4px;border-radius:50%;
+  background:#f2ff00;color:#070909;font:900 10px/1 Inter,sans-serif;vertical-align:middle;margin-left:7px}
+.noway-console-tabs button.is-active .noway-chat-unread{background:#090a09;color:#f2ff00}
+.noway-team-chat{min-width:0}
+.noway-team-chat-list{min-height:320px;height:clamp(390px,57vh,680px);gap:16px;padding:27px 24px}
+.noway-team-msg,.noway-team-msg.is-own{
+  width:fit-content;max-width:min(87%,760px);min-width:170px;
+  display:flex;align-items:flex-start;gap:12px;padding:13px 16px 13px 12px;
+  border:1px solid #383f3b;border-left:3px solid #5a665d;
+  background:#212623;border-radius:4px 16px 16px 16px;
+  transition:border-color .2s ease,background .2s ease
+}
+.noway-team-msg.is-own{align-self:flex-end;flex-direction:row-reverse;background:#252a22;
+  border-color:#435039;border-right:3px solid #f2ff00;border-left:1px solid #435039;border-radius:16px 4px 16px 16px}
+.noway-team-msg.is-highlighted{border-color:#f2ff00;box-shadow:0 0 0 3px rgba(242,255,0,.18)}
+.noway-chat-avatar{flex:0 0 39px;width:39px;height:39px;object-fit:cover;overflow:hidden;border-radius:50%;border:1px solid #626d4b;background:#2b3126}
+.noway-chat-avatar-letter{display:grid;place-items:center;font:900 22px/1 'Barlow Condensed',sans-serif;color:#f2ff00}
+.noway-chat-message-content{min-width:0;flex:1;max-width:100%;overflow-wrap:anywhere}
+.noway-team-msg-meta{margin-bottom:7px;gap:10px}
+.noway-team-msg-meta strong{font-size:11px}
+.noway-team-msg-meta time{font-size:10px}
+.noway-team-msg p{font:500 13px/1.65 Inter,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;color:#e0e6e1;margin:0}
+.noway-chat-message-actions{display:flex;gap:14px;align-items:center;margin-top:10px;opacity:.65}
+.noway-team-msg:hover .noway-chat-message-actions,
+.noway-team-msg:focus-within .noway-chat-message-actions{opacity:1}
+.noway-chat-message-actions button{border:0;background:none;color:#a5aaa5;padding:0;font:800 9px/1.5 Inter,sans-serif;
+  letter-spacing:.07em;cursor:pointer}
+.noway-chat-message-actions button:hover{color:#f2ff00}
+.noway-chat-message-actions [data-noway-chat-delete]:hover{color:#ff8b8b}
+.noway-chat-reply-quote,.noway-chat-event-quote{
+  display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  width:100%;max-width:520px;text-align:left;color:#dce2dc;
+  border:1px solid #45503c;background:#151b18;border-left:3px solid #f2ff00;
+  padding:11px 13px;margin:0 0 11px;font:600 11px/1.5 Inter,sans-serif;cursor:pointer
+}
+.noway-chat-reply-quote b,.noway-chat-event-quote>span{color:#f2ff00;font:900 9px/1.4 Inter,sans-serif;letter-spacing:.09em}
+.noway-chat-reply-quote>span{max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#c4d0c7}
+.noway-chat-event-quote{border:1px solid #667447;border-left:4px solid #f2ff00;
+  background:radial-gradient(circle at 92% 8%,rgba(242,255,0,.10),transparent 70%),#1a2118}
+.noway-chat-event-quote strong{font:900 23px/1 'Barlow Condensed',sans-serif;color:#fff}
+.noway-chat-event-quote small{font:800 9px/1.5 Inter,sans-serif;color:#a9b4a5;letter-spacing:.07em}
+.noway-chat-event-quote:hover,.noway-chat-reply-quote:hover{border-color:#f2ff00}
+.noway-chat-image-link{display:block;max-width:410px;margin-top:9px;border:1px solid #505b4b;overflow:hidden;background:#0f1310}
+.noway-chat-image-link img{display:block;max-width:100%;width:auto;max-height:340px;object-fit:contain}
+.noway-chat-image-link:hover{border-color:#f2ff00}
+.noway-chat-empty{margin:auto;max-width:370px;text-align:center;padding:44px 18px}
+.noway-chat-empty strong{font:900 38px/.9 'Barlow Condensed',sans-serif;color:#f2ff00}
+.noway-chat-empty p{color:#a6aba6;line-height:1.7;margin:14px 0}
+.noway-team-chat-form{padding:17px;border:1px solid #38423c;background:#171c19;margin-top:12px}
+.noway-chat-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:11px}
+.noway-chat-tool-buttons{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.noway-chat-tool{border:1px solid #4b574a;background:#232a24;color:#c3ccc4;padding:9px 12px;
+  font:800 9px/1.4 Inter,sans-serif;letter-spacing:.07em;transition:border-color .15s,color .15s}
+.noway-chat-tool:hover{border-color:#f2ff00;color:#f2ff00}
+.noway-chat-tools .noway-team-chat-tip{margin:0;color:#8b938c}
+.noway-chat-reference,.noway-chat-upload-preview{display:flex;align-items:center;justify-content:space-between;
+  gap:13px;border:1px solid #60713b;background:#272e21;padding:12px 15px;margin-bottom:13px}
+.noway-chat-reference>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+.noway-chat-reference>div>span{color:#f2ff00;font:900 9px/1.4 Inter,sans-serif;letter-spacing:.09em}
+.noway-chat-reference strong{font:800 12px/1.5 Inter,sans-serif;color:#e9eee6;overflow-wrap:anywhere}
+.noway-chat-reference>button,.noway-chat-upload-preview>button,.noway-chat-event-picker-head>button{
+  padding:4px 7px;border:0;background:transparent;color:#f2ff00;font-size:17px;cursor:pointer
+}
+.noway-chat-upload-preview{justify-content:flex-start;border-color:#424d49;background:#222927}
+.noway-chat-upload-preview img{width:70px;height:60px;flex:0 0 70px;object-fit:cover;border:1px solid #63705c}
+.noway-chat-upload-preview span{flex:1;min-width:0;font:700 11px/1.6 Inter,sans-serif;color:#e4eae4;overflow-wrap:anywhere}
+.noway-chat-event-picker{margin-top:12px;border:1px solid #4a5842;background:#161c19;max-height:290px;overflow:auto}
+.noway-chat-event-picker-head{padding:13px;display:flex;justify-content:space-between;align-items:center;gap:9px;
+  position:sticky;top:0;z-index:1;border-bottom:1px solid #374235;background:#1f2820}
+.noway-chat-event-picker-head strong{font:900 10px/1.5 Inter,sans-serif;letter-spacing:.08em;color:#f2ff00}
+.noway-chat-event-option{width:100%;display:flex;flex-direction:column;gap:7px;padding:13px 15px;
+  border:0;border-bottom:1px solid #313c32;background:transparent;text-align:left;color:#f0f4ef;cursor:pointer}
+.noway-chat-event-option:hover{background:#2b3328}
+.noway-chat-event-option span{font:800 9px/1.5 Inter,sans-serif;letter-spacing:.06em;color:#cbd7bb}
+.noway-chat-event-option strong{font:800 15px/1.4 'Barlow Condensed',sans-serif;letter-spacing:.03em}
+.noway-cal-share{margin:10px 8px 0 0;white-space:nowrap;border-color:#8c965b;color:#f2ff00}
+.noway-chat-toast{display:flex;align-items:center;gap:13px;position:fixed;z-index:130;
+  bottom:24px;right:24px;width:min(420px,calc(100vw - 32px));padding:16px;
+  border:1px solid #f2ff00;background:#1a201b;box-shadow:0 14px 65px #000b;
+  animation:nowayChatToastIn .2s ease-out}
+@keyframes nowayChatToastIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.noway-chat-toast-avatar{flex:0 0 40px;width:40px;height:40px;border:1px solid #f2ff00;border-radius:50%;
+  display:grid;place-items:center;background:#303b26;color:#f2ff00;font:900 16px 'Barlow Condensed',sans-serif}
+.noway-chat-toast>div{flex:1;min-width:0}
+.noway-chat-toast strong{display:block;font:900 10px/1.4 Inter,sans-serif;letter-spacing:.04em;color:#f2ff00}
+.noway-chat-toast p{font:500 11px/1.5 Inter,sans-serif;color:#ced6cf;margin:5px 0 0;overflow-wrap:anywhere}
+.noway-chat-toast button{border:0;background:none;color:#f2ff00;font:900 10px Inter,sans-serif;cursor:pointer}
+.noway-chat-toast #nowayChatToastOpen{background:#f2ff00;color:#070909;padding:9px 10px;white-space:nowrap}
+.noway-team-chat-compose .btn:disabled{opacity:.45}
+@media(max-width:950px){.noway-chat-header-actions{justify-content:flex-start}}
+@media(max-width:760px){
+  .noway-team-chat-list{padding:11px 9px;height:clamp(330px,50vh,520px);gap:10px}
+  .noway-team-msg,.noway-team-msg.is-own{max-width:97%;padding:12px 9px;gap:8px;min-width:0}
+  .noway-chat-avatar{width:32px;height:32px;flex-basis:32px}
+  .noway-chat-avatar-letter{font-size:18px}
+  .noway-team-msg-meta{gap:6px}
+  .noway-team-msg p{font-size:12px}
+  .noway-chat-message-actions{opacity:1}
+  .noway-chat-header-actions{gap:5px}
+  .noway-chat-header-actions .noway-outline-action{font-size:8px;padding:7px 9px}
+  .noway-team-chat-form{padding:12px}
+  .noway-chat-tool{padding:8px 9px;font-size:8px}
+  .noway-chat-toast{bottom:15px;right:16px;width:calc(100% - 32px);gap:9px;padding:12px}
+  .noway-chat-toast-avatar{width:33px;height:33px;flex-basis:33px}
+  .noway-chat-toast #nowayChatToastOpen{padding:8px 7px}
+  .noway-chat-event-quote strong{font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){.noway-chat-toast{animation:none}}
