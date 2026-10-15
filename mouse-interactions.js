@@ -1,123 +1,156 @@
-/* NOWAY — cursor reativo global / edição 3.
-   Rastro, retículo e iluminação contínuos em todo o site.
-   Usa apenas transforms, sem inclinar cards nem interferir no layout. */
+/* NOWAY / Interações v4 — cursor imediato, rastro leve e inclinação dos cards.
+   Usa RAF apenas enquanto há movimento; nenhuma biblioteca, sem interferir em touch. */
 (() => {
-  "use strict";
-  const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  if (!finePointer.matches || reduceMotion.matches) return;
+  'use strict';
+  const fine = matchMedia('(hover:hover) and (pointer:fine)');
+  const reduced = matchMedia('(prefers-reduced-motion:reduce)');
+  if (!fine.matches || reduced.matches) return;
 
   const root = document.documentElement;
-  const host = document.createElement("div");
-  host.id = "noway-cursor-fx";
-  host.setAttribute("aria-hidden", "true");
-  host.innerHTML =
-    '<div class="noway-pointer-glow"></div>' +
+  const host = document.createElement('div');
+  host.id = 'noway-cursor-fx';
+  host.setAttribute('aria-hidden', 'true');
+  host.innerHTML = '<div class="noway-pointer-glow"></div>' +
     '<div class="noway-pointer-reticle"><i></i><b></b></div>' +
     '<div class="noway-pointer-trail"></div>';
   document.body.appendChild(host);
 
-  const glow = host.querySelector(".noway-pointer-glow");
-  const reticle = host.querySelector(".noway-pointer-reticle");
-  const container = host.querySelector(".noway-pointer-trail");
-  const dots = Array.from({length:11},(_,i)=>{
-    const dot=document.createElement("span");
-    dot.className="noway-pointer-particle";
-    dot.style.setProperty("--particle-size",Math.max(2.1,7.2-i*.47).toFixed(1)+"px");
-    dot.style.setProperty("--particle-opacity",(0.75-i*.054).toFixed(3));
-    container.appendChild(dot);
-    return {element:dot,x:0,y:0};
+  const glow = host.querySelector('.noway-pointer-glow');
+  const reticle = host.querySelector('.noway-pointer-reticle');
+  const trail = host.querySelector('.noway-pointer-trail');
+  const dots = Array.from({length:7}, (_,i) => {
+    const element = document.createElement('span');
+    element.className = 'noway-pointer-particle';
+    element.style.setProperty('--particle-size', (5.2-i*.48).toFixed(1)+'px');
+    element.style.setProperty('--particle-opacity', (.64-i*.073).toFixed(2));
+    trail.appendChild(element);
+    return { element, x:0, y:0 };
   });
 
-  let targetX=-100, targetY=-100, x=-100,y=-100, glowX=-100,glowY=-100;
-  let active=false, inter=false, raf=0, lastFrame=0;
-  let visible=true;
-  function getInteractive(target){
-    return !!target?.closest?.('a,button,[role="button"],.player-card,input,textarea,select,label,summary');
-  }
-  function getEditing(target){
-    return !!target?.closest?.('input,textarea,select,[contenteditable="true"]');
-  }
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const interactiveSelector='a,button,[role="button"],.player-card,input,textarea,select,label,summary';
+  const textSelector='input,textarea,select,[contenteditable="true"]';
+  const position=(el,x,y)=>{el.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) translate(-50%,-50%)';};
 
-  function onPointer(event){
-    if (event.pointerType==="touch") return;
-    targetX=event.clientX;
-    targetY=event.clientY;
-    if (!active){
-      active=true;
-      x=glowX=targetX;y=glowY=targetY;
-      dots.forEach(dot=>{dot.x=targetX;dot.y=targetY;});
-      host.classList.add("is-visible");
+  let currentX=0,currentY=0, glowX=0,glowY=0;
+  let active=false,visible=!document.hidden,enabled=true,raf=0,lastFrame=0;
+  let hoveredCard=null,cardRect=null,wasInteractive=false,wasEditing=false;
+
+  function resetCard(){
+    if (!hoveredCard)return;
+    hoveredCard.style.setProperty('--noway-tilt-x','0deg');
+    hoveredCard.style.setProperty('--noway-tilt-y','0deg');
+    hoveredCard=null;cardRect=null;
+  }
+  function updateCard(target,x,y){
+    const card=target?.closest?.('.player-card');
+    if(card!==hoveredCard){
+      resetCard();
+      if(card){hoveredCard=card;cardRect=card.getBoundingClientRect();}
     }
-    inter=getInteractive(event.target);
-    host.classList.toggle("is-interactive",inter);
-    host.classList.toggle("is-editing",getEditing(event.target));
-    if (!raf && visible) raf=requestAnimationFrame(frame);
+    if(!cardRect||!cardRect.width||!cardRect.height)return;
+    const dx=clamp((x-cardRect.left)/cardRect.width-.5,-.5,.5);
+    const dy=clamp((y-cardRect.top)/cardRect.height-.5,-.5,.5);
+    card.style.setProperty('--noway-tilt-x',(-dy*5.5).toFixed(2)+'deg');
+    card.style.setProperty('--noway-tilt-y',(dx*5.5).toFixed(2)+'deg');
+  }
+  function hoverState(target){
+    const isInteractive=Boolean(target?.closest?.(interactiveSelector));
+    const isEditing=Boolean(target?.closest?.(textSelector));
+    if(isInteractive!==wasInteractive){
+      wasInteractive=isInteractive;
+      host.classList.toggle('is-interactive',isInteractive);
+      reticle.style.scale=isInteractive?'1.17':'1';
+    }
+    if(isEditing!==wasEditing){
+      wasEditing=isEditing;
+      host.classList.toggle('is-editing',isEditing);
+    }
+  }
+  function start(){
+    if(!enabled||!visible)return;
+    if(!raf)raf=requestAnimationFrame(frame);
+  }
+  function pointerMove(event){
+    if(!enabled||!visible||event.pointerType==='touch')return;
+    const x=event.clientX,y=event.clientY;
+    currentX=x;currentY=y;
+    // Ponteiro principal sem easing: não atrasa em relação ao mouse físico.
+    position(reticle,x,y);
+    if(!active){
+      active=true;glowX=x;glowY=y;
+      position(glow,x,y);
+      dots.forEach(dot=>{dot.x=x;dot.y=y;position(dot.element,x,y);});
+      host.classList.add('is-visible');
+    }
+    hoverState(event.target);
+    updateCard(event.target,x,y);
+    start();
   }
 
-  function frame(now){
+  function frame(time){
     raf=0;
-    if (!active || !visible)return;
-    // Quando o browser limita os frames, o easing continua estável.
-    const dt=Math.min(48,Math.max(8,lastFrame?now-lastFrame:16));
-    lastFrame=now;
-    const chase=1-Math.pow(.79,dt/16);
-    const follow=1-Math.pow(.88,dt/16);
-    x+=(targetX-x)*chase; y+=(targetY-y)*chase;
-    glowX+=(targetX-glowX)*follow;
-    glowY+=(targetY-glowY)*follow;
-    const amount=inter?1.26:1;
-    reticle.style.transform="translate3d("+x.toFixed(1)+"px,"+y.toFixed(1)+"px,0) translate(-50%,-50%) scale("+amount+")";
-    glow.style.transform="translate3d("+glowX.toFixed(1)+"px,"+glowY.toFixed(1)+"px,0) translate(-50%,-50%)";
-    let tx=x,ty=y;
+    if(!enabled||!active||!visible)return;
+    const dt=Math.max(8,Math.min(40,lastFrame?time-lastFrame:16));
+    lastFrame=time;
+    // A luz responde rapidamente; somente as partículas têm atraso deliberado.
+    const glowGain=1-Math.pow(.50,dt/16);
+    glowX+=(currentX-glowX)*glowGain;
+    glowY+=(currentY-glowY)*glowGain;
+    position(glow,glowX,glowY);
+    let aheadX=currentX,aheadY=currentY;
+    let unsettled=Math.abs(currentX-glowX)+Math.abs(currentY-glowY);
     for(let i=0;i<dots.length;i++){
       const dot=dots[i];
-      const k=1-Math.pow(.52+(i/dots.length)*.40,dt/16);
-      dot.x+=(tx-dot.x)*k;dot.y+=(ty-dot.y)*k;
-      dot.element.style.transform="translate3d("+dot.x.toFixed(1)+"px,"+dot.y.toFixed(1)+"px,0) translate(-50%,-50%)";
-      tx=dot.x;ty=dot.y;
+      const rate=.60-i*.035;
+      const gain=1-Math.pow(1-rate,dt/16);
+      dot.x+=(aheadX-dot.x)*gain;
+      dot.y+=(aheadY-dot.y)*gain;
+      position(dot.element,dot.x,dot.y);
+      unsettled+=Math.abs(aheadX-dot.x)+Math.abs(aheadY-dot.y);
+      aheadX=dot.x;aheadY=dot.y;
     }
-    raf=requestAnimationFrame(frame);
+    // Sem loop infinito quando o cursor para: reduz gasto de GPU/CPU.
+    if(unsettled>.9)start();
+    else lastFrame=0;
   }
 
   function hide(){
     active=false;lastFrame=0;
-    host.classList.remove("is-visible","is-interactive","is-editing");
+    host.classList.remove('is-visible','is-interactive','is-editing');
+    wasInteractive=false;wasEditing=false;
+    reticle.style.scale='1';
+    resetCard();
     if(raf){cancelAnimationFrame(raf);raf=0;}
   }
-  function resume(){if(active && !raf && visible)raf=requestAnimationFrame(frame);}
-  function preferenceChange(){
-    // Nunca esconder o ponteiro nativo quando o usuário passa a touch/reduced motion.
-    const enabled=finePointer.matches&&!reduceMotion.matches;
-    root.classList.toggle("noway-cursor-mode",enabled);
+  function applyPreferences(){
+    enabled=fine.matches&&!reduced.matches;
+    root.classList.toggle('noway-cursor-mode',enabled);
     if(!enabled)hide();
   }
 
-  const playerModal=document.getElementById("playerModal");
-  function positionLayer(){
-    // <dialog> fica no top layer do navegador: o efeito acompanha o jogador no modal.
-    const parent=playerModal?.open?playerModal:document.body;
+  const modal=document.getElementById('playerModal');
+  function syncLayer(){
+    // O dialog nativo vive numa camada acima da página.
+    const parent=modal?.open?modal:document.body;
     if(host.parentElement!==parent)parent.appendChild(host);
   }
-  if(playerModal){
-    new MutationObserver(positionLayer).observe(playerModal,{attributes:true,attributeFilter:["open"]});
-  }
+  if(modal)new MutationObserver(syncLayer).observe(modal,{attributes:true,attributeFilter:['open']});
 
-  document.addEventListener("pointermove",onPointer,{passive:true});
-  document.addEventListener("pointerover",event=>{
-    if (!active)return;
-    host.classList.toggle("is-interactive",getInteractive(event.target));
-    host.classList.toggle("is-editing",getEditing(event.target));
+  document.addEventListener('pointermove',pointerMove,{passive:true});
+  document.addEventListener('pointerover',event=>{
+    if(active)hoverState(event.target);
   },{passive:true});
-  document.documentElement.addEventListener("mouseleave",hide);
-  window.addEventListener("blur",hide);
-  document.addEventListener("visibilitychange",()=>{
+  document.addEventListener('pointerout',event=>{
+    if(hoveredCard&&!hoveredCard.contains(event.relatedTarget))resetCard();
+  },{passive:true});
+  document.documentElement.addEventListener('mouseleave',hide);
+  window.addEventListener('blur',hide);
+  document.addEventListener('visibilitychange',()=>{
     visible=!document.hidden;
     if(!visible)hide();
-    else resume();
   });
-  finePointer.addEventListener?.("change",preferenceChange);
-  reduceMotion.addEventListener?.("change",preferenceChange);
-  // Ativa somente depois dos elementos serem criados; sem JS o cursor nativo permanece.
-  preferenceChange();
+  fine.addEventListener?.('change',applyPreferences);
+  reduced.addEventListener?.('change',applyPreferences);
+  applyPreferences();
 })();
