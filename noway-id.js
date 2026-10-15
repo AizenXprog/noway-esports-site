@@ -495,6 +495,25 @@ function goToChatBottom(smooth=true){
   chatAwayNewCount=0;
   updateChatJump();
 }
+const chatExpandButton=$id("nowayChatExpand");
+function setChatFocus(open){
+ const active=Boolean(open)&&$id("nowayDashboard")?.dataset.consoleActive==="chat";
+ document.body.classList.toggle("noway-chat-focus",active);
+ if(chatExpandButton){
+   chatExpandButton.setAttribute("aria-pressed",String(active));
+   chatExpandButton.textContent=active?"REDUZIR ↙":"EXPANDIR ↗";
+   chatExpandButton.title=active?"Voltar ao chat no painel":"Ampliar a conversa para preencher a tela";
+ }
+ if(active)requestAnimationFrame(()=>updateChatJump());
+}
+chatExpandButton?.addEventListener("click",()=>setChatFocus(!document.body.classList.contains("noway-chat-focus")));
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape"&&document.body.classList.contains("noway-chat-focus")){
+   setChatFocus(false);
+   chatExpandButton?.focus();
+ }
+});
+
 const chatScrollEl=$id("nowayTeamChatList");
 chatScrollEl?.addEventListener("scroll",()=>{
   if(chatIsNearEnd(chatScrollEl))chatAwayNewCount=0;
