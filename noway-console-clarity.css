@@ -226,9 +226,12 @@
  .noway-console-nav-label{font-size:9px;padding:0 4px 7px!important}
 }
 @media(max-width:420px){
- .noway-console-tabs{grid-template-columns:1fr;gap:7px!important}
- .noway-console-tab-group{padding:10px 11px!important}
- .noway-console-tab-group button{min-height:43px}
+ .noway-console-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px!important}
+ .noway-console-tab-group{padding:10px 7px!important}
+ .noway-console-tab-group button{min-height:43px;font-size:9px!important;padding:10px 21px 10px 8px!important;white-space:normal}
+ .noway-console-tab-group button::after{right:6px;font-size:12px}
+ .noway-console-tab-group button.has-new::before,
+ .noway-console-tab-group button.has-unread::before{right:17px}
 }
 @media(prefers-reduced-motion:reduce){
  .noway-console-tab-group button.has-new::before,
