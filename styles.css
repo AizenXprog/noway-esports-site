@@ -553,3 +553,54 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
   /* Placeholders e bordas continuam definidos pelo tema do projeto. */
   .media-card:first-child::before{content:none!important}
 }
+
+
+/* NOWAY — microinterações v2: contraste e movimento perceptíveis no desktop */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  /* Foco luminoso sutil acompanha o mouse no banner, sem alterar as fotos. */
+  .hero::after {
+    content:"";
+    display:block;
+    position:absolute;
+    inset:0;
+    width:auto;
+    height:auto;
+    right:0;
+    bottom:0;
+    background:radial-gradient(430px circle at var(--noway-hero-cursor-x,75%) var(--noway-hero-cursor-y,46%),rgba(242,255,0,.12),rgba(242,255,0,.045) 38%,transparent 78%);
+    opacity:.8;
+    pointer-events:none;
+    z-index:1;
+  }
+  .hero-symbol{
+    transform:translate3d(var(--noway-hero-x,0px),var(--noway-hero-y,0px),0) rotate(-9deg);
+    transition:transform .32s cubic-bezier(.22,.7,.25,1);
+  }
+  .player-card{
+    --noway-tilt-x:0deg;
+    --noway-tilt-y:0deg;
+    --noway-photo-x:0px;
+    --noway-photo-y:0px;
+    transition:transform .22s cubic-bezier(.2,.75,.25,1),border-color .25s,box-shadow .25s;
+  }
+  .player-card:hover{
+    transform:perspective(920px) translateY(-9px) rotateX(var(--noway-tilt-x)) rotateY(var(--noway-tilt-y));
+    border-color:#f2ff00;
+    box-shadow:0 22px 48px rgba(0,0,0,.4),0 0 20px rgba(242,255,0,.08);
+  }
+  .player-card::after{
+    background:radial-gradient(250px circle at var(--noway-mouse-x,50%) var(--noway-mouse-y,50%),rgba(242,255,0,.21),rgba(242,255,0,.06) 45%,transparent 80%);
+    opacity:0;
+  }
+  .player-card:hover::after{opacity:1}
+  .player-card .player-photo{
+    transform:scale(1.035) translate3d(var(--noway-photo-x,0px),var(--noway-photo-y,0px),0);
+    transition:transform .22s cubic-bezier(.2,.75,.25,1);
+  }
+  .hero-cta .btn,.contact-actions .btn{
+    box-shadow:0 0 0 rgba(242,255,0,0);
+  }
+  .hero-cta .btn:hover,.contact-actions .btn:hover{
+    box-shadow:0 8px 23px rgba(0,0,0,.2),0 0 18px rgba(242,255,0,.11);
+  }
+}
