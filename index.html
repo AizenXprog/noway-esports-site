@@ -48,6 +48,48 @@
       <span class="noway-role" id="nowayAccountRole">MEMBRO</span>
     </div><div class="noway-account-actions"><button type="button" id="nowayEditName" class="noway-outline-action">EDITAR NOME</button><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></div>
     <form id="nowayDisplayNameForm" class="noway-form noway-name-form" hidden><label for="nowayDisplayName">SEU NOME NA COMUNIDADE</label><input id="nowayDisplayName" type="text" minlength="1" maxlength="80" autocomplete="name" required placeholder="Como devemos chamar você?"><button type="submit" class="btn btn-yellow">SALVAR NOME <span>↗</span></button></form>
+    <section id="nowayTeamWorkspace" class="noway-team-space" aria-label="Área interna da equipe NOWAY" hidden>
+      <div class="noway-team-head">
+        <div><span class="noway-tiny">NOWAY ID / ACESSO INTERNO</span>
+          <h3 id="nowayTeamTitle">ESPAÇO DA EQUIPE.</h3>
+          <p id="nowayTeamSubtitle">Comunicados e conversas exclusivos da organização.</p>
+        </div>
+        <span class="noway-team-private"><span class="noway-team-private-dot"></span> ACESSO RESTRITO</span>
+      </div>
+      <div class="noway-team-grid">
+        <section class="noway-panel noway-team-announcements" aria-labelledby="nowayTeamNewsTitle">
+          <div class="noway-team-panel-head"><div><span class="noway-tiny">01 / INFORMAÇÕES INTERNAS</span><h4 id="nowayTeamNewsTitle">MURAL DA EQUIPE.</h4></div></div>
+          <form id="nowayAnnouncementForm" class="noway-form noway-team-news-form" hidden>
+            <label for="nowayAnnouncementTitle">TÍTULO DO COMUNICADO</label>
+            <input id="nowayAnnouncementTitle" minlength="3" maxlength="100" required placeholder="Ex.: Treino de sexta-feira">
+            <label for="nowayAnnouncementBody">MENSAGEM PARA A EQUIPE</label>
+            <textarea id="nowayAnnouncementBody" minlength="2" maxlength="1600" rows="3" required placeholder="Compartilhe um recado com jogadores e gestão..."></textarea>
+            <button type="submit" class="btn btn-yellow">PUBLICAR COMUNICADO <span>↗</span></button>
+          </form>
+          <div id="nowayTeamNewsList" class="noway-team-news-list"><p class="noway-muted">Carregando mural...</p></div>
+        </section>
+        <section class="noway-panel noway-team-directory" aria-labelledby="nowayTeamDirectoryTitle">
+          <div class="noway-team-panel-head"><div><span class="noway-tiny">02 / NOSSA EQUIPE</span><h4 id="nowayTeamDirectoryTitle">INTEGRANTES.</h4></div></div>
+          <p class="noway-muted">Somente contas autorizadas pela NOWAY aparecem aqui.</p>
+          <div id="nowayTeamDirectoryList" class="noway-team-directory-list"><p class="noway-muted">Carregando equipe...</p></div>
+        </section>
+      </div>
+      <section class="noway-panel noway-team-chat" aria-labelledby="nowayTeamChatTitle">
+        <div class="noway-team-panel-head noway-team-chat-head"><div><span class="noway-tiny">03 / CANAL PRIVADO</span><h4 id="nowayTeamChatTitle">CHAT DA NOWAY<span class="noway-team-online">●</span></h4>
+          <p class="noway-muted">Um só espaço para jogadores, Team Manager e Founder.</p></div>
+          <button id="nowayRefreshTeamChat" class="noway-outline-action" type="button">ATUALIZAR ↻</button>
+        </div>
+        <div id="nowayTeamChatList" class="noway-team-chat-list" role="log" aria-label="Mensagens do chat interno" tabindex="0"><p class="noway-muted">Carregando mensagens...</p></div>
+        <form id="nowayTeamChatForm" class="noway-team-chat-form">
+          <label for="nowayTeamChatBody" class="noway-tiny">SUA MENSAGEM / EQUIPE NOWAY</label>
+          <div class="noway-team-chat-compose">
+            <textarea id="nowayTeamChatBody" rows="2" maxlength="1200" minlength="1" required placeholder="Enviar mensagem para a equipe..."></textarea>
+            <button class="btn btn-yellow" type="submit">ENVIAR <span>↗</span></button>
+          </div>
+          <span class="noway-team-chat-tip">ENTER envia · SHIFT + ENTER quebra linha</span>
+        </form>
+      </section>
+    </section>
     <div class="noway-dash-grid">
       <section class="noway-panel">
         <div class="noway-panel-top"><span class="noway-tiny">01 / NOVO CONTATO</span><h3>MANDE SUA MENSAGEM.</h3></div>
