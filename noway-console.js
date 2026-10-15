@@ -620,5 +620,286 @@ window.addEventListener("noway:go-to-event",event=>{
   if(ev){const date=new Date(ev.start_at);calendar=new Date(date.getFullYear(),date.getMonth(),1);
     selectedDay=spDateKey(ev.start_at);setTab("agenda");}
 });
+
+// NOWAY Competitive / v1 — jogos são eventos reais da Agenda, sem dados simulados.
+const competitiveState={
+ matches:new Map(),roster:[],maps:[],people:[],selected:null,filter:"upcoming",
+ lastLoaded:0,loading:false,request:0,userId:null
+};
+const compResultLabels={pendente:"A DEFINIR",vitoria:"VITÓRIA",derrota:"DERROTA",empate:"EMPATE"};
+const compPresenceLabels={pendente:"SEM RESPOSTA",confirmado:"CONFIRMADO",ausente:"NÃO VOU",talvez:"TALVEZ"};
+const compMapActions={disponivel:"EM ANÁLISE",pick_nosso:"PICK NOWAY",pick_adversario:"PICK ADVERSÁRIO",
+ ban_nosso:"BAN NOWAY",ban_adversario:"BAN ADVERSÁRIO",jogado:"JOGADO"};
+const compUUID=/^[a-f0-9-]{36}$/i;
+const compGetEvent=id=>events.find(e=>e.id===id&&["partida","treino"].includes(e.kind));
+const compGetSetup=id=>competitiveState.matches.get(id)||null;
+const compGetRoster=id=>competitiveState.roster.filter(p=>p.event_id===id);
+const compGetMaps=id=>competitiveState.maps.filter(m=>m.event_id===id).sort((a,b)=>a.slot-b.slot);
+const compPerson=id=>competitiveState.people.find(p=>p.id===id);
+const compCanEdit=()=>isManager();
+const compEsc=escapeHTML;
+const compDate=ts=>fmtDate(ts)+" · "+fmtTime(ts);
+function compAvatar(person){
+ const url=avatarURL(person?.avatar_url);
+ return url?'<img src="'+compEsc(url)+'" alt="" loading="lazy">':
+  '<span>'+compEsc((person?.display_name||"N").trim().slice(0,1).toUpperCase())+'</span>';
+}
+async function refreshCompetitive(force=false){
+ if(!isStaff()||!signed())return;
+ if(competitiveState.loading)return;
+ if(!force&&Date.now()-competitiveState.lastLoaded<6000){
+   renderCompetitive();return;
+ }
+ competitiveState.loading=true;
+ const current=me.id,run=++competitiveState.request;
+ $("nowayCompRefresh").disabled=true;
+ try{
+   const [matches,roster,maps,people]=await Promise.all([
+     db.from("noway_competitive_matches").select("event_id,best_of,result,our_score,opponent_score,preparation,updated_at"),
+     db.from("noway_competitive_roster").select("event_id,player_id,starter,presence,responded_at"),
+     db.from("noway_competitive_maps").select("event_id,slot,map_name,action,our_rounds,their_rounds"),
+     db.rpc("noway_team_directory_v2")
+   ]);
+   if(!signed()||me.id!==current||run!==competitiveState.request)return;
+   for(const [name,response] of [["partidas",matches],["convocações",roster],["mapas",maps],["diretório",people]]){
+     if(response.error)throw Error("Falha ao carregar "+name+": "+response.error.message);
+   }
+   competitiveState.matches=new Map((matches.data||[]).map(m=>[m.event_id,m]));
+   competitiveState.roster=roster.data||[];
+   competitiveState.maps=maps.data||[];
+   competitiveState.people=people.data||[];
+   competitiveState.userId=current;
+   competitiveState.lastLoaded=Date.now();
+   renderCompetitive();
+ }catch(err){
+   notice("NOWAY Competitive: "+(err?.message||"Não foi possível sincronizar os confrontos."),true);
+   $("nowayCompList").innerHTML='<p class="noway-muted">Não foi possível carregar os confrontos. Clique em ATUALIZAR para tentar novamente.</p>';
+ }finally{
+   if(run===competitiveState.request){competitiveState.loading=false;$("nowayCompRefresh").disabled=false;}
+ }
+}
+function compGetVisible(){
+ const all=events.filter(e=>["partida","treino"].includes(e.kind));
+ const now=Date.now();
+ const f=competitiveState.filter;
+ return all.filter(e=>{
+   const setup=compGetSetup(e.id),ended=new Date(e.start_at).getTime()<now-2*3600000;
+   const finished=setup?.result&&setup.result!=="pendente";
+   if(f==="upcoming")return e.status!=="cancelado"&&!finished&&!ended;
+   if(f==="history")return finished||ended||e.status==="cancelado";
+   if(f==="mine")return compGetRoster(e.id).some(p=>p.player_id===me?.id);
+   return true;
+ }).sort((a,b)=>{
+   const reverse=f==="history";
+   return reverse?new Date(b.start_at)-new Date(a.start_at):new Date(a.start_at)-new Date(b.start_at);
+ });
+}
+function renderCompetitive(){
+ if(!isStaff()||!signed())return;
+ document.querySelectorAll("[data-noway-comp-filter]").forEach(btn=>{
+   btn.classList.toggle("is-active",btn.dataset.nowayCompFilter===competitiveState.filter);
+   btn.setAttribute("aria-pressed",String(btn.dataset.nowayCompFilter===competitiveState.filter));
+ });
+ const all=events.filter(e=>["partida","treino"].includes(e.kind));
+ const finished=all.filter(e=>compGetSetup(e.id)?.result&&compGetSetup(e.id).result!=="pendente");
+ const future=all.filter(e=>e.status!=="cancelado"&&new Date(e.start_at)>new Date()&&compGetSetup(e.id)?.result!=="vitoria"&&compGetSetup(e.id)?.result!=="derrota");
+ const mine=competitiveState.roster.filter(r=>r.player_id===me.id);
+ const stats=[
+   ["CONFRONTOS",all.filter(e=>e.kind==="partida").length,"partidas registradas"],
+   ["VITÓRIAS",finished.filter(e=>compGetSetup(e.id)?.result==="vitoria").length,"resultados cadastrados"],
+   ["PRÓXIMOS",future.length,"treinos e partidas"],
+   ["MINHAS CONVOCAÇÕES",mine.length,"compromissos convocados"]
+ ];
+ $("nowayCompStats").innerHTML=stats.map(st=>'<article><small>'+compEsc(st[0])+'</small><strong>'+st[1]+'</strong><span>'+compEsc(st[2])+'</span></article>').join("");
+ const list=compGetVisible();
+ if(!list.some(e=>e.id===competitiveState.selected)){
+   competitiveState.selected=list[0]?.id||null;
+   $("nowayCompForm").hidden=true;
+   $("nowayCompDetail").hidden=false;
+ }
+ const container=$("nowayCompList");
+ container.innerHTML=list.length?list.map(e=>{
+   const m=compGetSetup(e.id),convoked=compGetRoster(e.id);
+   const present=convoked.filter(p=>p.presence==="confirmado").length;
+   const result=e.status==="cancelado"?"CANCELADO":m?.result&&m.result!=="pendente"?compResultLabels[m.result]:"A DEFINIR";
+   const resultClass=e.status==="cancelado"?"is-canceled":m?.result==="vitoria"?"is-win":m?.result==="derrota"?"is-loss":"is-pending";
+   return '<button type="button" class="noway-comp-match'+(competitiveState.selected===e.id?' is-selected':'')+'" data-comp-open="'+compEsc(e.id)+'">'+
+     '<span class="noway-comp-match-top"><small>'+compEsc(e.kind==="partida"?"PARTIDA / RAINBOW SIX":"TREINO / RAINBOW SIX")+
+       '</small><span class="noway-comp-tag '+resultClass+'">'+compEsc(result)+'</span></span>'+
+     '<span class="noway-comp-vs"><b>NOWAY</b><i>VS.</i><b>'+compEsc(e.opponent|| (e.kind==="treino"?"TREINO INTERNO":"A DEFINIR"))+'</b></span>'+
+     '<span class="noway-comp-match-bottom"><span>'+compEsc(compDate(e.start_at))+'</span><strong>'+compEsc(e.competition||"COMPETITIVO")+'</strong></span>'+
+     '<span class="noway-comp-roster-count">'+(m?"MD"+m.best_of+" · ":"")+convoked.length+' CONVOCADOS · '+present+' CONFIRMADOS ↗</span></button>';
+ }).join(""):'<div class="noway-comp-empty"><span>NW / 00</span><h4>NENHUM CONFRONTO AQUI.</h4><p>As partidas e os treinos cadastrados na Agenda aparecerão nesta seção.</p></div>';
+ container.querySelectorAll("[data-comp-open]").forEach(b=>b.addEventListener("click",()=>{
+   competitiveState.selected=b.dataset.compOpen;
+   $("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;
+   renderCompetitive();
+ }));
+ if(!$("nowayCompForm").hidden)return;
+ renderCompetitiveDetail();
+}
+function renderCompetitiveDetail(){
+ const wrap=$("nowayCompDetail"),event=compGetEvent(competitiveState.selected);
+ if(!event){
+   wrap.innerHTML='<div class="noway-comp-empty"><span>NW / VS.</span><h4>SELECIONE UM CONFRONTO.</h4><p>Abra uma partida ou treino para consultar a escalação, a presença e os resultados.</p></div>';
+   return;
+ }
+ const config=compGetSetup(event.id),roster=compGetRoster(event.id).sort((a,b)=>Number(b.starter)-Number(a.starter));
+ const maps=compGetMaps(event.id);
+ const mine=roster.find(r=>r.player_id===me.id);
+ const score=config?.our_score!=null?config.our_score+" — "+config.opponent_score:"— : —";
+ const confirmed=roster.filter(r=>r.presence==="confirmado").length;
+ const status=event.status==="cancelado"?"CANCELADO":compResultLabels[config?.result||"pendente"];
+ const rosterHtml=roster.length?roster.map((r,i)=>{
+   const person=compPerson(r.player_id)||{display_name:"Integrante"};
+   return '<div class="noway-comp-player">'+
+     '<div class="noway-comp-player-avatar">'+compAvatar(person)+'</div>'+
+     '<div class="noway-comp-player-name"><strong>'+compEsc(person.display_name||"Jogador")+'</strong>'+
+       '<small>'+(r.starter?"TITULAR":"RESERVA")+'</small></div>'+
+     '<span class="noway-comp-presence is-'+compEsc(r.presence)+'">'+compEsc(compPresenceLabels[r.presence]||r.presence)+'</span></div>';
+ }).join(""):'<p class="noway-muted">Nenhum integrante convocado. A gestão pode montar a escalação em GERENCIAR.</p>';
+ const mapHtml=maps.length?maps.map(m=>
+  '<div class="noway-comp-map"><div><strong>'+compEsc(m.map_name)+'</strong><small>'+compEsc(compMapActions[m.action]||"EM ANÁLISE")+'</small></div>'+
+  '<span>'+(m.our_rounds!=null?m.our_rounds+" : "+m.their_rounds:"—")+'</span></div>'
+ ).join(""):'<p class="noway-muted">Os mapas ainda não foram definidos.</p>';
+ wrap.innerHTML=
+   '<div class="noway-comp-detail-kicker">NOWAY / '+compEsc(event.kind==="treino"?"TREINO":"PARTIDA")+'</div>'+
+   '<h4>'+compEsc(event.title)+'</h4><p class="noway-comp-details-date">'+compEsc(compDate(event.start_at))+
+     (event.competition?" · "+compEsc(event.competition):"")+'</p>'+
+   '<div class="noway-comp-scoreboard"><div><small>TIME</small><strong>NOWAY</strong></div>'+
+     '<b>'+compEsc(score)+'</b><div><small>ADVERSÁRIO</small><strong>'+compEsc(event.opponent||"A DEFINIR")+'</strong></div></div>'+
+   '<div class="noway-comp-detail-status"><span>'+compEsc(status)+'</span><span>'+
+      compEsc("MD"+(config?.best_of||1))+' · '+confirmed+'/'+roster.length+' CONFIRMADOS</span></div>'+
+   (event.description?'<p class="noway-comp-description">'+compEsc(event.description)+'</p>':"")+
+   '<section class="noway-comp-subsection"><div class="noway-comp-subheading"><h5>ESCALAÇÃO.</h5><small>'+roster.length+' CONVOCADOS</small></div>'+
+     '<div class="noway-comp-player-list">'+rosterHtml+'</div></section>'+
+   (mine?'<div class="noway-comp-rsvp"><strong>SUA DISPONIBILIDADE</strong><p>'+compEsc(compPresenceLabels[mine.presence])+
+      '</p><div><button type="button" data-comp-rsvp="confirmado" '+(mine.presence==="confirmado"?'class="is-current"':'')+'>✓ CONFIRMO</button>'+
+      '<button type="button" data-comp-rsvp="talvez" '+(mine.presence==="talvez"?'class="is-current"':'')+'>? TALVEZ</button>'+
+      '<button type="button" data-comp-rsvp="ausente" '+(mine.presence==="ausente"?'class="is-current"':'')+'>× NÃO VOU</button></div></div>':"")+
+   '<section class="noway-comp-subsection"><div class="noway-comp-subheading"><h5>MAP POOL.</h5><small>'+maps.length+' MAPAS</small></div>'+
+     '<div class="noway-comp-map-list">'+mapHtml+'</div></section>'+
+   (config?.preparation?'<section class="noway-comp-subsection"><div class="noway-comp-subheading"><h5>PLANO DE JOGO.</h5></div>'+
+     '<p class="noway-comp-description">'+compEsc(config.preparation)+'</p></section>':"")+
+   '<div class="noway-comp-detail-actions">'+
+     (compCanEdit()?'<button type="button" id="nowayCompManage" class="btn btn-yellow">GERENCIAR PARTIDA ↗</button>':'')+
+     '<button type="button" id="nowayCompOpenAgenda" class="noway-outline-action">VER NA AGENDA ↗</button></div>';
+ wrap.querySelector("#nowayCompManage")?.addEventListener("click",openCompetitiveEditor);
+ wrap.querySelector("#nowayCompOpenAgenda")?.addEventListener("click",()=>{
+   const date=new Date(event.start_at);calendar=new Date(date.getFullYear(),date.getMonth(),1);
+   selectedDay=spDateKey(event.start_at);setTab("agenda");
+ });
+ wrap.querySelectorAll("[data-comp-rsvp]").forEach(b=>b.addEventListener("click",async()=>{
+   if(!mine||!isStaff())return;
+   wrap.querySelectorAll("[data-comp-rsvp]").forEach(button=>button.disabled=true);
+   const result=await db.rpc("noway_competitive_respond",{
+     p_event_id:event.id,p_presence:b.dataset.compRsvp
+   });
+   if(result.error)notice("Não foi possível confirmar presença: "+result.error.message,true);
+   else notice("Sua resposta de presença foi registrada.");
+   await refreshCompetitive(true);
+ }));
+}
+function addCompetitiveMapRow(m=null){
+ const target=$("nowayCompMapsEditor");
+ if(target.querySelectorAll(".noway-comp-map-edit").length>=5)
+   return notice("O limite é de cinco mapas por série.",true);
+ const n=target.querySelectorAll(".noway-comp-map-edit").length+1;
+ const row=document.createElement("div");
+ row.className="noway-comp-map-edit";
+ row.innerHTML=
+   '<div class="noway-comp-map-row"><div><label>MAPA</label><input class="comp-map-name" type="text" maxlength="64" list="nowayCompMapSuggestions" placeholder="Nome do mapa" value="'+compEsc(m?.map_name||"")+'"></div>'+
+   '<div><label>SELEÇÃO / VETO</label><select class="comp-map-action">'+
+     Object.entries(compMapActions).map(([value,label])=>
+       '<option value="'+compEsc(value)+'"'+((m?.action||"disponivel")===value?" selected":"")+'>'+compEsc(label)+'</option>'
+     ).join("")+'</select></div></div>'+
+   '<div class="noway-comp-map-result"><div><label>ROUNDS NOWAY</label><input class="comp-map-ours" type="number" min="0" max="20" placeholder="—" value="'+(m?.our_rounds??"")+'"></div>'+
+   '<div><label>ROUNDS ADVERSÁRIO</label><input class="comp-map-theirs" type="number" min="0" max="20" placeholder="—" value="'+(m?.their_rounds??"")+'"></div>'+
+   '<button class="noway-comp-map-remove" type="button" aria-label="Remover mapa">REMOVER ×</button></div>';
+ row.querySelector(".noway-comp-map-remove").addEventListener("click",()=>row.remove());
+ target.appendChild(row);
+}
+function openCompetitiveEditor(){
+ if(!compCanEdit())return;
+ const event=compGetEvent(competitiveState.selected);
+ if(!event)return;
+ const m=compGetSetup(event.id);
+ $("nowayCompEventId").value=event.id;
+ $("nowayCompBestOf").value=m?.best_of||1;
+ $("nowayCompResult").value=m?.result||"pendente";
+ $("nowayCompOurScore").value=m?.our_score??"";
+ $("nowayCompOpponentScore").value=m?.opponent_score??"";
+ $("nowayCompPreparation").value=m?.preparation||"";
+ const current=new Map(compGetRoster(event.id).map(r=>[r.player_id,r]));
+ const container=$("nowayCompRosterEditor");
+ const staff=competitiveState.people.filter(p=>["jogador","manager","owner"].includes(p.role));
+ container.innerHTML=staff.length?staff.map(p=>{
+   const item=current.get(p.id);
+   return '<div class="noway-comp-pick-row" data-comp-player="'+compEsc(p.id)+'">'+
+     '<span class="noway-comp-player-avatar">'+compAvatar(p)+'</span><div class="noway-comp-player-name"><strong>'+compEsc(p.display_name||"Integrante")+'</strong><small>'+compEsc(roles[p.role]||"EQUIPE")+'</small></div>'+
+     '<label><input class="comp-summon" type="checkbox"'+(item?' checked':'')+'> CONVOCAR</label>'+
+     '<label><input class="comp-starter" type="checkbox"'+(item?.starter?' checked':'')+(item?'':' disabled')+'> TITULAR</label></div>';
+ }).join(""):'<p class="noway-muted">Não foi possível localizar jogadores autorizados.</p>';
+ container.querySelectorAll("[data-comp-player]").forEach(row=>{
+   const summon=row.querySelector(".comp-summon"),starter=row.querySelector(".comp-starter");
+   summon.addEventListener("change",()=>{
+     starter.disabled=!summon.checked;
+     if(!summon.checked)starter.checked=false;
+   });
+   starter.addEventListener("change",()=>{
+     if(starter.checked&&container.querySelectorAll(".comp-starter:checked").length>5){
+       starter.checked=false;notice("A line-up titular permite no máximo 5 jogadores.",true);
+     }
+   });
+ });
+ $("nowayCompMapsEditor").replaceChildren();
+ compGetMaps(event.id).forEach(addCompetitiveMapRow);
+ $("nowayCompDetail").hidden=true;
+ $("nowayCompForm").hidden=false;
+ $("nowayCompForm").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+async function saveCompetitiveSetup(ev){
+ ev.preventDefault();
+ if(!compCanEdit())return;
+ const event=compGetEvent($("nowayCompEventId").value);
+ if(!event)return notice("Escolha uma partida existente na Agenda.",true);
+ const lineup=[...$("nowayCompRosterEditor").querySelectorAll("[data-comp-player]")]
+  .filter(row=>row.querySelector(".comp-summon").checked)
+  .map(row=>({player_id:row.dataset.compPlayer,starter:row.querySelector(".comp-starter").checked}));
+ const b=$("nowayCompBestOf").value;
+ const our=$("nowayCompOurScore").value.trim();
+ const them=$("nowayCompOpponentScore").value.trim();
+ if((our==="")!==(them===""))return notice("Preencha os dois placares ou deixe ambos em branco.",true);
+ const rows=[...$("nowayCompMapsEditor").querySelectorAll(".noway-comp-map-edit")];
+ const maps=[];
+ for(const row of rows){
+   const name=row.querySelector(".comp-map-name").value.trim();
+   const us=row.querySelector(".comp-map-ours").value.trim(),themRounds=row.querySelector(".comp-map-theirs").value.trim();
+   if(!name)return notice("Preencha o nome do mapa ou remova a linha vazia.",true);
+   if((us==="")!==(themRounds===""))return notice("Informe os dois placares por mapa ou deixe ambos vazios.",true);
+   maps.push({slot:maps.length+1,map_name:name,action:row.querySelector(".comp-map-action").value,
+     our_rounds:us===""?null:Number(us),their_rounds:themRounds===""?null:Number(themRounds)});
+ }
+ const form=$("nowayCompForm"),save=form.querySelector('[type="submit"]');
+ save.disabled=true;
+ try{
+   const {error}=await db.rpc("noway_competitive_save",{
+     p_event_id:event.id,p_best_of:Number(b),p_result:$("nowayCompResult").value,
+     p_our_score:our===""?null:Number(our),p_opponent_score:them===""?null:Number(them),
+     p_preparation:$("nowayCompPreparation").value.trim(),
+     p_roster:lineup,p_maps:maps
+   });
+   if(error)throw error;
+   competitiveState.selected=event.id;
+   competitiveState.filter="all";
+   $("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;
+   await refreshCompetitive(true);
+   notice("Confronto salvo! Escalação, mapas e resultados atualizados.");
+ }catch(error){
+   notice("Não foi possível salvar a preparação: "+error.message,true);
+ }finally{save.disabled=false;}
+}
+
+
 bind();
 loadAccount();
