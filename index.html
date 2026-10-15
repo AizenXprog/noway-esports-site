@@ -103,6 +103,138 @@
  .noway-home-google,.noway-discover-links>a{transition:none}
 }
 
+
+/* Descoberta / cards separados do marquee, linguagem dos cards do elenco. */
+.noway-home-discover{
+  position:relative;
+  isolation:isolate;
+  background:linear-gradient(180deg,#0c0e0f 0%,#111513 100%);
+  border-top:0;
+  border-bottom:1px solid #2c322e;
+  padding:clamp(70px,7vw,104px) 0 clamp(78px,7.5vw,112px);
+}
+.noway-home-discover-shell{
+  display:block;
+  min-height:0;
+}
+.noway-discover-heading{
+  display:flex;align-items:end;justify-content:space-between;gap:24px;
+  margin:0 0 27px;
+}
+.noway-discover-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font:900 10px/1.4 Inter,sans-serif;letter-spacing:.16em;
+  color:#bac4b9;
+}
+.noway-discover-spark{font-size:17px;color:#f2ff00}
+.noway-discover-heading h2{
+  margin:12px 0 0;
+  font:900 clamp(48px,5.6vw,78px)/.9 "Barlow Condensed",sans-serif;
+  letter-spacing:-.02em;color:#fff;
+}
+.noway-discover-heading h2 em{font-style:normal;color:#f2ff00}
+.noway-discover-heading>p{
+  margin:0 0 2px;max-width:280px;
+  font:500 12px/1.75 Inter,sans-serif;color:#9cab9d;
+}
+.noway-home-discover .noway-discover-links{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:13px;
+  width:100%;min-width:0;
+}
+.noway-home-discover .noway-discover-card{
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:254px;min-width:0;
+  padding:23px 22px 20px;
+  border:1px solid #343a36;border-radius:3px;
+  background:linear-gradient(148deg,#1b1f1c,#131615 72%);
+  box-shadow:none;
+  color:#f8faf5;text-decoration:none;
+  transition:transform .23s ease,border-color .23s ease,background .23s ease,box-shadow .23s ease;
+}
+.noway-home-discover .noway-discover-card:nth-child(even){
+  background:linear-gradient(149deg,#252a1c,#131615 77%);
+}
+.noway-home-discover .noway-discover-card::after{
+  content:attr(data-mark);
+  position:absolute;z-index:-1;right:-10px;bottom:12px;
+  font:900 160px/.7 "Barlow Condensed",sans-serif;
+  letter-spacing:-.08em;color:rgba(242,255,0,.055);
+  pointer-events:none;
+  transform:rotate(-8deg);
+}
+.noway-home-discover .noway-discover-card:hover,
+.noway-home-discover .noway-discover-card:focus-visible{
+  background:linear-gradient(145deg,#293124,#171d18 77%);
+  transform:translateY(-7px);
+  border-color:#f2ff00;
+  box-shadow:0 20px 34px #0005;
+  outline:none;
+}
+.noway-discover-card-top{
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
+}
+.noway-discover-card-top>span:first-child{
+  color:#f2ff00;
+  font:900 9px/1.5 Inter,sans-serif;letter-spacing:.10em;
+}
+.noway-discover-card-arrow{
+  display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;
+  border:1px solid #52604b;border-radius:50%;
+  font:900 18px/1 Inter,sans-serif;color:#f2ff00;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.noway-discover-card:hover .noway-discover-card-arrow,
+.noway-discover-card:focus-visible .noway-discover-card-arrow{
+  background:#f2ff00;color:#11160e;border-color:#f2ff00;
+}
+.noway-discover-card-content{display:flex;flex-direction:column;gap:10px;margin:31px 0 20px}
+.noway-home-discover .noway-discover-card strong{
+  font:900 clamp(27px,2.9vw,40px)/.93 "Barlow Condensed",sans-serif;
+  color:#fff;letter-spacing:.01em;overflow-wrap:anywhere;
+}
+.noway-home-discover .noway-discover-card small{
+  max-width:230px;min-height:37px;
+  font:500 11px/1.6 Inter,sans-serif;color:#b4bdb3;letter-spacing:normal;
+}
+.noway-discover-card-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:9px;
+  border-top:1px solid #384139;padding-top:13px;
+  font:900 9px/1.4 Inter,sans-serif;letter-spacing:.045em;color:#e4e9dc;
+}
+.noway-discover-card-foot span{color:#f2ff00;font-size:17px}
+@media(max-width:1020px){
+  .noway-home-discover .noway-discover-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .noway-home-discover .noway-discover-card{min-height:230px}
+  .noway-home-discover .noway-discover-card strong{font-size:36px}
+}
+@media(max-width:680px){
+  .noway-home-discover{padding:62px 0 73px}
+  .noway-discover-heading{display:block;margin-bottom:23px}
+  .noway-discover-heading h2{font-size:clamp(45px,10vw,66px)}
+  .noway-discover-heading>p{margin-top:12px;max-width:100%}
+  .noway-home-discover .noway-discover-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .noway-home-discover .noway-discover-card{min-height:205px;padding:15px 12px}
+  .noway-home-discover .noway-discover-card strong{font-size:clamp(22px,5.7vw,33px)}
+  .noway-home-discover .noway-discover-card small{font-size:10px;min-height:0}
+  .noway-discover-card-content{margin:23px 0 17px;gap:8px}
+  .noway-discover-card-top>span:first-child{font-size:8px}
+  .noway-discover-card-arrow{width:25px;height:25px;flex-basis:25px;font-size:15px}
+  .noway-discover-card-foot{font-size:8px}
+  .noway-home-discover .noway-discover-card::after{font-size:120px}
+}
+@media(max-width:375px){
+  .noway-home-discover .noway-discover-links{grid-template-columns:1fr}
+  .noway-home-discover .noway-discover-card{min-height:175px;padding:20px}
+  .noway-home-discover .noway-discover-card strong{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){
+  .noway-home-discover .noway-discover-card,
+  .noway-discover-card-arrow{transition:none}
+}
+
 </style><link rel="stylesheet" href="noway-results.css"></head><body>
 <div class="reading-line"></div><div class="noise"></div>
 <header class="header" id="top"><a class="wordmark" href="#home" aria-label="NOWAY — início"><img src="assets/logo-white.webp" alt="Logo NOWAY"><span>NOWAY<span class="trademark">®</span></span></a><nav class="desktop-nav" aria-label="Navegação principal"><a href="#home">INÍCIO</a><a href="#team">ELENCO</a><a href="#matches">COMPETIÇÕES</a><a href="#media">MÍDIA</a><a class="noway-header-recruit" href="recrutamento.html">RECRUTAMENTO ↗</a><a class="nav-discord" href="comunidade.html">COMUNIDADE <span aria-hidden="true">↗</span></a></nav><div class="header-actions"><a id="nowayHeaderLogin" class="header-login" href="painel.html" aria-label="Entrar no NOWAY ID ou abrir meu painel">ENTRAR / NOWAY ID ↗</a><button class="menu-btn" aria-label="Abrir menu" aria-expanded="false" id="menuBtn"><span></span><span></span></button></div></header>
@@ -124,17 +256,37 @@
 </div>
 <p id="nowayHomeAuthStatus" class="noway-home-auth-status" role="status" aria-live="polite" hidden></p></div><div class="hero-symbol"><img src="assets/logo-white.webp" alt="Símbolo da NOWAY"></div><div class="hero-footer wrap"><span><strong>BRASIL</strong> &nbsp; COMPETIÇÃO, DISCIPLINA E EVOLUÇÃO</span><span>EXPLORE NOSSA HISTÓRIA ↓</span></div></section>
 <div class="ticker" aria-label="NOWAY ESPORTS"><div class="ticker-track">NOWAY ESPORTS <b>✳</b> BUILT TO COMPETE <b>✳</b> NO WAY BACK <b>✳</b> NOWAY ESPORTS <b>✳</b> BUILT TO COMPETE <b>✳</b> NO WAY BACK <b>✳</b>&nbsp;</div></div>
-<nav class="noway-home-discover" aria-label="Explore as áreas da NOWAY">
+<section class="noway-home-discover" aria-labelledby="nowayDiscoverHeading">
   <div class="wrap noway-home-discover-shell">
-    <span class="noway-discover-label">DESCUBRA A NOWAY <span aria-hidden="true">✳</span></span>
-    <div class="noway-discover-links">
-      <a href="#team"><span class="noway-discover-icon" aria-hidden="true">01</span><span><strong>O TIME</strong><small>ELENCO E HISTÓRIA</small></span><b aria-hidden="true">↗</b></a>
-      <a href="recrutamento.html"><span class="noway-discover-icon" aria-hidden="true">02</span><span><strong>RECRUTAMENTO</strong><small>VAGAS E INSCRIÇÕES</small></span><b aria-hidden="true">↗</b></a>
-      <a href="comunidade.html"><span class="noway-discover-icon" aria-hidden="true">03</span><span><strong>DISCORD</strong><small>COMUNIDADE OFICIAL</small></span><b aria-hidden="true">↗</b></a>
-      <a href="painel.html"><span class="noway-discover-icon" aria-hidden="true">04</span><span><strong>NOWAY ID</strong><small>PAINEL E SERVIÇOS</small></span><b aria-hidden="true">↗</b></a>
+    <div class="noway-discover-heading">
+      <div><span class="noway-discover-eyebrow"><span class="noway-discover-spark" aria-hidden="true">✳</span> EXPLORE A ORGANIZAÇÃO</span>
+      <h2 id="nowayDiscoverHeading">DESCUBRA A <em>NOWAY.</em></h2></div>
+      <p>Conheça o time e encontre a área certa para você.</p>
     </div>
+    <nav class="noway-discover-links" aria-label="Áreas e serviços da NOWAY">
+      <a class="noway-discover-card" data-mark="01" href="#team">
+        <span class="noway-discover-card-top"><span>01 / ORGANIZAÇÃO</span><span class="noway-discover-card-arrow" aria-hidden="true">↗</span></span>
+        <span class="noway-discover-card-content"><strong>O ELENCO.</strong><small>Jogadores, gestão e identidade do time.</small></span>
+        <span class="noway-discover-card-foot">CONHECER A EQUIPE <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="noway-discover-card" data-mark="02" href="recrutamento.html">
+        <span class="noway-discover-card-top"><span>02 / OPORTUNIDADES</span><span class="noway-discover-card-arrow" aria-hidden="true">↗</span></span>
+        <span class="noway-discover-card-content"><strong>RECRUTAMENTO.</strong><small>Vagas para jogadores, coach, gestão e staff.</small></span>
+        <span class="noway-discover-card-foot">VER INSCRIÇÕES <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="noway-discover-card" data-mark="03" href="comunidade.html">
+        <span class="noway-discover-card-top"><span>03 / COMUNIDADE</span><span class="noway-discover-card-arrow" aria-hidden="true">↗</span></span>
+        <span class="noway-discover-card-content"><strong>DISCORD.</strong><small>Participe da comunidade oficial da NOWAY.</small></span>
+        <span class="noway-discover-card-foot">ACESSAR COMUNIDADE <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="noway-discover-card" data-mark="04" href="painel.html">
+        <span class="noway-discover-card-top"><span>04 / ÁREA DE MEMBROS</span><span class="noway-discover-card-arrow" aria-hidden="true">↗</span></span>
+        <span class="noway-discover-card-content"><strong>NOWAY ID.</strong><small>Perfil, mensagens e funções da sua conta.</small></span>
+        <span class="noway-discover-card-foot">ABRIR MEU PAINEL <span aria-hidden="true">→</span></span>
+      </a>
+    </nav>
   </div>
-</nav>
+</section>
 <section class="section team-section" id="team"><div class="wrap"><div class="section-heading"><div><div class="kicker">01 / ELENCO ATUAL</div><h2>NOSSO <span>TIME.</span></h2><p>Uma equipe em constante evolução. Conheça quem constrói a NOWAY dentro e fora do servidor.</p></div><div class="section-side">DIVISÃO COMPETITIVA<br><strong>RAINBOW SIX SIEGE</strong></div></div><div class="team-controls"><button class="filter is-active" data-filter="all">TODOS <span>05</span></button><button class="filter" data-filter="active">JOGADORES</button><button class="filter" data-filter="management">GESTÃO</button></div><div class="roster" id="roster"></div><div class="team-note"><span class="dot-small"></span> ELENCO DINÂMICO — ESCALAÇÕES E PARTICIPAÇÕES SUJEITAS A ALTERAÇÃO PELA GESTÃO.</div></div></section>
 <section class="manifesto"><div class="wrap manifesto-inner"><div><div class="kicker dark-kicker">MENTALIDADE NOWAY</div><h2>NÃO SEGUIMOS.<br>NÓS <span>CONSTRUÍMOS.</span></h2></div><img src="assets/logo-black.webp" alt="NOWAY" loading="lazy"><p>Uma estrutura forte não depende de nomes fixos. Ela depende de pessoas comprometidas com o mesmo objetivo.</p></div></section>
 <section class="section about-section" id="about"><div class="wrap"><div class="section-heading"><div><div class="kicker">02 / NOSSA HISTÓRIA</div><h2>NOSSA <span>HISTÓRIA.</span></h2></div></div><div class="story-layout"><div class="story-image story-generated-art"><div class="story-art-grid"></div><img class="story-floating-logo" src="assets/logo-white.webp" alt="Logo NOWAY" loading="lazy"><div class="story-art-label">ORG. BRASILEIRA <span>◆</span> RAINBOW SIX SIEGE</div><div class="story-img-cap">NOWAY ESPORTS / ORGULHO DE SER BRASILEIRO</div></div><div class="story-copy"><span class="tiny-label">NOWAY ESPORTS / QUEM SOMOS</span><h3>UMA IDENTIDADE.<br>UM PROPÓSITO.<br><span>UMA HISTÓRIA EM CONSTRUÇÃO.</span></h3><p>A <strong>NOWAY Esports</strong> é uma organização brasileira de esportes eletrônicos fundada por Nielss Uno, construída a partir da paixão pelo competitivo, da ambição de crescer e da vontade de estabelecer uma identidade própria no cenário nacional.</p><p>Com raízes em experiências competitivas anteriores, incluindo a MORI, a NOWAY representa a evolução de um projeto que busca transformar talento individual em força coletiva. Nossa filosofia vai além de reunir bons jogadores: acreditamos na disciplina, na inteligência estratégica, na comunicação e no comprometimento como pilares fundamentais para o sucesso.</p><p>Atualmente, nosso principal foco competitivo está no <strong>Rainbow Six Siege</strong>, modalidade em que buscamos desenvolver um elenco estruturado, preparado para enfrentar desafios e conquistar espaço em competições cada vez mais exigentes.</p><p>Nossa identidade carrega o orgulho de representar o <strong>Brasil</strong>, valorizando nossas origens e a comunidade que acompanha o crescimento dos esportes eletrônicos. Dentro e fora dos servidores, queremos construir uma organização reconhecida pela personalidade, profissionalismo e determinação.</p><p>Sob a liderança de Nielss Uno, como Founder &amp; Owner, e Prado, na gestão competitiva como Team Manager, a NOWAY trabalha para estabelecer uma estrutura em que o desenvolvimento da equipe esteja acima de qualquer individualidade.</p><p>Ainda estamos escrevendo nossa história. Cada campeonato, cada jogador e cada experiência representa mais um capítulo de um projeto que não pretende se limitar ao presente.</p><p class="story-closing"><strong>NOWAY Esports — o futuro é construído, não prometido.</strong></p><div class="story-stats"><div><strong>BR</strong><small>ORIGEM</small></div><div><strong>R6</strong><small>MODALIDADE</small></div><div><strong>2026</strong><small>NOVA FASE</small></div></div></div></div></div></section>
