@@ -83,3 +83,72 @@
  .noway-console-brand img{width:30px;height:30px}
  .noway-console-header-right>a[href="/"]{font-size:8px}
 }
+
+/* NOWAY Chat / foco na conversa, sem rolagem da página toda */
+.noway-dashboard[data-console-active="chat"] #nowayTeamWorkspace{min-width:0}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat{
+ display:flex;flex-direction:column;min-width:0;height:clamp(500px,calc(100dvh - 118px),900px);
+ padding:18px!important;border-color:#4c5d45;background:#131a16
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-head{
+ flex:0 0 auto;gap:10px;margin:0 0 12px;padding:0 0 13px;border-bottom:1px solid #314032
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-head h4{font-size:clamp(29px,3.2vw,42px);margin-bottom:4px}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-head .noway-muted{font-size:10px;margin:2px 0}
+.noway-chat-scroll-shell{position:relative;flex:1;min-height:0;min-width:0;display:flex;flex-direction:column}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-list{
+ flex:1;min-height:0;height:auto!important;max-height:none;overflow-y:auto;overscroll-behavior-y:contain;
+ scroll-behavior:auto;padding:17px 20px 40px;gap:13px;
+ background:radial-gradient(ellipse at 50% 0%,rgba(242,255,0,.035),transparent 55%),#101612;
+ border:1px solid #2e4232;border-radius:8px
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-msg{
+ background:#252c26;border-color:#4a584d;border-left-color:#727f72;
+ box-shadow:0 5px 14px #0002
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-msg.is-own{
+ background:#303a29;border-color:#5f704f;border-right-color:#f2ff00
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-msg-meta strong{font-size:11px}
+.noway-dashboard[data-console-active="chat"] .noway-team-msg p{font-size:13px;line-height:1.7}
+.noway-chat-jump{position:absolute;z-index:10;bottom:17px;right:23px;display:flex;align-items:center;
+ justify-content:center;width:46px;height:46px;border-radius:50%;
+ border:1px solid #f2ff00;background:#f2ff00;color:#11180c;cursor:pointer;
+ box-shadow:0 7px 23px #000b,0 0 0 3px #121c15bb;
+ transition:transform .18s ease,box-shadow .18s ease}
+.noway-chat-jump svg{width:23px;height:23px}
+.noway-chat-jump:hover{transform:translateY(-3px);box-shadow:0 10px 28px #000c}
+.noway-chat-jump[hidden],.noway-chat-jump span[hidden]{display:none!important}
+.noway-chat-jump span{position:absolute;top:-9px;right:-5px;min-width:24px;height:24px;display:grid;
+ place-items:center;padding:0 5px;background:#171e16;color:#f2ff00;border:1px solid #f2ff00;
+ border-radius:12px;font:900 10px Inter,sans-serif}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-form{
+ flex:0 0 auto;border:1px solid #3a513d;background:#19211b;padding:12px 14px;margin-top:10px;border-radius:7px
+}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose{align-items:center;gap:8px}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{
+ min-height:48px;height:48px;max-height:114px;resize:none;border:1px solid #576a54;
+ border-radius:6px;background:#242f25;padding:11px 14px;font-size:12px}
+.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{
+ min-height:48px;align-self:stretch;border-radius:6px;padding:9px 19px}
+.noway-dashboard[data-console-active="chat"] .noway-chat-tools{margin-top:8px}
+.noway-dashboard[data-console-active="chat"] .noway-chat-tool{padding:7px 10px;border-radius:5px}
+@media(max-width:760px){
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat{height:calc(100dvh - 85px);min-height:480px;padding:11px!important}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-head{align-items:flex-start}
+ .noway-dashboard[data-console-active="chat"] .noway-chat-header-actions{gap:5px}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-head .noway-muted{display:none}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-list{padding:11px 9px 50px}
+ .noway-dashboard[data-console-active="chat"] .noway-team-msg{max-width:96%}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-form{padding:8px 9px}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose{flex-direction:row}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{height:50px;min-height:50px}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{align-self:stretch;min-height:50px;padding:8px 13px}
+ .noway-chat-jump{right:15px;bottom:15px;width:43px;height:43px}
+ .noway-dashboard[data-console-active="chat"] .noway-team-chat-tip{display:none}
+}
+@media(max-width:390px){
+ .noway-dashboard[data-console-active="chat"] .noway-chat-tool-buttons{gap:3px}
+ .noway-dashboard[data-console-active="chat"] .noway-chat-tool{font-size:8px;padding:6px 7px}
+}
+@media(prefers-reduced-motion:reduce){.noway-chat-jump{transition:none}}
