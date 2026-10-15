@@ -293,12 +293,28 @@ $id("nowayDisplayNameForm").addEventListener("submit",async(event)=>{
 const teamRoles=new Set(["jogador","manager","owner"]);
 let teamChannel=null,teamPollCounter=0;
 let teamDirectory=[],teamMessageSignature=null,teamNewsSignature=null;
+let teamChatList=[], teamKnownIds=new Set(),teamChatReady=false,chatRequestId=0;
+let teamChatEvents=[],chatImages=new Map(),chatReplyTo=null,chatEventId=null,chatPhoto=null,chatPhotoURL=null;
+let teamUnread=0,chatToastTimer=null;
+let chatSoundOn=true,chatAudioContext=null;
+const originalNowayTitle=document.title;
 
 function stopTeamFeed(){
   if(teamChannel){supabase.removeChannel(teamChannel);teamChannel=null;}
   teamDirectory=[];
   teamMessageSignature=null;
   teamNewsSignature=null;
+  teamChatReady=false;
+  teamKnownIds=new Set();
+  teamChatList=[];
+  teamUnread=0;
+  teamChatEvents=[];
+  chatImages.clear();
+  chatReplyTo=null;chatEventId=null;
+  if(chatPhotoURL){URL.revokeObjectURL(chatPhotoURL);chatPhotoURL=null;}
+  chatPhoto=null;
+  hideTeamToast();
+  updateTeamUnread();
 }
 function canReadTeam(){return Boolean(signedUser&&teamRoles.has(profile?.role));}
 function canManageTeam(){return profile?.role==="manager"||profile?.role==="owner";}
@@ -332,7 +348,8 @@ async function loadTeamWorkspace(run){
   $id("nowayTeamSubtitle").textContent=subtitles[level];
   $id("nowayAnnouncementForm").hidden=!canManageTeam();
   const currentUser=signedUser.id;
-  await Promise.all([refreshTeamDirectory(),refreshTeamNews(),refreshTeamChat()]);
+  await Promise.all([refreshTeamDirectory(),refreshTeamEvents()]);
+  await Promise.all([refreshTeamNews(),refreshTeamChat()]);
   if(run!==running || !signedUser || signedUser.id!==currentUser)return;
 
   // Supabase Realtime atualiza ao chegar nova mensagem; o polling recupera
@@ -340,7 +357,7 @@ async function loadTeamWorkspace(run){
   try{
     teamChannel=supabase.channel("noway-private-team-chat")
       .on("postgres_changes",{
-        event:"INSERT",schema:"public",table:"noway_team_messages"
+        event:"*",schema:"public",table:"noway_team_messages"
       },()=>{if(canReadTeam())refreshTeamChat();})
       .subscribe();
   }catch(err){console.warn("NOWAY: chat usará atualização periódica",err);}
@@ -405,38 +422,100 @@ async function refreshTeamNews(){
 
 async function refreshTeamChat(){
   if(!canReadTeam())return;
-  const currentUser=signedUser.id;
+  const userId=signedUser.id;
+  const req=++chatRequestId;
   const {data,error}=await supabase.from("noway_team_messages")
-    .select("id,sender_id,sender_name,body,created_at")
-    .order("created_at",{ascending:false}).limit(80);
-  if(!signedUser||signedUser.id!==currentUser||!canReadTeam())return;
+    .select("id,sender_id,sender_name,body,created_at,reply_to,event_id,image_path")
+    .order("created_at",{ascending:false}).limit(100);
+  if(req!==chatRequestId||!canReadTeam()||signedUser?.id!==userId)return;
   const target=$id("nowayTeamChatList");
   if(error){
-    target.innerHTML='<p class="noway-muted">O chat não pôde ser carregado. Tente atualizar.</p>';
-    console.warn("NOWAY team chat",error.message);
-    return;
+    target.innerHTML='<p class="noway-muted">O chat não pôde ser carregado. Tente novamente.</p>';
+    console.warn("NOWAY chat:",error.message);return;
   }
   const list=(data||[]).reverse();
-  const signature=list.map(msg=>msg.id).join(",");
+  const newMessages=teamChatReady?list.filter(m=>!teamKnownIds.has(m.id)&&m.sender_id!==signedUser.id):[];
+  teamChatReady=true;
+  for(const m of list)teamKnownIds.add(m.id);
+  // Não acumular ilimitadamente identificadores de mensagens antigas.
+  if(teamKnownIds.size>450)teamKnownIds=new Set(list.map(m=>m.id));
+  teamChatList=list;
+  if(newMessages.length)announceTeamMessages(newMessages);
+  const signature=list.map(m=>m.id).join(",");
   if(signature===teamMessageSignature)return;
-  const autoScroll=target.scrollHeight-target.scrollTop-target.clientHeight<110;
+  const autoScroll=target.scrollHeight-target.scrollTop-target.clientHeight<105;
   teamMessageSignature=signature;
-  target.innerHTML=list.length?list.map(msg=>
-    '<article class="noway-team-msg'+(msg.sender_id===signedUser.id?' is-own':'')+'">'+
-      '<div class="noway-team-msg-meta"><strong>'+clean(msg.sender_name)+'</strong><time datetime="'+clean(msg.created_at)+'">'+clean(teamTime(msg.created_at))+'</time></div>'+
-      '<p>'+clean(msg.body)+'</p>'+
-      (profile?.role==="owner" ? '<button class="noway-team-chat-delete" type="button" data-noway-chat-delete="'+clean(msg.id)+'" aria-label="Excluir mensagem">EXCLUIR ×</button>' : '')+
-    '</article>'
-  ).join(""):'<p class="noway-muted">O canal está pronto. Envie a primeira mensagem para a equipe NOWAY.</p>';
+  // URLs de imagens vêm de links temporários, liberados apenas a contas da equipe.
+  const mediaPaths=[...new Set(list.map(m=>m.image_path).filter(Boolean))];
+  await Promise.all(mediaPaths.map(async path=>{
+    const cached=chatImages.get(path);
+    if(cached?.expires>Date.now())return;
+    if(!/^[a-f0-9-]{36}\/[a-f0-9-]{36}\.webp$/.test(path))return;
+    const res=await supabase.storage.from("noway-team-chat").createSignedUrl(path,3600);
+    if(!res.error&&res.data?.signedUrl)chatImages.set(path,{url:res.data.signedUrl,expires:Date.now()+3300000});
+  }));
+  if(req!==chatRequestId||!canReadTeam()||signedUser?.id!==userId)return;
+  const refs=new Map(list.map(m=>[m.id,m]));
+  const eventsById=new Map(teamChatEvents.map(e=>[e.id,e]));
+  const avatarFor=m=>{
+    const person=teamDirectory.find(p=>p.id===m.sender_id);
+    const path=person?.avatar_url;
+    if(path&&/^[a-f0-9-]{36}\/avatar\.webp$/.test(path)){
+      const url=supabase.storage.from("noway-avatars").getPublicUrl(path).data.publicUrl;
+      return '<img class="noway-chat-avatar" src="'+clean(url)+'" alt="" loading="lazy">';
+    }
+    return '<span class="noway-chat-avatar noway-chat-avatar-letter">'+clean((m.sender_name||"N").charAt(0).toUpperCase())+'</span>';
+  };
+  target.innerHTML=list.length?list.map(m=>{
+    const own=m.sender_id===signedUser.id;
+    const replied=refs.get(m.reply_to);
+    const ev=eventsById.get(m.event_id);
+    const eventHtml=m.event_id?
+      '<button type="button" class="noway-chat-event-quote" data-chat-event-view="'+clean(m.event_id)+'">'+
+        '<span>▣ EVENTO DA AGENDA'+(ev?' · '+clean(teamDate(ev.start_at))+' '+clean(teamTime(ev.start_at)):'')+'</span>'+
+        '<strong>'+clean(ev?.title||"Evento compartilhado")+'</strong>'+
+        (ev?.kind?'<small>'+clean(({reuniao:"REUNIÃO",partida:"PARTIDA",treino:"TREINO",evento:"EVENTO"})[ev.kind]||"EVENTO")+'</small>':'')+
+      '</button>':"";
+    const replyHtml=m.reply_to?
+      '<button type="button" class="noway-chat-reply-quote" data-chat-reply-view="'+clean(m.reply_to)+'">'+
+        '<b>↳ '+clean(replied?.sender_name||"Mensagem anterior")+'</b>'+
+        '<span>'+clean((replied?.body||"Mensagem anterior ou removida").slice(0,150))+'</span></button>':"";
+    const media=chatImages.get(m.image_path);
+    const imageHtml=m.image_path&&media?.url?
+      '<a href="'+clean(media.url)+'" class="noway-chat-image-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem enviada por '+clean(m.sender_name)+'">'+
+        '<img src="'+clean(media.url)+'" alt="Imagem enviada por '+clean(m.sender_name)+'" loading="lazy"></a>':
+      m.image_path?'<p class="noway-muted">Imagem indisponível no momento.</p>':"";
+    return '<article class="noway-team-msg'+(own?' is-own':'')+'" id="team-message-'+clean(m.id)+'">'+
+      avatarFor(m)+
+      '<div class="noway-chat-message-content">'+
+        '<div class="noway-team-msg-meta"><strong>'+clean(m.sender_name)+'</strong><time datetime="'+clean(m.created_at)+'">'+clean(teamTime(m.created_at))+'</time></div>'+
+        replyHtml+eventHtml+
+        (m.body?'<p>'+clean(m.body)+'</p>':"")+imageHtml+
+        '<div class="noway-chat-message-actions"><button type="button" data-chat-reply="'+clean(m.id)+'">↩ RESPONDER</button>'+
+        (profile?.role==="owner"?'<button type="button" data-noway-chat-delete="'+clean(m.id)+'">EXCLUIR ×</button>':"")+
+        '</div></div></article>';
+  }).join(""):'<div class="noway-chat-empty"><strong>COMECE A CONVERSA.</strong><p>O chat é exclusivo dos jogadores, gerência e Founder. Compartilhe uma mensagem, imagem ou evento.</p></div>';
   if(autoScroll||list.length===1)target.scrollTop=target.scrollHeight;
+  target.querySelectorAll("[data-chat-reply]").forEach(button=>button.addEventListener("click",()=>{
+    const msg=teamChatList.find(m=>m.id===button.dataset.chatReply);
+    if(!msg)return;
+    setTeamReference("reply",msg.id,msg.sender_name+" · "+(msg.body||"Imagem / evento").slice(0,110));
+    $id("nowayTeamChatBody").focus();
+  }));
+  target.querySelectorAll("[data-chat-reply-view]").forEach(button=>button.addEventListener("click",()=>{
+    const el=document.getElementById("team-message-"+button.dataset.chatReplyView);
+    if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("is-highlighted");setTimeout(()=>el.classList.remove("is-highlighted"),1800);}
+  }));
+  target.querySelectorAll("[data-chat-event-view]").forEach(button=>button.addEventListener("click",()=>{
+    window.dispatchEvent(new Event("noway:chat-to-agenda"));
+    document.querySelector('[data-console-tab="agenda"]')?.click();
+  }));
   target.querySelectorAll("[data-noway-chat-delete]").forEach(button=>button.addEventListener("click",async()=>{
-    if(profile?.role!=="owner" || !confirm("Excluir esta mensagem do chat interno?"))return;
+    if(profile?.role!=="owner"||!confirm("Excluir esta mensagem do chat interno?"))return;
     button.disabled=true;
     const {error}=await supabase.rpc("noway_delete_team_message",{p_message_id:button.dataset.nowayChatDelete});
-    if(error){button.disabled=false;feedback("Erro ao moderar chat: "+error.message,true);return;}
-    teamMessageSignature=null;
-    await refreshTeamChat();
-    feedback("Mensagem removida do canal.");
+    if(error){button.disabled=false;feedback("Erro ao moderar: "+error.message,true);return;}
+    teamMessageSignature=null;await refreshTeamChat();feedback("Mensagem removida do canal.");
   }));
 }
 
@@ -457,23 +536,39 @@ $id("nowayAnnouncementForm").addEventListener("submit",async event=>{
 $id("nowayTeamChatForm").addEventListener("submit",async event=>{
   event.preventDefault();
   if(!canReadTeam())return feedback("O canal é exclusivo da equipe NOWAY.",true);
-  const form=event.currentTarget;
-  const input=$id("nowayTeamChatBody");
+  const form=event.currentTarget,input=$id("nowayTeamChatBody");
   const body=input.value.trim();
-  if(!body)return;
+  if(!body&&!chatPhoto&&!chatReplyTo&&!chatEventId)return;
   setBusy(form,true);
-  const {error}=await supabase.rpc("noway_send_team_message",{p_body:body});
-  setBusy(form,false);
-  if(error)return feedback("Não foi possível enviar no chat: "+error.message,true);
-  input.value="";
-  teamMessageSignature=null;
-  await refreshTeamChat();
-  input.focus();
+  let path=null;
+  try{
+    if(chatPhoto){
+      const upload=await prepareChatPhoto(chatPhoto);
+      path=signedUser.id+"/"+crypto.randomUUID()+".webp";
+      const result=await supabase.storage.from("noway-team-chat").upload(path,upload,{
+        contentType:"image/webp",upsert:false,cacheControl:"3600"
+      });
+      if(result.error)throw result.error;
+    }
+    const {error}=await supabase.rpc("noway_send_team_message_v2",{
+      p_body:body,p_reply_to:chatReplyTo,p_event_id:chatEventId,p_image_path:path
+    });
+    if(error)throw error;
+    input.value="";
+    clearTeamReference();
+    clearChatPhoto();
+    await refreshTeamChat();
+    input.focus();
+  }catch(error){
+    if(path)await supabase.storage.from("noway-team-chat").remove([path]);
+    feedback("Não foi possível enviar no chat: "+error.message,true);
+  }finally{setBusy(form,false);}
 });
 $id("nowayTeamChatBody").addEventListener("keydown",event=>{
   if(event.key==="Enter"&&!event.shiftKey&&!event.isComposing){
     event.preventDefault();
-    if(event.currentTarget.value.trim())$id("nowayTeamChatForm").requestSubmit();
+    if(event.currentTarget.value.trim()||chatPhoto||chatEventId||chatReplyTo)
+      $id("nowayTeamChatForm").requestSubmit();
   }
 });
 $id("nowayRefreshTeamChat").addEventListener("click",async()=>{
