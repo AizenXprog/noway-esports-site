@@ -70,12 +70,13 @@ async function refreshAuth() {
     $id("nowayTeamWorkspace").hidden=true;
     $id("nowayOwnerMembers").hidden=true;
     await refreshTickets();
+    if(owner)await refreshMembers();
     return;
   }
   await loadTeamWorkspace(run);
   if(run!==running)return;
   await refreshTickets();
-  if(owner && document.body.dataset.nowayConsole!=="true")await refreshMembers();
+  if(owner)await refreshMembers();
 }
 
 async function refreshTickets() {
