@@ -12,6 +12,7 @@ renderTeam();
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.remove('is-active'));btn.classList.add('is-active');renderTeam(btn.dataset.filter)}));
 $('#closeModal').addEventListener('click',()=>$('#playerModal').close());$('#playerModal').addEventListener('click',e=>{if(e.target===$('#playerModal'))$('#playerModal').close()});
 const tournamentContainer=$('#tournaments');
+tournamentContainer.hidden=!data.tournaments.length;
 tournamentContainer.innerHTML=data.tournaments.length?data.tournaments.map(t=>`<div class="comp-item"><div><strong>${escapeHTML(t.name)}</strong><p>${escapeHTML(t.description)}</p></div><span>${escapeHTML(t.date)}</span><span>${escapeHTML(t.result)}</span></div>`).join(''):'<div class="empty-comp"><div><b>THE JOURNEY STARTS HERE.</b><p>Em breve, esta seção reunirá campeonatos disputados, resultados, adversários e a trajetória competitiva da NOWAY. Nenhum resultado foi publicado sem confirmação.</p></div><div class="empty-icon">01↗</div></div>';
 const media=$('#mediaGrid');
 const defaultCards=[
