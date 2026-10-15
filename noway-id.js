@@ -347,6 +347,7 @@ let teamDirectory=[],teamMessageSignature=null,teamNewsSignature=null;
 let teamChatList=[], teamKnownIds=new Set(),teamChatReady=false,chatRequestId=0;
 let teamChatEvents=[],chatImages=new Map(),chatReplyTo=null,chatEventId=null,chatPhoto=null,chatPhotoURL=null;
 let teamUnread=0,chatToastTimer=null;
+let chatAwayNewCount=0;
 let chatSoundOn=true,chatAudioContext=null;
 const originalNowayTitle=document.title;
 
@@ -359,6 +360,8 @@ function stopTeamFeed(){
   teamKnownIds=new Set();
   teamChatList=[];
   teamUnread=0;
+  chatAwayNewCount=0;
+  updateChatJump();
   teamChatEvents=[];
   chatImages.clear();
   chatReplyTo=null;chatEventId=null;
@@ -472,6 +475,33 @@ async function refreshTeamNews(){
   }));
 }
 
+function chatIsNearEnd(target=$id("nowayTeamChatList")){
+  return !target||target.scrollHeight-target.scrollTop-target.clientHeight<105;
+}
+function updateChatJump(){
+  const target=$id("nowayTeamChatList"),button=$id("nowayChatJumpBottom"),count=$id("nowayChatJumpCount");
+  if(!target||!button||!count)return;
+  const away=target.scrollHeight-target.scrollTop-target.clientHeight>170;
+  button.hidden=!away;
+  count.hidden=!chatAwayNewCount;
+  count.textContent=chatAwayNewCount>99?"99+":String(chatAwayNewCount);
+  button.setAttribute("aria-label",away?
+    "Ir para as mensagens mais recentes"+(chatAwayNewCount?" ("+chatAwayNewCount+" novas)":"") :
+    "Você já está nas mensagens mais recentes");
+}
+function goToChatBottom(smooth=true){
+  const target=$id("nowayTeamChatList");if(!target)return;
+  target.scrollTo({top:target.scrollHeight,behavior:smooth?"smooth":"auto"});
+  chatAwayNewCount=0;
+  updateChatJump();
+}
+const chatScrollEl=$id("nowayTeamChatList");
+chatScrollEl?.addEventListener("scroll",()=>{
+  if(chatIsNearEnd(chatScrollEl))chatAwayNewCount=0;
+  updateChatJump();
+},{passive:true});
+$id("nowayChatJumpBottom")?.addEventListener("click",()=>goToChatBottom());
+
 async function refreshTeamChat(){
   if(!canReadTeam())return;
   const userId=signedUser.id;
@@ -495,7 +525,8 @@ async function refreshTeamChat(){
   if(newMessages.length)announceTeamMessages(newMessages);
   const signature=list.map(m=>m.id).join(",");
   if(signature===teamMessageSignature)return;
-  const autoScroll=target.scrollHeight-target.scrollTop-target.clientHeight<105;
+  const autoScroll=chatIsNearEnd(target);
+  if(!autoScroll&&newMessages.length)chatAwayNewCount+=newMessages.length;
   // URLs de imagens vêm de links temporários, liberados apenas a contas da equipe.
   const mediaPaths=[...new Set(list.map(m=>m.image_path).filter(Boolean))];
   await Promise.all(mediaPaths.map(async path=>{
@@ -549,7 +580,8 @@ async function refreshTeamChat(){
         (profile?.role==="owner"?'<button type="button" data-noway-chat-delete="'+clean(m.id)+'">EXCLUIR ×</button>':"")+
         '</div></div></article>';
   }).join(""):'<div class="noway-chat-empty"><strong>COMECE A CONVERSA.</strong><p>O chat é exclusivo dos jogadores, gerência e Founder. Compartilhe uma mensagem, imagem ou evento.</p></div>';
-  if(autoScroll||list.length===1)target.scrollTop=target.scrollHeight;
+  if(autoScroll||list.length===1)goToChatBottom(false);
+  else updateChatJump();
   target.querySelectorAll("[data-chat-reply]").forEach(button=>button.addEventListener("click",()=>{
     const msg=teamChatList.find(m=>m.id===button.dataset.chatReply);
     if(!msg)return;
@@ -558,7 +590,11 @@ async function refreshTeamChat(){
   }));
   target.querySelectorAll("[data-chat-reply-view]").forEach(button=>button.addEventListener("click",()=>{
     const el=document.getElementById("team-message-"+button.dataset.chatReplyView);
-    if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("is-highlighted");setTimeout(()=>el.classList.remove("is-highlighted"),1800);}
+    if(el){
+      const top=el.offsetTop-target.offsetTop-(target.clientHeight-el.clientHeight)/2;
+      target.scrollTo({top:Math.max(0,top),behavior:"smooth"});
+      el.classList.add("is-highlighted");setTimeout(()=>el.classList.remove("is-highlighted"),1800);
+    }
   }));
   target.querySelectorAll("[data-chat-event-view]").forEach(button=>button.addEventListener("click",()=>{
     window.dispatchEvent(new CustomEvent("noway:go-to-event",{detail:{id:button.dataset.chatEventView}}));
@@ -657,7 +693,7 @@ function updateTeamUnread(){
 }
 function resetTeamUnread(){
   teamUnread=0;updateTeamUnread();hideTeamToast();
-  const el=$id("nowayTeamChatList");if(el)el.scrollTop=el.scrollHeight;
+  goToChatBottom(false);
 }
 function primeChatSound(){
   if(!chatSoundOn||!canReadTeam())return;
