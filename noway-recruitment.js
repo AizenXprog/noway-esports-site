@@ -119,6 +119,7 @@ function renderApplicationDetails(){
 async function openThread(id){
  if(!user||!apps.some(a=>a.id===id))return;
  activeId=id;
+ messages=[];lastMessageIds.clear();
  $("nowayRecruitThread").hidden=false;
  $("nowayRecruitMessages").innerHTML='<p class="nw-rec-hint">Carregando conversa...</p>';
  renderApplicationDetails();
@@ -131,7 +132,7 @@ async function refreshThread(force=false){
  const list=$("nowayRecruitMessages");
  const bottom=list.scrollHeight-list.scrollTop-list.clientHeight<100;
  const {data,error}=await db.from("noway_recruitment_messages")
-  .select("id,application_id,sender_id,sender_name,sender_role,body,created_at")
+  .select("id,application_id,sender_id,sender_name,sender_role,sender_avatar_path,body,created_at")
   .eq("application_id",id).order("created_at",{ascending:true}).limit(200);
  if(id!==activeId||version!==threadRun)return;
  if(error)return notify("Falha ao abrir conversa: "+error.message,true);
@@ -142,10 +143,16 @@ async function refreshThread(force=false){
  lastMessageIds=new Set(messages.map(m=>m.id));
  list.innerHTML=messages.length?messages.map(m=>{
   const own=m.sender_id===user.id;
+  const avatarPath=m.sender_avatar_path;
+  const isValidPhoto=typeof avatarPath==="string"&&/^[a-f0-9-]{36}\/avatar\.(?:webp|jpg)$/.test(avatarPath);
+  const avatarURL=isValidPhoto?db.storage.from("noway-avatars").getPublicUrl(avatarPath).data.publicUrl:null;
+  const avatar=avatarURL?'<img src="'+safe(avatarURL)+'" alt="" loading="lazy">':
+    '<span>'+safe((m.sender_name||"N").trim().slice(0,1).toUpperCase())+'</span>';
   return '<article class="nw-rec-message'+(own?" is-own":"")+'">'+
-  '<div class="nw-rec-message-author"><strong>'+safe(own?"VOCÊ":m.sender_name)+'</strong>'+
+  '<div class="nw-rec-message-avatar">'+avatar+'</div>'+
+  '<div class="nw-rec-message-content"><div class="nw-rec-message-author"><strong>'+safe(own?"VOCÊ":m.sender_name)+'</strong>'+
   badge(m.sender_role,m.sender_name)+'<time>'+safe(date(m.created_at))+'</time></div>'+
-  '<p>'+safe(m.body)+'</p></article>';
+  '<p>'+safe(m.body)+'</p></div></article>';
  }).join(""):'<p class="nw-rec-hint">Comece sua conversa com a NOWAY.</p>';
  if(bottom||force)list.scrollTop=list.scrollHeight;
 }
@@ -229,5 +236,5 @@ $("nowayRecruitReplyBody").addEventListener("keydown",ev=>{
 $("nowayRecruitSaveStatus").addEventListener("click",updateStatus);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&user){loadApps();if(activeId)refreshThread();}});
 setInterval(()=>{if(!document.hidden&&user){loadApps();if(activeId)refreshThread();}},25000);
-db.auth.onAuthStateChange(()=>setTimeout(()=>loadAuth(),0));
+db.auth.onAuthStateChange((event)=>{if(["SIGNED_IN","SIGNED_OUT","USER_UPDATED"].includes(event))setTimeout(()=>loadAuth(),0);});
 loadAuth().catch(e=>notify("Erro ao iniciar o Recrutamento: "+e.message,true));
