@@ -3,7 +3,7 @@
 <div class="reading-line"></div><div class="noise"></div>
 <header class="noway-console-header"><a href="/" class="noway-console-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ID.</b></span></a><div class="noway-console-header-right"><a href="recrutamento.html" class="noway-console-back">RECRUTAMENTO ↗</a><a href="/" class="noway-console-back">← VOLTAR AO SITE</a><button type="button" id="nowayHeaderLogin" class="header-login">MINHA CONTA ↗</button></div></header>
 <main class="noway-console-main">
-<div class="noway-console-intro wrap"><div><span class="noway-tiny">NOWAY ESPORTS / PORTAL PRIVADO</span><h1>ÁREA <em>INTERNA.</em></h1><p>Um espaço para cuidar do que acontece dentro da NOWAY.</p></div><span class="noway-console-intro-mark" aria-hidden="true">NW / 26</span></div>
+<div class="noway-console-intro wrap"><div><span class="noway-tiny">NOWAY ID / CENTRAL PESSOAL</span><h1>SEU <em>PAINEL.</em></h1><p>Conta, conversas e recursos da organização. Cada coisa no seu lugar.</p></div><span class="noway-console-intro-mark" aria-hidden="true">NW / 26</span></div>
 <section class="section noway-id-section noway-console-section" id="community">
 <div class="wrap">
   <div class="section-heading"><div>
@@ -13,10 +13,10 @@
   </div><div class="section-side">COMUNIDADE / ACESSO SEGURO<br><strong>BRASIL</strong></div></div>
   <div id="nowaySystemNotice" class="noway-system-notice" role="status" aria-live="polite" hidden></div>
   <div class="noway-auth-surface" id="nowayLoginSurface">
-    <div class="noway-auth-intro"><span class="noway-tiny">ACESSO À COMUNIDADE</span>
+    <div class="noway-auth-intro"><span class="noway-tiny">LOGIN / NOWAY ID</span>
       <h3>SUA IDENTIDADE<br>NA NOWAY.</h3>
-      <p>Entre para falar diretamente com a organização. Seus contatos e respostas ficam privados na sua conta.</p>
-      <div class="noway-auth-points"><span>01 / IDENTIDADE VERIFICADA</span><span>02 / MENSAGENS PRIVADAS</span><span>03 / RESPOSTAS ACOMPANHADAS</span></div>
+      <p>Faça login para acessar seu perfil, suas conversas e os recursos liberados para a sua conta.</p>
+      <div class="noway-auth-points"><span>01 / ENTRE COM GOOGLE OU E-MAIL</span><span>02 / ACESSE SUA ÁREA</span><span>03 / ENCONTRE CONVERSAS E RECURSOS</span></div>
     </div>
     <div class="noway-auth-form">
       <span class="noway-tiny">ACESSAR NOWAY ID</span>
@@ -32,16 +32,24 @@
     </div>
   </div>
   <div id="nowayDashboard" class="noway-dashboard" hidden>
-  <nav class="noway-console-tabs" id="nowayConsoleTabs" aria-label="Áreas do painel">
-    <button type="button" data-console-tab="overview" class="is-active">INÍCIO</button>
-    <button type="button" data-console-tab="team">EQUIPE</button>
-    <button type="button" data-console-tab="agenda">AGENDA</button>
-    <button type="button" data-console-tab="competitive">COMPETITIVE</button>
-    <button type="button" data-console-tab="stats">ESTATÍSTICAS</button>
-    <button type="button" data-console-tab="chat">CHAT DA EQUIPE <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
-    <button type="button" data-console-tab="contacts">CONTATOS</button>
-    <button type="button" data-console-tab="users">USUÁRIOS</button>
-    <button type="button" data-console-tab="profile">MEU PERFIL</button>
+  <nav class="noway-console-tabs" id="nowayConsoleTabs" aria-label="Navegação por áreas do painel">
+    <div class="noway-console-tab-group" data-console-nav-group="inicio"><span class="noway-console-nav-label">PRINCIPAL</span>
+      <button type="button" data-console-tab="overview" class="is-active">VISÃO GERAL</button>
+      <button type="button" data-console-tab="profile">MINHA CONTA</button>
+    </div>
+    <div class="noway-console-tab-group" data-console-nav-group="equipe"><span class="noway-console-nav-label">EQUIPE</span>
+      <button type="button" data-console-tab="team">MURAL / EQUIPE</button>
+      <button type="button" data-console-tab="chat">CHAT <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
+    </div>
+    <div class="noway-console-tab-group" data-console-nav-group="competitivo"><span class="noway-console-nav-label">COMPETITIVO</span>
+      <button type="button" data-console-tab="agenda">AGENDA</button>
+      <button type="button" data-console-tab="competitive">PARTIDAS</button>
+      <button type="button" data-console-tab="stats">ESTATÍSTICAS</button>
+    </div>
+    <div class="noway-console-tab-group" data-console-nav-group="atendimento"><span class="noway-console-nav-label">ATENDIMENTO</span>
+      <button type="button" data-console-tab="contacts">MINHAS CONVERSAS</button>
+      <button type="button" data-console-tab="users">CONTAS / PERMISSÕES</button>
+    </div>
   </nav>
         <div id="nowayChatToast" class="noway-chat-toast" role="status" aria-live="polite" hidden>
           <span id="nowayChatToastAvatar" class="noway-chat-toast-avatar">NW</span>
@@ -76,15 +84,27 @@
         <div class="noway-hq-panel-title"><div><span class="noway-tiny">03 / ACESSO DIRETO</span><h4>ATALHOS.</h4></div></div>
         <p id="nowayConsoleWelcomeText" class="noway-muted">Um espaço para organizar sua equipe.</p>
         <div class="noway-hq-shortcut-grid">
-          <button type="button" class="noway-hq-shortcut" data-console-open="team"><span>01 / TIME</span><strong>EQUIPE E MURAL</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="competitive"><span>02 / COMPETIÇÃO</span><strong>COMPETITIVE</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="stats"><span>03 / DESEMPENHO</span><strong>PLAYER STATS</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="agenda"><span>04 / PLANEJAMENTO</span><strong>AGENDA</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="chat"><span>05 / COMUNICAÇÃO</span><strong>CHAT INTERNO</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="contacts"><span>06 / SOLICITAÇÕES</span><strong>CONTATOS</strong><b>↗</b></button>
-          <a href="recrutamento.html" class="noway-hq-shortcut noway-hq-recruitment-link"><span>07 / RECRUTAMENTO</span><strong>CANDIDATURAS ↗</strong><b>↗</b></a>
-          <button type="button" class="noway-hq-shortcut" data-console-open="users"><span>08 / FOUNDER</span><strong>CONTAS E CARGOS</strong><b>↗</b></button>
-          <button type="button" class="noway-hq-shortcut" data-console-open="profile"><span>09 / IDENTIDADE</span><strong>MEU PERFIL</strong><b>↗</b></button>
+          <div class="noway-hq-shortcut-group" data-shortcut-group="essencial">
+            <h5>01 / SUA CONTA E CONTATOS</h5>
+            <button type="button" class="noway-hq-shortcut" data-console-open="contacts"><strong>CONVERSAS COM A NOWAY</strong><span>Suas solicitações e respostas privadas</span><b>↗</b></button>
+            <button type="button" class="noway-hq-shortcut" data-console-open="profile"><strong>PERFIL E IDENTIDADE</strong><span>Seu nome e sua foto no NOWAY ID</span><b>↗</b></button>
+            <a href="recrutamento.html" class="noway-hq-shortcut noway-hq-recruitment-link"><strong>RECRUTAMENTO</strong><span>Candidaturas e conversas de seleção</span><b>↗</b></a>
+          </div>
+          <div class="noway-hq-shortcut-group" data-shortcut-group="equipe">
+            <h5>02 / COMUNICAÇÃO DA EQUIPE</h5>
+            <button type="button" class="noway-hq-shortcut" data-console-open="team"><strong>EQUIPE E MURAL</strong><span>Comunicados e diretório dos integrantes</span><b>↗</b></button>
+            <button type="button" class="noway-hq-shortcut" data-console-open="chat"><strong>CHAT INTERNO</strong><span>Mensagens em tempo real da equipe</span><b>↗</b></button>
+          </div>
+          <div class="noway-hq-shortcut-group" data-shortcut-group="competicao">
+            <h5>03 / DEPARTAMENTO COMPETITIVO</h5>
+            <button type="button" class="noway-hq-shortcut" data-console-open="agenda"><strong>AGENDA</strong><span>Treinos, reuniões e compromissos</span><b>↗</b></button>
+            <button type="button" class="noway-hq-shortcut" data-console-open="competitive"><strong>GESTÃO DE PARTIDAS</strong><span>Confrontos, escalações e resultados</span><b>↗</b></button>
+            <button type="button" class="noway-hq-shortcut" data-console-open="stats"><strong>PLAYER STATS</strong><span>Desempenho e histórico por jogador</span><b>↗</b></button>
+          </div>
+          <div class="noway-hq-shortcut-group" data-shortcut-group="gestao">
+            <h5>04 / ADMINISTRAÇÃO</h5>
+            <button type="button" class="noway-hq-shortcut" data-console-open="users"><strong>CONTAS E PERMISSÕES</strong><span>Administração exclusiva do Founder</span><b>↗</b></button>
+          </div>
         </div>
         <button id="nowayHQNewEvent" type="button" class="noway-hq-new-event" hidden>+ AGENDAR NOVO COMPROMISSO</button>
       </section>
@@ -98,11 +118,11 @@
       <button type="button" id="nowayAvatarTrigger" class="noway-avatar-trigger" aria-label="Alterar sua foto de perfil">
         <img id="nowayAvatarPhoto" alt="" hidden><span id="nowayAvatarLetter">N</span><i aria-hidden="true">✎</i>
       </button>
-      <div><span class="noway-tiny">CONTA AUTENTICADA</span>
+      <div><span class="noway-tiny">SEU NOWAY ID / SESSÃO ATIVA</span>
       <h3 id="nowayAccountName">MEMBRO NOWAY</h3>
       <span class="noway-role" id="nowayAccountRole">MEMBRO</span><p id="nowayAvatarStatus" class="noway-avatar-status" role="status" aria-live="polite" hidden></p></div>
     </div><input id="nowayAvatarInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" hidden>
-    <div class="noway-account-actions"><button type="button" id="nowayEditName" class="noway-outline-action">EDITAR NOME</button><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></div>
+    <details class="noway-account-menu"><summary>OPÇÕES DA CONTA <span>⌄</span></summary><div class="noway-account-actions"><button type="button" id="nowayEditName" class="noway-outline-action">EDITAR NOME</button><button type="button" id="nowayCopyId" class="noway-outline-action">COPIAR MEU ID</button><button type="button" id="nowaySignOut" class="noway-outline-action">SAIR DA CONTA ↗</button></div></details></div>
     <form id="nowayDisplayNameForm" class="noway-form noway-name-form" hidden><label for="nowayDisplayName">SEU NOME NA COMUNIDADE</label><input id="nowayDisplayName" type="text" minlength="1" maxlength="80" autocomplete="name" required placeholder="Como devemos chamar você?"><button type="submit" class="btn btn-yellow">SALVAR NOME <span>↗</span></button></form>
     <section id="nowayTeamWorkspace" class="noway-team-space" aria-label="Área interna da equipe NOWAY" hidden>
       <div class="noway-team-head">
@@ -331,8 +351,9 @@
       <div class="noway-console-pagination"><button id="nowayAccountsPrev" class="noway-outline-action" type="button">← ANTERIOR</button><span id="nowayAccountsPage"></span><button id="nowayAccountsNext" class="noway-outline-action" type="button">PRÓXIMA →</button></div>
     </section>
     <section id="nowayConsoleProfile" class="noway-panel noway-console-view" data-console-view="profile" hidden>
-      <div class="noway-console-view-header"><div><span class="noway-tiny">06 / IDENTIDADE</span><h3>MEU PERFIL.</h3><p>Seu nome e sua foto dentro do NOWAY ID.</p></div></div>
-      <div class="noway-console-profile-body"><div id="nowayProfileAvatar" class="noway-profile-avatar-preview">N</div><div><h4>PERSONALIZE SUA CONTA.</h4><p class="noway-muted">Use JPG, PNG ou WebP (até 24 MB). Ajustamos a foto automaticamente, sem filtros. Arquivos HEIC também podem funcionar se o navegador conseguir abri-los.</p><div class="noway-profile-action-row"><button id="nowayProfileChangeAvatar" class="btn btn-yellow" type="button">ALTERAR FOTO ↗</button><button id="nowayProfileRemoveAvatar" class="noway-outline-action" type="button">REMOVER FOTO</button><button id="nowayProfileChangeName" class="noway-outline-action" type="button">EDITAR NOME</button></div></div></div>
+      <div class="noway-console-view-header"><div><span class="noway-tiny">SUA CONTA / IDENTIDADE</span><h3>MEU PERFIL.</h3><p>Gerencie sua identidade aqui. Para candidaturas e mensagens, use as áreas correspondentes no painel.</p></div></div>
+      <div class="noway-console-profile-body"><div id="nowayProfileAvatar" class="noway-profile-avatar-preview">N</div><div><h4>SEU NOME. SUA FOTO.</h4><p class="noway-muted">Você está alterando apenas a foto da sua conta pessoal, exibida nas conversas internas. A foto do elenco no site público é gerenciada separadamente.</p><p class="noway-muted">Use JPG, PNG ou WebP (até 24 MB). Ajustamos a foto automaticamente, sem filtros. Arquivos HEIC também podem funcionar se o navegador conseguir abri-los.</p><div class="noway-profile-action-row"><button id="nowayProfileChangeAvatar" class="btn btn-yellow" type="button">ALTERAR FOTO ↗</button><button id="nowayProfileRemoveAvatar" class="noway-outline-action" type="button">REMOVER FOTO</button><button id="nowayProfileChangeName" class="noway-outline-action" type="button">EDITAR NOME</button></div></div></div>
+      <div class="noway-profile-destinations"><div><span>PRECISA DE OUTRA COISA?</span><strong>ACESSO DIRETO</strong></div><button type="button" data-console-open="contacts">MINHAS CONVERSAS ↗</button><a href="recrutamento.html">MINHAS CANDIDATURAS ↗</a></div>
     </section>
   </div>
 </div>
