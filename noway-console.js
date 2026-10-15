@@ -297,6 +297,7 @@ async function refreshEvents(){
     if(error){notice("Não foi possível carregar a agenda: "+error.message,true);return;}
     events=data||[];renderCalendar();renderEvents();renderOverview();
     if(currentTab==="competitive")renderCompetitive();
+    if(currentTab==="stats")renderPlayerStats();
   })();
   try{await loadEventsPromise;}finally{loadEventsPromise=null;}
 }
@@ -401,6 +402,7 @@ async function saveEvent(ev){
   btn.disabled=false;
   if(error)return notice("Erro ao salvar: "+error.message,true);
   closeEventEditor();selectedDay=null;calendar=new Date(start.getFullYear(),start.getMonth(),1);
+  playerStatsState.loadedAt=0;
   await refreshEvents();notice("Compromisso salvo na agenda da equipe.");
   if(["partida","treino"].includes(savedKind) && savedEventId){
     competitiveState.filter="all";
@@ -414,7 +416,8 @@ async function deleteEvent(){
   const {error}=await db.rpc("noway_delete_team_event",{p_id:$("nowayEventId").value});
   btn.disabled=false;
   if(error)return notice("Não foi possível excluir: "+error.message,true);
-  closeEventEditor();await refreshEvents();await refreshCompetitive(true);notice("Evento excluído.");
+  closeEventEditor();playerStatsState.loadedAt=0;
+  await refreshEvents();await refreshCompetitive(true);notice("Evento excluído.");
 }
 async function refreshAccounts(){
   if(!isOwner())return;
@@ -941,6 +944,7 @@ async function saveCompetitiveSetup(ev){
    competitiveState.selected=event.id;
    competitiveState.filter="all";
    $("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;
+   playerStatsState.loadedAt=0;
    await refreshCompetitive(true);
    notice("Confronto salvo! Escalação, mapas e resultados atualizados.");
  }catch(error){
