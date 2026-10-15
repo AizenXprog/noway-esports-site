@@ -30,7 +30,7 @@ function nowayRoleBadge(role,senderName=""){
   if(role!=="owner"&&role!=="manager")return "";
   const isFounder=role==="owner";
   const name=isFounder?"Niel":(/prado/i.test(senderName)?"Prado":String(senderName||"Team Manager").trim().split(/\s+/)[0]);
-  const description=name+(isFounder?" - Founder":" - Team Manager");
+  const description=name+(isFounder?" - founder":" - Team Manager");
   // Desenhos SVG autorais para os dois cargos da NOWAY; o cargo vem do servidor.
   const icon=isFounder?
     '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
