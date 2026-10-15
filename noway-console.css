@@ -447,3 +447,7 @@ body[data-noway-console="true"]{background:#0c0d0e;min-height:100vh}
   .noway-hq-activity-item time{font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){.noway-hq-refresh,.noway-hq-shortcut,.noway-hq-next-item,.noway-hq-activity-item{transition:none}}
+
+.noway-hq-live-pill b{font:inherit;letter-spacing:inherit}
+.noway-hq-live-pill.is-error{border-color:#a86d6d;color:#ffb6b6;background:#322220}
+.noway-hq-live-pill.is-error>span{background:#ff9f9f;box-shadow:none}
