@@ -170,3 +170,19 @@
  font:900 20px/1 "Barlow Condensed",sans-serif}
 .nw-rec-message-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:680px){.nw-rec-message{gap:7px}.nw-rec-message-avatar{width:31px;height:31px;flex-basis:31px;font-size:16px}}
+
+
+/* Encerramento de atendimento individual, com motivo visível e histórico preservado. */
+.nw-rec-closure{border:1px solid #e5f067;background:#293323;padding:17px 19px;margin:19px 0;color:#eff7df}
+.nw-rec-closure strong{font:900 13px/1.45 Inter,sans-serif;color:#f2ff00;letter-spacing:.06em}
+.nw-rec-closure p{font:600 12px/1.75 Inter,sans-serif;white-space:pre-wrap;margin:11px 0 0}
+.nw-rec-close-panel{margin:20px 0 0;border:1px solid #697d50;background:#20291f;padding:16px}
+.nw-rec-close-panel[hidden]{display:none!important}
+.nw-rec-close-panel summary{list-style:none;cursor:pointer;color:#f2ff00;font:900 11px/1.5 Inter,sans-serif;display:flex;justify-content:space-between}
+.nw-rec-close-panel summary::-webkit-details-marker{display:none}
+.nw-rec-close-panel form{display:flex;flex-direction:column;gap:11px;padding-top:18px}
+.nw-rec-close-panel label{font:900 10px Inter,sans-serif;color:#d2e0c6}
+.nw-rec-close-panel textarea{background:#131b15;border:1px solid #667b5a;color:white;padding:13px;font:600 12px/1.6 Inter,sans-serif;resize:vertical}
+.nw-rec-close-panel button{background:#f2ff00;border:1px solid #f2ff00;color:#151915;padding:13px 16px;cursor:pointer;font:900 10px Inter,sans-serif}
+.nw-rec-close-panel button:disabled{opacity:.5;cursor:wait}
+.nw-rec-close-panel p{font:600 10px/1.7 Inter,sans-serif;color:#b2bfa9;margin:0}
