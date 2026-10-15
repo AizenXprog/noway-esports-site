@@ -282,10 +282,10 @@ async function refreshEvents(){
   if(!isStaff())return;
   if(loadEventsPromise)return loadEventsPromise;
   loadEventsPromise=(async()=>{
-    const start=new Date(new Date().getFullYear()-1,0,1).toISOString();
+    const start=new Date(new Date().getFullYear()-5,0,1).toISOString();
     const {data,error}=await db.from("noway_team_events")
       .select("id,kind,title,description,opponent,competition,meeting_link,start_at,end_at,status,created_by")
-      .gte("start_at",start).order("start_at",{ascending:true}).limit(500);
+      .gte("start_at",start).order("start_at",{ascending:true}).limit(1000);
     if(error){notice("Não foi possível carregar a agenda: "+error.message,true);return;}
     events=data||[];renderCalendar();renderEvents();renderOverview();
     if(currentTab==="competitive")renderCompetitive();
