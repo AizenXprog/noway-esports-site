@@ -444,7 +444,6 @@ async function refreshTeamChat(){
   const signature=list.map(m=>m.id).join(",");
   if(signature===teamMessageSignature)return;
   const autoScroll=target.scrollHeight-target.scrollTop-target.clientHeight<105;
-  teamMessageSignature=signature;
   // URLs de imagens vêm de links temporários, liberados apenas a contas da equipe.
   const mediaPaths=[...new Set(list.map(m=>m.image_path).filter(Boolean))];
   await Promise.all(mediaPaths.map(async path=>{
@@ -455,6 +454,7 @@ async function refreshTeamChat(){
     if(!res.error&&res.data?.signedUrl)chatImages.set(path,{url:res.data.signedUrl,expires:Date.now()+3300000});
   }));
   if(req!==chatRequestId||!canReadTeam()||signedUser?.id!==userId)return;
+  teamMessageSignature=signature;
   const refs=new Map(list.map(m=>[m.id,m]));
   const eventsById=new Map(teamChatEvents.map(e=>[e.id,e]));
   const avatarFor=m=>{
@@ -507,8 +507,7 @@ async function refreshTeamChat(){
     if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("is-highlighted");setTimeout(()=>el.classList.remove("is-highlighted"),1800);}
   }));
   target.querySelectorAll("[data-chat-event-view]").forEach(button=>button.addEventListener("click",()=>{
-    window.dispatchEvent(new Event("noway:chat-to-agenda"));
-    document.querySelector('[data-console-tab="agenda"]')?.click();
+    window.dispatchEvent(new CustomEvent("noway:go-to-event",{detail:{id:button.dataset.chatEventView}}));
   }));
   target.querySelectorAll("[data-noway-chat-delete]").forEach(button=>button.addEventListener("click",async()=>{
     if(profile?.role!=="owner"||!confirm("Excluir esta mensagem do chat interno?"))return;
