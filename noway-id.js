@@ -26,6 +26,11 @@ function displayDate(date) {
   try {return new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(date))}
   catch{return ""}
 }
+function nowayRoleBadge(role){
+  if(role==="owner")return '<span class="noway-role-message-badge is-founder" aria-label="Founder / Owner" title="Founder da NOWAY">👑 <span>FOUNDER</span></span>';
+  if(role==="manager")return '<span class="noway-role-message-badge is-manager" aria-label="Team Manager" title="Gestão NOWAY">🛡️ <span>TEAM MANAGER</span></span>';
+  return "";
+}
 function contactName(item) {
   if(item.user_id===signedUser?.id)return "VOCÊ";
   return members.find(m=>m.id===item.user_id)?.display_name||"MEMBRO NOWAY";
@@ -114,15 +119,27 @@ async function openTicket(id) {
   $id("nowayTicketStatus").value=ticket.status;
   $id("nowayThreadMessages").innerHTML='<p class="noway-muted">Carregando conversa...</p>';
   $id("nowayThreadSection").scrollIntoView({behavior:"smooth",block:"nearest"});
-  const res=await supabase.from("noway_contact_messages")
-    .select("id,contact_id,sender_id,body,created_at")
-    .eq("contact_id",id).order("created_at",{ascending:true});
+  const [res,rolesResult]=await Promise.all([
+    supabase.from("noway_contact_messages")
+      .select("id,contact_id,sender_id,body,created_at")
+      .eq("contact_id",id).order("created_at",{ascending:true}),
+    supabase.rpc("noway_contact_message_roles",{p_contact_id:id})
+  ]);
   if(activeId!==id)return;
   if(res.error){feedback("Não foi possível abrir a conversa: "+res.error.message,true);return}
   const list=res.data||[];
-  $id("nowayThreadMessages").innerHTML=list.length?list.map(m=>'<article class="noway-chat-message'+(m.sender_id===signedUser?.id?' is-own':'')+'">'+
-    '<span class="noway-chat-author">'+clean(m.sender_id===signedUser?.id?"VOCÊ":(profile?.role==="owner"?contactName(ticket):"NOWAY ESPORTS"))+' · '+clean(displayDate(m.created_at))+'</span>'+
-    '<p>'+clean(m.body)+'</p></article>').join(""):'<p class="noway-muted">Sem mensagens.</p>';
+  const senderRoles=new Map((rolesResult.error?[]:rolesResult.data||[]).map(m=>[m.sender_id,m.role]));
+  if(rolesResult.error)console.warn("NOWAY: cargo do remetente indisponível",rolesResult.error.message);
+  $id("nowayThreadMessages").innerHTML=list.length?list.map(m=>{
+    const own=m.sender_id===signedUser?.id;
+    const authorRole=senderRoles.get(m.sender_id)||(own?profile?.role:null);
+    return '<article class="noway-chat-message'+(own?' is-own':'')+'">'+
+      '<div class="noway-chat-author-line"><span class="noway-chat-author">'+
+        clean(own?"VOCÊ":(profile?.role==="owner"?contactName(ticket):"NOWAY ESPORTS"))+
+      '</span>'+nowayRoleBadge(authorRole)+
+      '<time>'+clean(displayDate(m.created_at))+'</time></div>'+
+      '<p>'+clean(m.body)+'</p></article>';
+  }).join(""):'<p class="noway-muted">Sem mensagens.</p>';
 }
 
 async function refreshMembers() {
@@ -406,6 +423,7 @@ async function refreshTeamNews(){
     const mayRemove=profile.role==="owner"||(profile.role==="manager"&&a.author_id===signedUser.id);
     return '<article class="noway-team-news-item">'+
       '<div class="noway-team-news-meta"><span>'+clean(a.author_name)+' · '+clean(teamDate(a.created_at))+'</span>'+
+      nowayRoleBadge(teamDirectory.find(p=>p.id===a.author_id)?.role||(a.author_id===signedUser.id?profile?.role:null))+
       (mayRemove?'<button type="button" class="noway-team-delete" data-team-remove="'+clean(a.id)+'" aria-label="Excluir comunicado: '+clean(a.title)+'">EXCLUIR ×</button>':'')+
       '</div><h5>'+clean(a.title)+'</h5><p>'+clean(a.body)+'</p></article>';
   }).join(""):'<p class="noway-muted">Nenhum comunicado ainda. A gestão pode publicar os primeiros recados aqui.</p>';
@@ -488,7 +506,9 @@ async function refreshTeamChat(){
     return '<article class="noway-team-msg'+(own?' is-own':'')+'" id="team-message-'+clean(m.id)+'">'+
       avatarFor(m)+
       '<div class="noway-chat-message-content">'+
-        '<div class="noway-team-msg-meta"><strong>'+clean(m.sender_name)+'</strong><time datetime="'+clean(m.created_at)+'">'+clean(teamTime(m.created_at))+'</time></div>'+
+        '<div class="noway-team-msg-meta"><strong>'+clean(m.sender_name)+'</strong>'+
+          nowayRoleBadge(teamDirectory.find(p=>p.id===m.sender_id)?.role||(m.sender_id===signedUser.id?profile?.role:null))+
+          '<time datetime="'+clean(m.created_at)+'">'+clean(teamTime(m.created_at))+'</time></div>'+
         replyHtml+eventHtml+
         (m.body?'<p>'+clean(m.body)+'</p>':"")+imageHtml+
         '<div class="noway-chat-message-actions"><button type="button" data-chat-reply="'+clean(m.id)+'">↩ RESPONDER</button>'+
