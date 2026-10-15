@@ -940,5 +940,240 @@ async function saveCompetitiveSetup(ev){
 }
 
 
+
+// NOWAY Player Stats / v1 — dados inseridos após partidas encerradas, nunca estimados.
+const playerStatsState={
+  userId:null,rows:[],people:[],roster:[],matches:[],loadedAt:0,loading:false,request:0,
+  selectedPlayer:null,selectedMatch:null,season:"all"
+};
+const statNumericKeys=["kills","deaths","assists","rounds_played","rounds_survived","kost_rounds","entry_kills","entry_deaths"];
+const statInputIds=["nowayStatsKills","nowayStatsDeaths","nowayStatsAssists","nowayStatsRounds",
+  "nowayStatsSurvived","nowayStatsKost","nowayStatsEntryKills","nowayStatsEntryDeaths"];
+const statMatches=()=>new Map(playerStatsState.matches.map(m=>[m.event_id,m]));
+function eligibleStatEvent(id,matchMap=null){
+  const e=events.find(ev=>ev.id===id);
+  const m=(matchMap||statMatches()).get(id);
+  return e&&m&&e.kind==="partida"&&e.status==="confirmado"&&
+    new Date(e.start_at).getTime()<=Date.now()&&["vitoria","derrota","empate"].includes(m.result)?e:null;
+}
+function eligibleStatRows(){
+  const map=statMatches();
+  return playerStatsState.rows.filter(row=>{
+    const event=eligibleStatEvent(row.event_id,map);
+    const roster=playerStatsState.roster.find(r=>r.event_id===row.event_id&&r.player_id===row.player_id);
+    return Boolean(event&&roster&&roster.presence!=="ausente"&&
+      (playerStatsState.season==="all"||spDateKey(event.start_at).slice(0,4)===playerStatsState.season));
+  });
+}
+function calcPlayerStats(rows){
+  const total={matches:rows.length,kills:0,deaths:0,assists:0,rounds_played:0,rounds_survived:0,
+    kost_rounds:0,entry_kills:0,entry_deaths:0};
+  for(const row of rows)for(const field of statNumericKeys)total[field]+=Number(row[field]||0);
+  total.kd=total.deaths?total.kills/total.deaths:total.kills?Infinity:null;
+  total.kpr=total.rounds_played?total.kills/total.rounds_played:null;
+  total.kost=total.rounds_played?100*total.kost_rounds/total.rounds_played:null;
+  total.survival=total.rounds_played?100*total.rounds_survived/total.rounds_played:null;
+  total.entry=total.entry_kills-total.entry_deaths;
+  return total;
+}
+const statRatio=x=>x==null?"—":x===Infinity?"∞":x.toFixed(2).replace(".",",");
+const statPercent=x=>x==null?"—":x.toFixed(1).replace(".",",")+"%";
+const statSigned=x=>x>0?"+"+x:String(x);
+const statsPerson=id=>playerStatsState.people.find(p=>p.id===id);
+function statsAvatar(p){
+  const href=avatarURL(p?.avatar_url);
+  const initial=(p?.display_name||"N").trim().slice(0,1).toUpperCase();
+  return href?'<img src="'+escapeHTML(href)+'" alt="" loading="lazy">':
+    '<span>'+escapeHTML(initial)+'</span>';
+}
+async function refreshPlayerStats(force=false){
+  if(!isStaff()||!signed())return;
+  if(playerStatsState.loading)return;
+  if(!force&&Date.now()-playerStatsState.loadedAt<20000){
+    renderPlayerStats();return;
+  }
+  const user=me.id,request=++playerStatsState.request;
+  playerStatsState.loading=true;
+  $("nowayStatsRefresh").disabled=true;
+  try{
+    const [stats,roster,matches,directory]=await Promise.all([
+      db.from("noway_player_match_stats")
+        .select("event_id,player_id,kills,deaths,assists,rounds_played,rounds_survived,kost_rounds,entry_kills,entry_deaths,updated_at")
+        .limit(5000),
+      db.from("noway_competitive_roster")
+        .select("event_id,player_id,presence,starter").limit(5000),
+      db.from("noway_competitive_matches").select("event_id,result,our_score,opponent_score").limit(1000),
+      db.rpc("noway_team_directory_v2")
+    ]);
+    if(!signed()||me.id!==user||request!==playerStatsState.request)return;
+    for(const [name,response] of [["estatísticas",stats],["convocações",roster],["partidas",matches],["integrantes",directory]]){
+      if(response.error)throw Error("Falha ao carregar "+name+": "+response.error.message);
+    }
+    playerStatsState.rows=stats.data||[];
+    playerStatsState.roster=roster.data||[];
+    playerStatsState.matches=matches.data||[];
+    playerStatsState.people=directory.data||[];
+    playerStatsState.userId=user;
+    playerStatsState.loadedAt=Date.now();
+    renderPlayerStats();
+  }catch(err){
+    notice("Estatísticas: "+(err.message||"Não foi possível carregar os dados"),true);
+    $("nowayStatsPlayers").innerHTML='<p class="noway-muted">Erro ao carregar estatísticas. Tente atualizar.</p>';
+  }finally{
+    if(request===playerStatsState.request){playerStatsState.loading=false;$("nowayStatsRefresh").disabled=false;}
+  }
+}
+function renderPlayerStats(){
+  if(!isStaff()||!signed())return;
+  const all=playerStatsState.rows.filter(row=>Boolean(eligibleStatEvent(row.event_id))&&
+    playerStatsState.roster.some(r=>r.event_id===row.event_id&&r.player_id===row.player_id&&r.presence!=="ausente"));
+  const years=[...new Set(all.map(row=>spDateKey(events.find(e=>e.id===row.event_id).start_at).slice(0,4)))].sort((a,b)=>b.localeCompare(a));
+  const season=$("nowayStatsSeason");
+  season.innerHTML='<option value="all">TODAS AS TEMPORADAS</option>'+
+    years.map(y=>'<option value="'+escapeHTML(y)+'">'+escapeHTML(y)+'</option>').join("");
+  if(playerStatsState.season!=="all"&&!years.includes(playerStatsState.season))playerStatsState.season="all";
+  season.value=playerStatsState.season;
+  const rows=eligibleStatRows();
+  const tot=calcPlayerStats(rows);
+  const playersWithData=new Set(rows.map(r=>r.player_id)).size;
+  const gamesWithData=new Set(rows.map(r=>r.event_id)).size;
+  $("nowayStatsOverview").innerHTML=[
+    ["PARTIDAS ANALISADAS",gamesWithData,"com dados individuais"],
+    ["JOGADORES COM DADOS",playersWithData,"desempenhos registrados"],
+    ["ROUNDS REGISTRADOS",tot.rounds_played,"participações individuais"],
+    ["KOST GERAL",statPercent(tot.kost),"ponderado por rounds"]
+  ].map(m=>'<article><small>'+escapeHTML(m[0])+'</small><strong>'+escapeHTML(m[1])+
+    '</strong><span>'+escapeHTML(m[2])+'</span></article>').join("");
+  const people=playerStatsState.people.filter(p=>["owner","manager","jogador"].includes(p.role));
+  if(!people.some(p=>p.id===playerStatsState.selectedPlayer)){
+    playerStatsState.selectedPlayer=people.find(p=>rows.some(r=>r.player_id===p.id))?.id||
+      people.find(p=>p.id===me.id)?.id||people[0]?.id||null;
+  }
+  const ordered=[...people].sort((a,b)=>{
+    const aa=rows.filter(x=>x.player_id===a.id).length;
+    const bb=rows.filter(x=>x.player_id===b.id).length;
+    return bb-aa||a.display_name.localeCompare(b.display_name,"pt-BR");
+  });
+  $("nowayStatsPlayers").innerHTML=ordered.length?ordered.map(p=>{
+    const r=calcPlayerStats(rows.filter(x=>x.player_id===p.id));
+    return '<button type="button" class="noway-player-stat-row'+
+      (playerStatsState.selectedPlayer===p.id?' is-selected':'')+
+      '" data-noway-stat-player="'+escapeHTML(p.id)+'">'+
+      '<span class="noway-stats-avatar">'+statsAvatar(p)+'</span>'+
+      '<span class="noway-stats-person"><strong>'+escapeHTML(p.display_name)+
+      '</strong><small>'+r.matches+(r.matches===1?' PARTIDA ANALISADA':' PARTIDAS ANALISADAS')+'</small></span>'+
+      '<span class="noway-stats-inline"><b>'+statRatio(r.kd)+'</b><small>K/D</small></span>'+
+      '<span class="noway-stats-inline"><b>'+statPercent(r.kost)+'</b><small>KOST</small></span></button>';
+  }).join(""):'<p class="noway-muted">Nenhum integrante autorizado encontrado.</p>';
+  $("nowayStatsPlayers").querySelectorAll("[data-noway-stat-player]").forEach(b=>b.addEventListener("click",()=>{
+    playerStatsState.selectedPlayer=b.dataset.nowayStatPlayer;
+    playerStatsState.selectedMatch=null;renderPlayerStats();
+  }));
+  renderPlayerStatsDetail(rows);
+  $("nowayStatsAdmin").hidden=!isManager();
+  if(isManager())renderPlayerStatsEditor();
+}
+function renderPlayerStatsDetail(filteredRows){
+  const target=$("nowayStatsPlayerDetail");
+  const p=statsPerson(playerStatsState.selectedPlayer);
+  if(!p){
+    target.innerHTML='<div class="noway-comp-empty"><h4>ESCOLHA UM INTEGRANTE.</h4></div>';
+    return;
+  }
+  const rows=filteredRows.filter(r=>r.player_id===p.id);
+  const totals=calcPlayerStats(rows);
+  const summary=[
+    ["K/D",statRatio(totals.kd),"Eliminações ÷ mortes"],
+    ["KOST",statPercent(totals.kost),"Rounds com K, O, S ou T"],
+    ["KPR",statRatio(totals.kpr),"Eliminações por round"],
+    ["SOBREVIVÊNCIA",statPercent(totals.survival),"Rounds sobrevividos"]
+  ];
+  const table=rows.length?'<div class="noway-stats-history-scroll"><table class="noway-stats-history"><thead><tr>'+
+    '<th>PARTIDA</th><th>K / D / A</th><th>ROUNDS</th><th>K/D</th><th>KOST</th><th>ENTRY</th></tr></thead><tbody>'+
+    rows.sort((a,b)=>{
+      const aa=events.find(e=>e.id===a.event_id)?.start_at;
+      const bb=events.find(e=>e.id===b.event_id)?.start_at;
+      return new Date(bb||0)-new Date(aa||0);
+    }).map(r=>{
+      const e=events.find(x=>x.id===r.event_id);
+      const kd=r.deaths?r.kills/r.deaths:r.kills?Infinity:null;
+      const kost=100*r.kost_rounds/r.rounds_played;
+      return '<tr><td><strong>'+escapeHTML(e?.opponent||e?.title||"Partida")+
+        '</strong><small>'+escapeHTML(fmtDate(e?.start_at))+'</small></td>'+
+        '<td>'+r.kills+' / '+r.deaths+' / '+r.assists+'</td>'+
+        '<td>'+r.rounds_played+'</td><td>'+statRatio(kd)+'</td><td>'+statPercent(kost)+'</td>'+
+        '<td>'+statSigned(r.entry_kills-r.entry_deaths)+'</td></tr>';
+    }).join("")+'</tbody></table></div>':
+    '<div class="noway-stats-no-data"><strong>SEM PARTIDAS ANALISADAS.</strong>'+
+    '<p>A gestão ainda não lançou números individuais para este integrante no período selecionado.</p></div>';
+  target.innerHTML='<div class="noway-stats-player-heading">'+
+    '<span class="noway-stats-avatar is-large">'+statsAvatar(p)+'</span><div><span class="noway-tiny">PLAYER PROFILE / PERFORMANCE</span>'+
+    '<h4>'+escapeHTML(p.display_name)+'</h4><p>'+totals.matches+' partidas com estatísticas · '+totals.kills+
+    ' kills · '+totals.deaths+' deaths · '+totals.assists+' assists</p></div></div>'+
+    '<div class="noway-stats-player-metrics">'+summary.map(s=>
+      '<article><small>'+escapeHTML(s[0])+'</small><strong>'+escapeHTML(s[1])+
+      '</strong><span>'+escapeHTML(s[2])+'</span></article>').join("")+'</div>'+
+    '<div class="noway-stats-extra"><span>ENTRY KILLS <b>'+totals.entry_kills+'</b></span>'+
+    '<span>ENTRY DEATHS <b>'+totals.entry_deaths+'</b></span>'+
+    '<span>SALDO DE ENTRY <b>'+statSigned(totals.entry)+'</b></span></div>'+
+    '<div class="noway-stats-history-heading"><h5>HISTÓRICO INDIVIDUAL.</h5>'+
+    '<span>'+totals.matches+' REGISTROS</span></div>'+table+
+    '<p class="noway-stats-disclaimer">Números informados pela gestão após cada partida. Ausência de registro não equivale a zero de desempenho.</p>';
+}
+function renderPlayerStatsEditor(){
+  if(!isManager())return;
+  const personSelect=$("nowayStatsPlayerSelect");
+  const people=playerStatsState.people.filter(p=>["owner","manager","jogador"].includes(p.role));
+  personSelect.innerHTML=people.map(p=>
+    '<option value="'+escapeHTML(p.id)+'">'+escapeHTML(p.display_name)+'</option>').join("");
+  if(!people.some(p=>p.id===playerStatsState.selectedPlayer))playerStatsState.selectedPlayer=people[0]?.id||null;
+  if(!playerStatsState.selectedPlayer){$("nowayStatsSave").disabled=true;return;}
+  personSelect.value=playerStatsState.selectedPlayer;
+  const matches=playerStatsState.roster
+    .filter(r=>r.player_id===playerStatsState.selectedPlayer&&r.presence!=="ausente")
+    .map(r=>eligibleStatEvent(r.event_id)).filter(Boolean)
+    .sort((a,b)=>new Date(b.start_at)-new Date(a.start_at));
+  if(!matches.some(e=>e.id===playerStatsState.selectedMatch))playerStatsState.selectedMatch=matches[0]?.id||null;
+  const matchSelect=$("nowayStatsMatchSelect");
+  matchSelect.innerHTML=matches.length?matches.map(e=>
+    '<option value="'+escapeHTML(e.id)+'">'+escapeHTML(fmtDate(e.start_at))+' · '+escapeHTML(e.opponent||e.title)+'</option>').join(""):
+    '<option value="">NENHUMA PARTIDA FINALIZADA COM ESTE JOGADOR</option>';
+  matchSelect.disabled=!matches.length;
+  if(playerStatsState.selectedMatch)matchSelect.value=playerStatsState.selectedMatch;
+  const previous=playerStatsState.rows.find(r=>
+    r.player_id===playerStatsState.selectedPlayer&&r.event_id===playerStatsState.selectedMatch);
+  statNumericKeys.forEach((key,i)=>{$(statInputIds[i]).value=previous?.[key]??"";});
+  $("nowayStatsSave").disabled=!matches.length;
+}
+async function savePlayerMatchStats(ev){
+  ev.preventDefault();
+  if(!isManager()||!signed())return;
+  const playerId=$("nowayStatsPlayerSelect").value,eventId=$("nowayStatsMatchSelect").value;
+  if(!playerId||!eventId||!eligibleStatEvent(eventId))
+    return notice("Finalize um confronto e convoque o integrante no Competitive antes de registrar os números.",true);
+  const numbers=statInputIds.map(id=>$(id).value.trim());
+  if(numbers.some(v=>v===""||!Number.isInteger(Number(v))))
+    return notice("Preencha todos os números inteiros, incluindo os valores zero.",true);
+  const n=numbers.map(Number);
+  if(n[3]<1||n[0]<0||n[1]<0||n[2]<0||n[4]>n[3]||n[5]>n[3]||
+    n[6]>n[0]||n[7]>n[1]||n[1]>n[3]||n.some(v=>v<0))
+    return notice("Revise rounds, mortes, sobrevivência, KOST e entradas.",true);
+  const button=$("nowayStatsSave");button.disabled=true;
+  const {error}=await db.rpc("noway_save_player_match_stats",{
+    p_event_id:eventId,p_player_id:playerId,p_kills:n[0],p_deaths:n[1],
+    p_assists:n[2],p_rounds_played:n[3],p_rounds_survived:n[4],p_kost_rounds:n[5],
+    p_entry_kills:n[6],p_entry_deaths:n[7]
+  });
+  if(error){
+    button.disabled=false;
+    return notice("Não foi possível salvar as estatísticas: "+error.message,true);
+  }
+  playerStatsState.selectedPlayer=playerId;playerStatsState.selectedMatch=eventId;
+  playerStatsState.loadedAt=0;
+  await refreshPlayerStats(true);
+  notice("Estatísticas salvas e indicadores recalculados.");
+}
+
+
 bind();
 loadAccount();
