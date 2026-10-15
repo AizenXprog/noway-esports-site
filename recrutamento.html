@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a">
+<meta name="description" content="Recrutamento NOWAY Esports — inscreva-se para jogador, coach, gestão, analista, mídia ou staff do Discord. Acompanhe sua candidatura pelo chat privado NOWAY ID.">
+<title>RECRUTAMENTO — NOWAY ESPORTS</title>
+<link rel="icon" type="image/webp" href="assets/logo-white.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-recruitment.css"></head>
+<body class="noway-recruitment-page">
+<div class="reading-line"></div><div class="noise"></div>
+<header class="nw-rec-header"><a href="/" class="nw-rec-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ESPORTS.</b></span></a>
+ <nav aria-label="Navegação do recrutamento"><a href="/">← SITE OFICIAL</a><a href="painel.html">NOWAY ID ↗</a></nav>
+</header>
+<main>
+ <section class="nw-rec-hero">
+ <div class="wrap nw-rec-hero-grid"><div>
+ <div class="nw-rec-label"><span class="nw-rec-led"></span> NOVAS OPORTUNIDADES / NOWAY ESPORTS</div>
+ <h1>O PRÓXIMO<br>PASSO <em>É SEU.</em></h1>
+ <p>A NOWAY procura pessoas comprometidas em construir algo sério. Escolha onde você acredita que pode contribuir, apresente sua experiência e entre em contato diretamente com nossa gestão.</p>
+ <div class="nw-rec-hero-actions"><a class="nw-rec-main-button" href="#inscricao">INICIAR CANDIDATURA <span>↗</span></a><a class="nw-rec-secondary-button" href="#areas">VER ÁREAS DISPONÍVEIS ↓</a></div>
+ </div><aside class="nw-rec-manifest"><span>NW / RECRUITMENT 2026</span><strong>NÃO BUSCAMOS<br>APENAS NOMES.<br><em>BUSCAMOS ENTREGA.</em></strong>
+ <p>Compromisso. Postura. Evolução.</p></aside></div></section>
+ <section class="nw-rec-section wrap" id="areas"><div class="nw-rec-section-header"><div><span class="nw-rec-kicker">01 / OPORTUNIDADES</span><h2>ONDE VOCÊ <em>SE ENCAIXA?</em></h2></div><p>Escolha uma função durante a inscrição. Sua candidatura será avaliada individualmente.</p></div>
+ <div class="nw-rec-role-grid" id="nowayRecruitRoles">
+  <button type="button" data-role="jogador"><small>01 / ELENCO</small><strong>JOGADOR</strong><span>Competições, treinos, disciplina e desempenho.</span><b>↗</b></button>
+  <button type="button" data-role="coach"><small>02 / TÁTICA</small><strong>COACH</strong><span>Análise, comunicação, preparação e liderança.</span><b>↗</b></button>
+  <button type="button" data-role="manager"><small>03 / GESTÃO</small><strong>GERÊNCIA</strong><span>Organização, cronogramas e suporte à operação.</span><b>↗</b></button>
+  <button type="button" data-role="discord_staff"><small>04 / COMUNIDADE</small><strong>STAFF DISCORD</strong><span>Moderação, eventos e atendimento à comunidade.</span><b>↗</b></button>
+  <button type="button" data-role="analista"><small>05 / PERFORMANCE</small><strong>ANALISTA</strong><span>Estatísticas, adversários e revisão de partidas.</span><b>↗</b></button>
+  <button type="button" data-role="designer"><small>06 / CRIATIVO</small><strong>DESIGN / MÍDIA</strong><span>Identidade visual, vídeos e comunicação.</span><b>↗</b></button>
+  <button type="button" data-role="criador"><small>07 / CONTEÚDO</small><strong>CRIADOR</strong><span>Lives, produção e representação da NOWAY.</span><b>↗</b></button>
+  <button type="button" data-role="outro"><small>08 / NOVAS IDEIAS</small><strong>OUTRA FUNÇÃO</strong><span>Apresente sua proposta e como pode contribuir.</span><b>↗</b></button>
+ </div></section>
+ <section class="nw-rec-section wrap" id="inscricao"><div class="nw-rec-section-header"><div><span class="nw-rec-kicker">02 / CANDIDATURA</span><h2>APRESENTE <em>SEU POTENCIAL.</em></h2></div><p>As inscrições são feitas com NOWAY ID. Acompanhe respostas no chat da sua candidatura.</p></div>
+ <div id="nowayRecruitNotice" class="nw-rec-notice" role="status" aria-live="polite" hidden></div>
+ <div id="nowayRecruitAuth" class="nw-rec-auth"><div><span class="nw-rec-kicker">IDENTIDADE VERIFICADA</span><h3>ENTRE PARA<br>SE CANDIDATAR.</h3><p>Use Google ou e-mail. Seu perfil NOWAY ID identifica a candidatura e protege a conversa com a gestão.</p></div>
+ <div><button type="button" id="nowayRecruitGoogle" class="nw-rec-main-button">CONTINUAR COM GOOGLE ↗</button><form id="nowayRecruitEmailForm"><label for="nowayRecruitEmail">OU ENTRAR POR E-MAIL</label><div><input id="nowayRecruitEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" required maxlength="254"><button type="submit">ENVIAR LINK ↗</button></div></form>
+ <small>O link enviado por e-mail pode demorar alguns minutos.</small></div></div>
+ <div id="nowayRecruitSigned" hidden>
+ <div class="nw-rec-signed"><div><span>CONTA CONECTADA</span><strong id="nowayRecruitAccountName">MEMBRO NOWAY</strong></div><button id="nowayRecruitLogout" type="button">SAIR DA CONTA ↗</button></div>
+ <div class="nw-rec-dashboard">
+ <div class="nw-rec-submit-panel"><div class="nw-rec-panel-head"><span>FORMULÁRIO / NOWAY RECRUITMENT</span><h3>NOVA <em>INSCRIÇÃO.</em></h3></div>
+ <form id="nowayRecruitForm" class="nw-rec-form">
+  <label for="nowayRecruitRole">FUNÇÃO DE INTERESSE *</label>
+  <select id="nowayRecruitRole" required>
+   <option value="jogador">Jogador competitivo</option><option value="coach">Coach / IGL</option>
+   <option value="manager">Team Manager / Gerência</option><option value="discord_staff">Staff do Discord</option>
+   <option value="analista">Analista competitivo</option><option value="designer">Designer / Editor de mídia</option>
+   <option value="criador">Criador de conteúdo</option><option value="outro">Outra função</option>
+  </select>
+  <label for="nowayRecruitName">COMO DEVEMOS TE CHAMAR? *</label><input id="nowayRecruitName" maxlength="80" minlength="2" required autocomplete="name" placeholder="Seu nome ou nickname">
+  <div class="nw-rec-pair"><div><label for="nowayRecruitDiscord">DISCORD — CONTATO PREFERENCIAL</label><input id="nowayRecruitDiscord" maxlength="100" placeholder="@usuario"></div>
+   <div><label for="nowayRecruitAlt">OUTRO CONTATO (OPCIONAL SE TIVER DISCORD)</label><input id="nowayRecruitAlt" maxlength="200" placeholder="E-mail ou outra forma de contato"></div></div>
+  <p class="nw-rec-hint">Informe pelo menos um contato válido. Preferimos seu usuário do Discord para agilizar o retorno.</p>
+  <div id="nowayRecruitR6Fields">
+   <div class="nw-rec-pair"><div><label for="nowayRecruitUbi">UBISOFT CONNECT (SE JOGAR R6)</label><input id="nowayRecruitUbi" maxlength="120" placeholder="Seu nome no Rainbow Six Siege"></div>
+   <div><label for="nowayRecruitTracker">LINK DO R6 TRACKER (OPCIONAL)</label><input id="nowayRecruitTracker" maxlength="400" type="url" placeholder="https://tracker.gg/r6siege/..."></div></div>
+   <p class="nw-rec-hint">Usamos o link somente como referência para avaliação manual. Nenhum dado é importado automaticamente.</p>
+  </div>
+  <label for="nowayRecruitExperience">SUA EXPERIÊNCIA</label><textarea id="nowayRecruitExperience" maxlength="1600" rows="3" placeholder="Times anteriores, competições, funções, projetos ou competências..."></textarea>
+  <label for="nowayRecruitAvailability">DISPONIBILIDADE</label><textarea id="nowayRecruitAvailability" maxlength="600" rows="2" placeholder="Dias, horários e outros compromissos..."></textarea>
+  <label for="nowayRecruitMotivation">POR QUE VOCÊ QUER FAZER PARTE DA NOWAY? *</label><textarea id="nowayRecruitMotivation" maxlength="3500" minlength="20" rows="5" required placeholder="Conte o que você busca, o que tem para entregar e por que acredita que pode contribuir."></textarea>
+  <label class="nw-rec-agreement"><input id="nowayRecruitAgree" type="checkbox" required><span>Concordo que as informações desta inscrição sejam utilizadas pela gestão da NOWAY para avaliação e contato. A candidatura não garante vaga.</span></label>
+  <button id="nowayRecruitSubmit" type="submit" class="nw-rec-main-button">ENVIAR MINHA CANDIDATURA ↗</button>
+ </form></div>
+ <div class="nw-rec-inbox-panel">
+  <div class="nw-rec-panel-head"><span id="nowayRecruitInboxKicker">CANDIDATURAS / ACOMPANHAMENTO</span><h3 id="nowayRecruitInboxHeading">SUAS <em>INSCRIÇÕES.</em></h3></div>
+  <p class="nw-rec-hint" id="nowayRecruitInboxHelp">Escolha uma inscrição para acompanhar as respostas da NOWAY.</p>
+  <div class="nw-rec-filter" id="nowayRecruitManagerFilters" hidden><label for="nowayRecruitFilter">FILTRAR STATUS</label><select id="nowayRecruitFilter"><option value="all">Todas</option><option value="recebida">Recebidas</option><option value="em_analise">Em análise</option><option value="teste">Em testes</option><option value="aprovada">Aprovadas</option><option value="recusada">Não selecionadas</option><option value="arquivada">Arquivadas</option></select></div>
+  <button type="button" id="nowayRecruitRefresh" class="nw-rec-refresh">ATUALIZAR CONVERSAS ↻</button>
+  <div id="nowayRecruitList" class="nw-rec-application-list"><p class="nw-rec-hint">Carregando candidaturas...</p></div>
+ </div>
+ </div>
+ <section id="nowayRecruitThread" class="nw-rec-thread" hidden>
+  <div class="nw-rec-thread-head"><div><span>CANAL PRIVADO / NOWAY RECRUITMENT</span><h3 id="nowayRecruitThreadTitle">CONVERSA.</h3><p id="nowayRecruitThreadSub"></p></div><button id="nowayRecruitThreadClose" type="button">FECHAR ×</button></div>
+  <div id="nowayRecruitDetails" class="nw-rec-details"></div>
+  <div id="nowayRecruitMessages" class="nw-rec-messages" role="log" aria-label="Conversa privada sobre candidatura" tabindex="0"><p>Carregando conversa...</p></div>
+  <form id="nowayRecruitReplyForm" class="nw-rec-reply"><label for="nowayRecruitReplyBody">RESPONDER NA CONVERSA</label><div><textarea id="nowayRecruitReplyBody" maxlength="3500" rows="2" required placeholder="Escreva para a NOWAY ou para o candidato..."></textarea><button type="submit" class="nw-rec-main-button">ENVIAR ↗</button></div><span>Enter envia · Shift+Enter quebra linha</span></form>
+  <div id="nowayRecruitManagerTools" class="nw-rec-management" hidden><label for="nowayRecruitStatus">ETAPA DE AVALIAÇÃO</label><select id="nowayRecruitStatus">
+   <option value="recebida">Recebida</option><option value="em_analise">Em análise</option>
+   <option value="teste">Convocado para testes</option><option value="aprovada">Aprovada</option>
+   <option value="recusada">Não selecionada</option><option value="arquivada">Arquivada</option></select>
+   <button type="button" id="nowayRecruitSaveStatus">SALVAR ETAPA ↗</button></div>
+ </section>
+ </div>
+ </section>
+</main>
+<footer class="nw-rec-footer"><div class="wrap"><strong>NOWAY ESPORTS.</strong><span>RECRUTAMENTO / CONTATO PRIVADO / ORGANIZAÇÃO</span><a href="/">VOLTAR AO SITE ↑</a></div></footer>
+<script type="module" src="noway-recruitment.js"></script>
+</body></html>
