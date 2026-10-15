@@ -94,3 +94,8 @@
  .noway-player-stat-row{gap:7px;padding:11px 7px}
  .noway-stats-avatar{width:35px;height:35px;flex-basis:35px}
 }
+
+/* Atalho para análise aberta ao público, separado da área privada de edição. */
+.noway-stats-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.noway-tracker-public-link{display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+@media(max-width:720px){.noway-stats-header-actions{width:100%;justify-content:flex-start}}
