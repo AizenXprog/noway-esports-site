@@ -817,9 +817,18 @@ function renderCompetitiveDetail(){
      '<p class="noway-comp-description">'+compEsc(config.preparation)+'</p></section>':"")+
    '<div class="noway-comp-detail-actions">'+
      (compCanEdit()?'<button type="button" id="nowayCompManage" class="btn btn-yellow">GERENCIAR PARTIDA ↗</button>':'')+
+     '<button type="button" id="nowayCompViewStats" class="noway-outline-action">▥ ESTATÍSTICAS ↗</button>'+
      '<button type="button" id="nowayCompShareChat" class="noway-outline-action">▣ MARCAR NO CHAT ↗</button>'+
      '<button type="button" id="nowayCompOpenAgenda" class="noway-outline-action">VER NA AGENDA ↗</button></div>';
  wrap.querySelector("#nowayCompManage")?.addEventListener("click",openCompetitiveEditor);
+ wrap.querySelector("#nowayCompViewStats")?.addEventListener("click",()=>{
+   playerStatsState.selectedMatch=event.id;
+   const convoked=compGetRoster(event.id);
+   if(!convoked.some(r=>r.player_id===playerStatsState.selectedPlayer))
+     playerStatsState.selectedPlayer=convoked.find(r=>r.player_id===me.id)?.player_id||
+       convoked[0]?.player_id||null;
+   setTab("stats");
+ });
  wrap.querySelector("#nowayCompShareChat")?.addEventListener("click",()=>{
    setTab("chat");
    window.dispatchEvent(new CustomEvent("noway:attach-event",{detail:{id:event.id}}));
