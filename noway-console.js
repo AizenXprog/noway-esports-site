@@ -209,6 +209,8 @@ async function refreshHQ(force=false){
   hqLoading=true;
   const refresh=$("nowayHQRefresh");
   if(refresh)refresh.disabled=true;
+  $("nowayHQConnectionText").textContent="SINCRONIZANDO";
+  $("nowayHQConnection").classList.remove("is-error");
   try{
     const tasks=[db.rpc("noway_hq_overview")];
     const active=isStaff(),owner=isOwner();
@@ -254,10 +256,13 @@ async function refreshHQ(force=false){
     }else hqInbox=[];
     hqActivity=items.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,8);
     hqLoadedAt=Date.now();
+    $("nowayHQConnectionText").textContent="DADOS ATUALIZADOS";
     $("nowayHQLastUpdated").textContent="Atualizado às "+new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"}).format(new Date());
     renderOverview();
   }catch(err){
     notice("Não foi possível atualizar a central: "+(err?.message||"erro inesperado"),true);
+    $("nowayHQConnectionText").textContent="FALHA NA SINCRONIZAÇÃO";
+    $("nowayHQConnection").classList.add("is-error");
     $("nowayHQLastUpdated").textContent="Erro ao sincronizar os dados";
   }finally{
     if(run===hqRun){hqLoading=false;if(refresh)refresh.disabled=false;}
