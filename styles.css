@@ -505,13 +505,19 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
 
 /* NOWAY — cursor de identidade global: ring, luz e rastro contínuo */
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
-  /* Elimina a distorção 3D dos jogadores; a animação agora é GLOBAL. */
-  .player-card, .player-card:hover {
+  /* Tilt editorial voltou, sem o brilho/efeito de carta anterior. */
+  .player-card{
+    --noway-tilt-x:0deg;
+    --noway-tilt-y:0deg;
     transform:none;
-    transition:border-color .22s ease,background-color .22s ease;
-    box-shadow:none;
+    transform-style:preserve-3d;
+    transition:transform .14s ease-out,border-color .2s ease,box-shadow .2s ease;
   }
-  .player-card:hover{border-color:rgba(242,255,0,.62)}
+  .player-card:hover{
+    transform:perspective(1050px) translateY(-5px) rotateX(var(--noway-tilt-x)) rotateY(var(--noway-tilt-y));
+    border-color:rgba(242,255,0,.75);
+    box-shadow:0 14px 30px rgba(0,0,0,.22);
+  }
   .player-card::after{content:none!important}
   .player-card .player-photo{transform:none;transition:none}
   .hero::after{content:none!important}
@@ -556,14 +562,13 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
     will-change:transform;
   }
   .noway-pointer-glow{
-    width:290px;height:290px;
+    width:238px;height:238px;
     border-radius:50%;
     background:radial-gradient(circle,
       rgba(242,255,0,.20) 0%,
       rgba(242,255,0,.11) 17%,
       rgba(242,255,0,.052) 38%,
       rgba(242,255,0,0) 72%);
-    mix-blend-mode:screen;
     z-index:0;
   }
   /* Ponteiro com identidade de mira técnica, sutil mas sempre presente. */
@@ -610,8 +615,7 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
     border-radius:50%;
     background:#f2ff00;
     opacity:var(--particle-opacity);
-    box-shadow:0 0 9px rgba(242,255,0,.75);
-    mix-blend-mode:difference;
+    box-shadow:none;
     z-index:1;
   }
 }
