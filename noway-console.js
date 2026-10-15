@@ -23,12 +23,13 @@ const notice=(message,error=false)=>{
   if(error)box.scrollIntoView({behavior:"smooth",block:"nearest"});
 };
 const avatarURL=path=>{
-  if(!path||!me||!(/^[a-f0-9-]{36}\/avatar\.webp$/.test(path)))return null;
+  if(!path||!me||!(/^[a-f0-9-]{36}\/avatar\.(?:webp|jpg)$/.test(path)))return null;
   return db.storage.from("noway-avatars").getPublicUrl(path).data.publicUrl;
 };
 const avatarMarkup=(path,name,klass="noway-account-avatar")=>{
   const href=avatarURL(path);
-  return href?'<img class="'+klass+'" src="'+escapeHTML(href)+'" alt="" loading="lazy">':
+  const version=href&&me&&path.startsWith(me.id+"/")?"?v="+encodeURIComponent(window.nowayAvatarVersion||"1"):"";
+  return href?'<img class="'+klass+'" src="'+escapeHTML(href+version)+'" alt="" loading="lazy">':
     '<span class="'+klass+' noway-account-avatar-letter">'+escapeHTML((name||"N").trim().charAt(0).toUpperCase())+'</span>';
 };
 const fmtDate=ts=>ts?new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric",timeZone:"America/Sao_Paulo"}).format(new Date(ts)):"—";
@@ -298,38 +299,121 @@ async function refreshAccounts(){
     await refreshAccounts();notice("Cargo atualizado. O acesso será aplicado conforme as permissões do banco.");
   }));
 }
+function avatarFeedback(message,error=false){
+  const el=$("nowayAvatarStatus");
+  if(!el)return;
+  el.hidden=!message;
+  el.textContent=message||"";
+  el.classList.toggle("is-error",Boolean(error));
+}
+function imageFromObjectUrl(src){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error(
+      "O navegador não conseguiu abrir a imagem. Tente salvar uma cópia como JPG ou PNG e enviar novamente."
+    ));
+    img.src=src;
+  });
+}
+async function encodeAvatar(canvas,type,quality){
+  return new Promise((resolve,reject)=>{
+    try{
+      canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Não foi possível converter a imagem.")),type,quality);
+    }catch(error){reject(error);}
+  });
+}
 async function uploadAvatar(file){
   if(!signed()||!file)return;
-  if(!["image/png","image/jpeg","image/webp"].includes(file.type))return notice("Use PNG, JPEG ou WebP.",true);
-  if(file.size>8*1024*1024)return notice("Selecione uma imagem de até 8 MB.",true);
-  const button=$("nowayAvatarTrigger");button.disabled=true;
-  const src=URL.createObjectURL(file);
+  const name=(file.name||"").toLowerCase();
+  const supported=["image/png","image/jpeg","image/webp","image/heic","image/heif"].includes(file.type)||
+    /\.(png|jpe?g|webp|heic|heif)$/.test(name);
+  if(!supported){
+    avatarFeedback("Formato não reconhecido. Use JPG, PNG ou WebP.",true);
+    return notice("Formato não reconhecido. Use JPG, PNG ou WebP.",true);
+  }
+  if(file.size>24*1024*1024){
+    avatarFeedback("Arquivo acima de 24 MB. Tente uma foto menor.",true);
+    return notice("Sua foto excede o limite de 24 MB.",true);
+  }
+  const button=$("nowayAvatarTrigger");
+  const action=$("nowayProfileChangeAvatar");
+  button.disabled=true;
+  if(action)action.disabled=true;
+  avatarFeedback("Preparando sua foto...");
+  let src=null,uploadedPath=null;
+  const oldPath=account?.avatar_url||null;
   try{
-    const img=new Image();img.src=src;await img.decode();
-    if(img.naturalWidth<64||img.naturalHeight<64)throw Error("Escolha uma imagem com pelo menos 64 pixels.");
-    const cv=document.createElement("canvas");cv.width=cv.height=480;
-    const ctx=cv.getContext("2d");if(!ctx)throw Error("Seu navegador não permite processar imagens.");
+    src=URL.createObjectURL(file);
+    const img=await imageFromObjectUrl(src);
+    if(img.naturalWidth<64||img.naturalHeight<64)
+      throw new Error("Escolha uma imagem com pelo menos 64 × 64 pixels.");
+    if(img.naturalWidth*img.naturalHeight>44000000)
+      throw new Error("Esta foto possui resolução muito alta. Reduza-a antes do envio.");
+    const cv=document.createElement("canvas");
+    cv.width=cv.height=480;
+    const ctx=cv.getContext("2d");
+    if(!ctx)throw new Error("Seu navegador não conseguiu processar a foto.");
+    ctx.fillStyle="#181b1a";
+    ctx.fillRect(0,0,480,480);
     const size=Math.min(img.naturalWidth,img.naturalHeight);
     ctx.drawImage(img,(img.naturalWidth-size)/2,(img.naturalHeight-size)/2,size,size,0,0,480,480);
-    const blob=await new Promise((resolve,reject)=>cv.toBlob(b=>b?resolve(b):reject(Error("Falha ao gerar foto.")),"image/webp",.83));
-    if(blob.type!=="image/webp")throw Error("Formato WebP indisponível neste navegador.");
-    if(blob.size>2*1024*1024)throw Error("Imagem acima do limite. Tente outra foto.");
-    const path=me.id+"/avatar.webp";
-    const up=await db.storage.from("noway-avatars").upload(path,blob,{upsert:true,contentType:"image/webp",cacheControl:"120"});
-    if(up.error)throw up.error;
-    const result=await db.rpc("noway_set_avatar",{p_path:path});
-    if(result.error)throw result.error;
-    account.avatar_url=path;window.nowayAvatarVersion=Date.now();
-    renderProfile();notice("Foto de perfil atualizada com sucesso.");
-  }catch(e){notice("Não foi possível alterar sua foto: "+e.message,true);}
-  finally{button.disabled=false;URL.revokeObjectURL(src);$("nowayAvatarInput").value="";}
+    avatarFeedback("Convertendo e compactando...");
+    let blob=null,extension="webp";
+    try{blob=await encodeAvatar(cv,"image/webp",.82);}catch{}
+    if(blob?.type!=="image/webp"){
+      blob=await encodeAvatar(cv,"image/jpeg",.84);
+      extension="jpg";
+    }
+    if(blob.type!=="image/webp"&&blob.type!=="image/jpeg")
+      throw new Error("Seu navegador não conseguiu gerar uma imagem compatível.");
+    if(blob.size>2*1024*1024)
+      throw new Error("A foto continua muito grande após a compactação.");
+    const currentUserId=me.id;
+    const path=currentUserId+"/avatar."+extension;
+    avatarFeedback("Enviando foto para sua conta...");
+    const {error:uploadError}=await db.storage.from("noway-avatars").upload(path,blob,{
+      upsert:true,contentType:blob.type,cacheControl:"60"
+    });
+    if(uploadError)throw new Error(
+      /row.level.security|not.authorized|403|unauthorized/i.test(uploadError.message)?
+        "O servidor recusou o envio. Saia da conta, entre novamente e tente outra vez.":
+        uploadError.message
+    );
+    uploadedPath=path;
+    const {error:profileError}=await db.rpc("noway_set_avatar",{p_path:path});
+    if(profileError)throw profileError;
+    if(me?.id!==currentUserId)throw new Error("A sessão mudou durante o envio. Atualize a página.");
+    account.avatar_url=path;
+    window.nowayAvatarVersion=Date.now();
+    renderProfile();
+    avatarFeedback("Foto atualizada! ✓");
+    notice("Sua foto de perfil foi atualizada com sucesso.");
+    // Não deixar arquivos antigos se o navegador mudou do WebP para JPEG.
+    if(oldPath&&oldPath!==path&&
+       (oldPath===currentUserId+"/avatar.webp"||oldPath===currentUserId+"/avatar.jpg")){
+      db.storage.from("noway-avatars").remove([oldPath]).catch(()=>{});
+    }
+  }catch(error){
+    const message=error?.message||"Erro desconhecido ao enviar a foto.";
+    avatarFeedback(message,true);
+    notice("Não foi possível atualizar a foto: "+message,true);
+    // Evita excluir um avatar previamente existente ao falhar um upsert.
+    if(uploadedPath&&uploadedPath!==oldPath)
+      db.storage.from("noway-avatars").remove([uploadedPath]).catch(()=>{});
+  }finally{
+    button.disabled=false;
+    if(action)action.disabled=false;
+    if(src)URL.revokeObjectURL(src);
+    $("nowayAvatarInput").value="";
+  }
 }
 async function removeAvatar(){
   if(!signed()||!account.avatar_url||!confirm("Remover sua foto de perfil?"))return;
   const {error}=await db.rpc("noway_set_avatar",{p_path:null});
   if(error)return notice("Não foi possível remover: "+error.message,true);
   await db.storage.from("noway-avatars").remove([me.id+"/avatar.webp"]);
-  account.avatar_url=null;renderProfile();notice("Foto removida.");
+  account.avatar_url=null;window.nowayAvatarVersion=Date.now();renderProfile();avatarFeedback("Foto removida.");notice("Foto removida.");
 }
 function bind(){
   document.querySelectorAll("[data-console-tab]").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.consoleTab)));
