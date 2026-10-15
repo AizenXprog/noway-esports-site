@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a"><meta name="description" content="NOWAY ID — painel pessoal para membros, jogadores e gestão da NOWAY Esports."><title>NOWAY ID — Central da Equipe</title><link rel="icon" type="image/webp" href="assets/logo-white.webp"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-console.css"><link rel="stylesheet" href="noway-competitive.css"><link rel="stylesheet" href="noway-player-stats.css"><link rel="stylesheet" href="noway-console-clarity.css"></head><body data-noway-console="true">
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a"><meta name="description" content="NOWAY ID — painel pessoal para membros, jogadores e gestão da NOWAY Esports."><title>NOWAY ID — Central da Equipe</title><link rel="icon" type="image/webp" href="assets/logo-white.webp"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-console.css"><link rel="stylesheet" href="noway-competitive.css"><link rel="stylesheet" href="noway-player-stats.css"><link rel="stylesheet" href="noway-console-clarity.css"><link rel="stylesheet" href="noway-recruitment-desk.css"></head><body data-noway-console="true">
 <div class="reading-line"></div><div class="noise"></div>
 <header class="noway-console-header"><a href="/" class="noway-console-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ID.</b></span></a><div class="noway-console-header-right"><a href="recrutamento.html" class="noway-console-back">RECRUTAMENTO ↗</a><a href="/" class="noway-console-back">← VOLTAR AO SITE</a><button type="button" id="nowayHeaderLogin" class="header-login">MINHA CONTA ↗</button></div></header>
 <main class="noway-console-main">
@@ -47,6 +47,7 @@
       <button type="button" data-console-tab="stats">ESTATÍSTICAS</button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="atendimento"><span class="noway-console-nav-label">ATENDIMENTO</span>
+      <button type="button" data-console-tab="recruitment">RECRUTAMENTO</button>
       <button type="button" data-console-tab="contacts">MINHAS CONVERSAS</button>
       <button type="button" data-console-tab="users">CONTAS / PERMISSÕES</button>
     </div>
@@ -345,6 +346,36 @@
         </form>
       </section>
     </section>
+    <section id="nowayConsoleRecruitment" class="noway-console-view noway-recruit-desk" data-console-view="recruitment" hidden>
+ <div class="noway-console-view-header"><div><span class="noway-tiny">GESTÃO / FOUNDER E TEAM MANAGER</span>
+ <h3>ATENDIMENTO DE <em>RECRUTAMENTO.</em></h3><p>Conversas privadas com candidatos e acompanhamento da seleção.</p></div>
+ <button type="button" id="nowayDeskRefresh" class="noway-outline-action">ATUALIZAR ↻</button></div>
+ <div class="noway-desk-layout"><aside class="noway-desk-sidebar">
+ <label for="nowayDeskFilter">FILTRAR CANDIDATURAS</label><select id="nowayDeskFilter"><option value="all">TODAS</option>
+ <option value="recebida">RECEBIDAS</option><option value="em_analise">EM ANÁLISE</option><option value="teste">EM TESTES</option>
+ <option value="aprovada">APROVADAS</option><option value="recusada">NÃO SELECIONADAS</option>
+ <option value="arquivada">ARQUIVADAS</option><option value="encerrada">ENCERRADAS</option></select>
+ <div id="nowayDeskList" class="noway-desk-list" aria-live="polite"></div></aside>
+ <div class="noway-desk-conversation"><div id="nowayDeskEmpty" class="noway-desk-empty">SELECIONE UMA CANDIDATURA PARA RESPONDER.</div>
+ <div id="nowayDeskActive" hidden>
+ <div class="noway-desk-thread-top"><div><span>CONVERSA PRIVADA / NOWAY</span><h4 id="nowayDeskTitle">CANDIDATO.</h4>
+ <p id="nowayDeskSubtitle"></p></div><button type="button" id="nowayDeskCloseView" class="noway-outline-action">FECHAR VISUALIZAÇÃO ×</button></div>
+ <details class="noway-desk-candidate"><summary>DADOS DA CANDIDATURA ⌄</summary><div id="nowayDeskCandidateData"></div></details>
+ <div id="nowayDeskClosed" class="noway-desk-closed" hidden></div>
+ <div id="nowayDeskMessages" class="noway-desk-messages" role="log" aria-label="Mensagens do recrutamento" tabindex="0"></div>
+ <form id="nowayDeskReplyForm" class="noway-desk-reply"><label for="nowayDeskReply">MENSAGEM AO CANDIDATO</label>
+ <div><textarea id="nowayDeskReply" rows="2" maxlength="3500" required placeholder="Escreva sua resposta..."></textarea>
+ <button type="submit" id="nowayDeskSend" class="btn btn-yellow">ENVIAR ↗</button></div></form>
+ <div id="nowayDeskActions" class="noway-desk-actions"><label for="nowayDeskStatus">ETAPA DA SELEÇÃO</label>
+ <select id="nowayDeskStatus"><option value="recebida">Recebida</option><option value="em_analise">Em análise</option>
+ <option value="teste">Convocado para testes</option><option value="aprovada">Aprovada</option>
+ <option value="recusada">Não selecionada</option><option value="arquivada">Arquivada</option></select>
+ <button type="button" id="nowayDeskSaveStatus" class="noway-outline-action">SALVAR ETAPA</button></div>
+ <details id="nowayDeskCloseDetails" class="noway-desk-close-details"><summary>ENCERRAR CONVERSA DEFINITIVAMENTE</summary>
+ <form id="nowayDeskCloseForm"><label for="nowayDeskCloseReason">MOTIVO DO ENCERRAMENTO *</label>
+ <textarea id="nowayDeskCloseReason" rows="3" minlength="10" maxlength="1000" required placeholder="Informe o motivo do encerramento..."></textarea>
+ <button type="submit" id="nowayDeskCloseConfirm" class="noway-outline-action">CONFIRMAR ENCERRAMENTO</button></form></details>
+ </div></div></div></section>
     <section id="nowayConsoleUsers" class="noway-panel noway-console-view" data-console-view="users" hidden>
       <div class="noway-console-view-header"><div><span class="noway-tiny">05 / EXCLUSIVO DO FOUNDER</span><h3>CONTROLE DE CONTAS.</h3><p>Todos os cadastros autenticados, últimos acessos e atribuição manual de cargos.</p></div><button id="nowayAccountsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div>
       <div class="noway-console-account-filter"><label for="nowayAccountsSearch">BUSCAR MEMBRO / E-MAIL</label><input id="nowayAccountsSearch" placeholder="Pesquise por nome ou endereço de e-mail..." maxlength="80" autocomplete="off"><span id="nowayAccountsCount"></span></div>
@@ -360,4 +391,4 @@
 </div>
 </section>
 </main><footer class="noway-console-footer"><div class="wrap"><span>© NOWAY ESPORTS / PAINEL DE CONTROLE</span><a href="https://discord.gg/USZvdCUAEb" target="_blank" rel="noopener noreferrer">DISCORD DA COMUNIDADE ↗</a></div></footer>
-<script type="module" src="noway-id.js"></script><script type="module" src="noway-console.js"></script></body></html>
+<script type="module" src="noway-id.js"></script><script type="module" src="noway-console.js"></script><script type="module" src="noway-recruitment-desk.js"></script></body></html>
