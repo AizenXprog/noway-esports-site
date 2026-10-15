@@ -80,6 +80,7 @@ function setTab(name){
   if(name==="users")refreshAccounts();
   if(name==="overview")renderOverview();
   if(name==="profile")renderProfile();
+  if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
   document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -199,10 +200,17 @@ function renderEvents(){
       (e.competition?'<p>'+escapeHTML(e.competition)+'</p>':'')+
       (e.description?'<p>'+escapeHTML(e.description)+'</p>':'')+
       (link?'<a target="_blank" rel="noopener noreferrer" href="'+escapeHTML(link)+'">ACESSAR LINK ↗</a>':'')+
+      '<button type="button" data-chat-share-event="'+escapeHTML(e.id)+'" class="noway-mini-action noway-cal-share">▣ MARCAR NO CHAT ↗</button>'+
       (canEdit?'<button type="button" data-edit-event="'+escapeHTML(e.id)+'" class="noway-mini-action">EDITAR ↗</button>':'')+
       '</div></article>';
   }).join(""):'<p class="noway-muted">Nenhum evento neste período. Use as setas para navegar pelos meses.</p>';
   box.querySelectorAll("[data-edit-event]").forEach(b=>b.addEventListener("click",()=>openEventEditor(events.find(e=>e.id===b.dataset.editEvent))));
+  box.querySelectorAll("[data-chat-share-event]").forEach(b=>b.addEventListener("click",()=>{
+    const ev=events.find(e=>e.id===b.dataset.chatShareEvent);
+    if(!ev)return;
+    setTab("chat");
+    window.dispatchEvent(new CustomEvent("noway:attach-event",{detail:{id:ev.id}}));
+  }));
 }
 function openEventEditor(event=null){
   if(!isManager())return;
@@ -350,5 +358,10 @@ function bind(){
   db.auth.onAuthStateChange(()=>setTimeout(loadAccount,0));
   window.addEventListener("focus",()=>{if(isStaff())refreshEvents();});
 }
+window.addEventListener("noway:go-to-event",event=>{
+  const ev=events.find(e=>e.id===event.detail?.id);
+  if(ev){const date=new Date(ev.start_at);calendar=new Date(date.getFullYear(),date.getMonth(),1);
+    selectedDay=spDateKey(ev.start_at);setTab("agenda");}
+});
 bind();
 loadAccount();
