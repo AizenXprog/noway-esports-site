@@ -460,7 +460,7 @@ async function refreshTeamChat(){
   const avatarFor=m=>{
     const person=teamDirectory.find(p=>p.id===m.sender_id);
     const path=person?.avatar_url;
-    if(path&&/^[a-f0-9-]{36}\/avatar\.webp$/.test(path)){
+    if(path&&/^[a-f0-9-]{36}\/avatar\.(?:webp|jpg)$/.test(path)){
       const url=supabase.storage.from("noway-avatars").getPublicUrl(path).data.publicUrl;
       return '<img class="noway-chat-avatar" src="'+clean(url)+'" alt="" loading="lazy">';
     }
