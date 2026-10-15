@@ -118,6 +118,11 @@ async function loadAccount(){
     if(res.error)throw res.error;
     account=res.data||{id:me.id,role:"membro",display_name:me.user_metadata?.full_name||"Membro",avatar_url:null};
     if(hqIdentity!==me.id){hqSnapshot=null;hqActivity=[];hqInbox=[];hqLoadedAt=0;hqIdentity=me.id;}
+    if(competitiveState.userId&&competitiveState.userId!==me.id){
+      competitiveState.matches.clear();competitiveState.roster=[];competitiveState.maps=[];
+      competitiveState.people=[];competitiveState.selected=null;competitiveState.lastLoaded=0;
+      competitiveState.userId=null;
+    }
     syncRoles();renderProfile();
     if(isStaff())await refreshEvents();
     await refreshHQ();
@@ -374,6 +379,7 @@ function closeEventEditor(){
 async function saveEvent(ev){
   ev.preventDefault();if(!isManager())return;
   const form=$("nowayEventForm"),btn=form.querySelector('[type="submit"]');
+  const savedKind=$("nowayEventKind").value;
   const start=new Date($("nowayEventStart").value),end=$("nowayEventEnd").value?new Date($("nowayEventEnd").value):null;
   if(Number.isNaN(start.getTime())||(end&&Number.isNaN(end.getTime())))return notice("Informe uma data e hora válidas.",true);
   btn.disabled=true;
@@ -388,7 +394,7 @@ async function saveEvent(ev){
   if(error)return notice("Erro ao salvar: "+error.message,true);
   closeEventEditor();selectedDay=null;calendar=new Date(start.getFullYear(),start.getMonth(),1);
   await refreshEvents();notice("Compromisso salvo na agenda da equipe.");
-  if(["partida","treino"].includes($("nowayEventKind").value) && savedEventId){
+  if(["partida","treino"].includes(savedKind) && savedEventId){
     competitiveState.filter="all";
     competitiveState.selected=savedEventId;
     setTab("competitive");
@@ -582,8 +588,12 @@ function bind(){
   $("nowayCompClose").addEventListener("click",()=>{$("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;});
   $("nowayCompEditEvent").addEventListener("click",()=>{
     const match=events.find(e=>e.id===competitiveState.selected);
-    if(match&&!isManager())return;
-    if(match){setTab("agenda");openEventEditor(match);}
+    if(!match||!isManager())return;
+    if(!isOwner()&&match.created_by!==me.id){
+      notice("Apenas quem agendou o evento ou o Founder pode alterar data e horário. O Team Manager ainda pode gerenciar a escalação aqui.",true);
+      return;
+    }
+    setTab("agenda");openEventEditor(match);
   });
   $("nowayCompAddMap").addEventListener("click",()=>addCompetitiveMapRow());
   $("nowayCompForm").addEventListener("submit",saveCompetitiveSetup);
