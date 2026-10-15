@@ -53,6 +53,8 @@ async function refreshAuth() {
   $id("nowayDashboard").hidden=!signedUser;
   $id("nowayHeaderLogin").textContent=signedUser?"MINHA CONTA ↗":"ENTRAR ↗";
   $id("nowayThreadSection").hidden=true;
+  $id("nowayTeamWorkspace").hidden=true;
+  stopTeamFeed();
   if(!signedUser)return;
   $id("nowayAccountName").textContent=profile.display_name||"MEMBRO NOWAY";
   $id("nowayAccountRole").textContent=labels[profile.role]||"MEMBRO";
@@ -61,6 +63,8 @@ async function refreshAuth() {
   $id("nowayInboxDescription").textContent=owner?
     "Mensagens enviadas à NOWAY. Selecione uma para responder.":"Acompanhe as suas solicitações e as respostas da organização.";
   $id("nowayOwnerMembers").hidden=!owner;
+  await loadTeamWorkspace(run);
+  if(run!==running)return;
   await refreshTickets();
   if(owner)await refreshMembers();
 }
@@ -271,4 +275,199 @@ $id("nowayDisplayNameForm").addEventListener("submit",async(event)=>{
   form.hidden=true;
   await refreshAuth();
   feedback("Seu nome na comunidade foi atualizado.");
+});
+
+
+// NOWAY Team Hub v1 — espaços de Jogador, Gerência e Owner.
+// O servidor valida todos os papéis em RPC e RLS. Esconder painéis não dá permissão.
+const teamRoles=new Set(["jogador","manager","owner"]);
+let teamChannel=null,teamPollCounter=0;
+let teamDirectory=[],teamMessageSignature="",teamNewsSignature="";
+
+function stopTeamFeed(){
+  if(teamChannel){supabase.removeChannel(teamChannel);teamChannel=null;}
+  teamDirectory=[];
+  teamMessageSignature="";
+  teamNewsSignature="";
+}
+function canReadTeam(){return Boolean(signedUser&&teamRoles.has(profile?.role));}
+function canManageTeam(){return profile?.role==="manager"||profile?.role==="owner";}
+function teamRoleLabel(role){
+  return {owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR"}[role]||"EQUIPE";
+}
+function teamTime(date){
+  const d=new Date(date);
+  return Number.isNaN(d.getTime())?"":d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+}
+function teamDate(date){
+  const d=new Date(date);
+  return Number.isNaN(d.getTime())?"":d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+}
+
+async function loadTeamWorkspace(run){
+  if(!canReadTeam())return;
+  const level=profile.role;
+  const titles={
+    jogador:"ESPAÇO DO JOGADOR.",
+    manager:"ESPAÇO DA GESTÃO.",
+    owner:"CENTRAL DA EQUIPE."
+  };
+  const subtitles={
+    jogador:"Seus comunicados, companheiros e conversas internas. Um canal só para a NOWAY.",
+    manager:"Organize os comunicados e mantenha o elenco conectado. A administração de contas continua com o Founder.",
+    owner:"Acompanhe a equipe, publique comunicados e converse diretamente com jogadores e gestão."
+  };
+  $id("nowayTeamWorkspace").hidden=false;
+  $id("nowayTeamTitle").textContent=titles[level];
+  $id("nowayTeamSubtitle").textContent=subtitles[level];
+  $id("nowayAnnouncementForm").hidden=!canManageTeam();
+  const currentUser=signedUser.id;
+  await Promise.all([refreshTeamDirectory(),refreshTeamNews(),refreshTeamChat()]);
+  if(run!==running || !signedUser || signedUser.id!==currentUser)return;
+
+  // Supabase Realtime atualiza ao chegar nova mensagem; o polling recupera
+  // eventos perdidos ao suspender a aba ou perder a conexão.
+  try{
+    teamChannel=supabase.channel("noway-private-team-chat")
+      .on("postgres_changes",{
+        event:"INSERT",schema:"public",table:"noway_team_messages"
+      },()=>{if(canReadTeam())refreshTeamChat();})
+      .subscribe();
+  }catch(err){console.warn("NOWAY: chat usará atualização periódica",err);}
+}
+
+async function refreshTeamDirectory(){
+  if(!canReadTeam())return;
+  const currentUser=signedUser.id;
+  const result=await supabase.rpc("noway_team_directory");
+  if(!signedUser||signedUser.id!==currentUser||!canReadTeam())return;
+  if(result.error){
+    $id("nowayTeamDirectoryList").innerHTML='<p class="noway-muted">Não foi possível carregar a equipe.</p>';
+    console.warn("NOWAY directory",result.error.message);
+    return;
+  }
+  teamDirectory=result.data||[];
+  $id("nowayTeamDirectoryList").innerHTML=teamDirectory.length?teamDirectory.map(person=>
+    '<div class="noway-team-person">'+
+      '<span class="noway-team-avatar" aria-hidden="true">'+clean((person.display_name||"N").trim().charAt(0).toUpperCase())+'</span>'+
+      '<span class="noway-team-person-name">'+clean(person.display_name||"Integrante NOWAY")+(person.id===signedUser.id?' <small>(VOCÊ)</small>':'')+'</span>'+
+      '<span class="noway-team-person-role">'+clean(teamRoleLabel(person.role))+'</span>'+
+    '</div>'
+  ).join(""):'<p class="noway-muted">A equipe aparecerá aqui assim que as contas forem autorizadas.</p>';
+}
+
+async function refreshTeamNews(){
+  if(!canReadTeam())return;
+  const currentUser=signedUser.id;
+  const {data,error}=await supabase.from("noway_team_announcements")
+    .select("id,author_id,author_name,title,body,created_at")
+    .order("created_at",{ascending:false}).limit(30);
+  if(!signedUser||signedUser.id!==currentUser||!canReadTeam())return;
+  const target=$id("nowayTeamNewsList");
+  if(error){
+    target.innerHTML='<p class="noway-muted">Não foi possível carregar os comunicados.</p>';
+    console.warn("NOWAY announcements",error.message);
+    return;
+  }
+  const list=data||[];
+  const signature=list.map(a=>a.id).join(",");
+  if(teamNewsSignature===signature)return;
+  teamNewsSignature=signature;
+  target.innerHTML=list.length?list.map(a=>{
+    const mayRemove=profile.role==="owner"||(profile.role==="manager"&&a.author_id===signedUser.id);
+    return '<article class="noway-team-news-item">'+
+      '<div class="noway-team-news-meta"><span>'+clean(a.author_name)+' · '+clean(teamDate(a.created_at))+'</span>'+
+      (mayRemove?'<button type="button" class="noway-team-delete" data-team-remove="'+clean(a.id)+'" aria-label="Excluir comunicado: '+clean(a.title)+'">EXCLUIR ×</button>':'')+
+      '</div><h5>'+clean(a.title)+'</h5><p>'+clean(a.body)+'</p></article>';
+  }).join(""):'<p class="noway-muted">Nenhum comunicado ainda. A gestão pode publicar os primeiros recados aqui.</p>';
+  target.querySelectorAll("[data-team-remove]").forEach(button=>button.addEventListener("click",async()=>{
+    if(!canManageTeam()||!confirm("Excluir este comunicado da equipe?"))return;
+    button.disabled=true;
+    const res=await supabase.rpc("noway_remove_team_announcement",{p_announcement_id:button.dataset.teamRemove});
+    if(res.error){button.disabled=false;feedback("Não foi possível excluir: "+res.error.message,true);return;}
+    teamNewsSignature="";
+    await refreshTeamNews();
+    feedback("Comunicado removido da equipe.");
+  }));
+}
+
+async function refreshTeamChat(){
+  if(!canReadTeam())return;
+  const currentUser=signedUser.id;
+  const {data,error}=await supabase.from("noway_team_messages")
+    .select("id,sender_id,sender_name,body,created_at")
+    .order("created_at",{ascending:false}).limit(80);
+  if(!signedUser||signedUser.id!==currentUser||!canReadTeam())return;
+  const target=$id("nowayTeamChatList");
+  if(error){
+    target.innerHTML='<p class="noway-muted">O chat não pôde ser carregado. Tente atualizar.</p>';
+    console.warn("NOWAY team chat",error.message);
+    return;
+  }
+  const list=(data||[]).reverse();
+  const signature=list.map(msg=>msg.id).join(",");
+  if(signature===teamMessageSignature)return;
+  const autoScroll=target.scrollHeight-target.scrollTop-target.clientHeight<110;
+  teamMessageSignature=signature;
+  target.innerHTML=list.length?list.map(msg=>
+    '<article class="noway-team-msg'+(msg.sender_id===signedUser.id?' is-own':'')+'">'+
+      '<div class="noway-team-msg-meta"><strong>'+clean(msg.sender_name)+'</strong><time datetime="'+clean(msg.created_at)+'">'+clean(teamTime(msg.created_at))+'</time></div>'+
+      '<p>'+clean(msg.body)+'</p>'+
+    '</article>'
+  ).join(""):'<p class="noway-muted">O canal está pronto. Envie a primeira mensagem para a equipe NOWAY.</p>';
+  if(autoScroll||list.length===1)target.scrollTop=target.scrollHeight;
+}
+
+$id("nowayAnnouncementForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!canManageTeam())return feedback("Apenas gestão e Founder podem publicar.",true);
+  const form=event.currentTarget;
+  setBusy(form,true);
+  const {error}=await supabase.rpc("noway_publish_team_announcement",{
+    p_title:$id("nowayAnnouncementTitle").value.trim(),
+    p_body:$id("nowayAnnouncementBody").value.trim()
+  });
+  setBusy(form,false);
+  if(error)return feedback("Falha ao publicar: "+error.message,true);
+  form.reset();teamNewsSignature="";await refreshTeamNews();
+  feedback("Comunicado publicado para a equipe.");
+});
+$id("nowayTeamChatForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!canReadTeam())return feedback("O canal é exclusivo da equipe NOWAY.",true);
+  const form=event.currentTarget;
+  const input=$id("nowayTeamChatBody");
+  const body=input.value.trim();
+  if(!body)return;
+  setBusy(form,true);
+  const {error}=await supabase.rpc("noway_send_team_message",{p_body:body});
+  setBusy(form,false);
+  if(error)return feedback("Não foi possível enviar no chat: "+error.message,true);
+  input.value="";
+  teamMessageSignature="";
+  await refreshTeamChat();
+  input.focus();
+});
+$id("nowayTeamChatBody").addEventListener("keydown",event=>{
+  if(event.key==="Enter"&&!event.shiftKey&&!event.isComposing){
+    event.preventDefault();
+    if(event.currentTarget.value.trim())$id("nowayTeamChatForm").requestSubmit();
+  }
+});
+$id("nowayRefreshTeamChat").addEventListener("click",async()=>{
+  await Promise.all([refreshTeamChat(),refreshTeamNews(),refreshTeamDirectory()]);
+  feedback("Espaço da equipe atualizado.");
+});
+
+// Revalidamos o papel no banco a cada novo acesso aos dados: RLS/RPC impedem
+// contas comuns ou rebaixadas de ler/escrever mensagens e comunicados privados.
+setInterval(()=>{
+  if(!canReadTeam()||document.hidden)return;
+  refreshTeamChat();
+  if(++teamPollCounter%3===0){refreshTeamNews();refreshTeamDirectory();}
+},12000);
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden&&canReadTeam()){
+    refreshTeamChat();refreshTeamNews();
+  }
 });
