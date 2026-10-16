@@ -6,7 +6,7 @@ const fmt=(v,d=0)=>v==null||!Number.isFinite(Number(v))?"—":Number(v).toLocale
 const pct=(n,d)=>d>0?fmt(n*100/d,1)+"%":"—";
 const ratio=(n,d)=>d>0?fmt(n/d,2):n>0?"∞":"—";
 const date=v=>v?new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(v)):"—";
-const roleLabel={owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR",gri:"GRI / JOGADOR"};
+const roleLabel={owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR",gri:"GESTOR DE RECRUTAMENTO"};
 const ranks={copper:"COBRE",bronze:"BRONZE",silver:"PRATA",gold:"OURO",platinum:"PLATINA",emerald:"ESMERALDA",diamond:"DIAMANTE",champion:"CAMPEÃO",unranked:"SEM RANK"};
 const roman=["","I","II","III","IV","V"];
 const rankLabel=r=>r&&ranks[r.tier]?ranks[r.tier]+(r.division?" "+roman[r.division]:""):"NÃO REGISTRADO";
@@ -21,16 +21,111 @@ const avatar=p=>{
  return safe((p.name||"N").trim()[0]?.toUpperCase()||"N");
 };
 let people=[],events=[],current=null,user=null,canManage=false,busy=false,generation=0;
-const active=()=>!$("nowayConsoleEquipe")?.hidden;
+const active=()=>!$("nowayConsoleEquipe")?.hidden||!$("nowayConsoleAgenda")?.hidden;
 const person=()=>people.find(p=>p.id===current);
+
+/* Dados externos são obtidos do backend já usado pelo NOWAY Tracker. A origem
+   permanece separada das estatísticas oficiais registradas pela NOWAY. */
+const externalCache=new Map();
+let externalFetchRunning=false;
+const trackerDisplayTime=value=>value?date(value):"Ainda sem atualização";
+function extractExternal(payload){
+ const p=payload?.profile||{};
+ const segment=(p.seasons?.data?.segments||[]).find(x=>/ranked/i.test(String(x.type||x.metadata?.name||"")));
+ const board=(p.stats?.platform_families_full_profiles||[]).find(x=>/ranked/i.test(String(x.board_id||x.metadata?.name||"")));
+ const sources=[segment?.stats,board?.stats,board,p.stats?.stats].filter(x=>x&&typeof x==="object");
+ const numeric=(...keys)=>{for(const data of sources)for(const key of keys){
+   const raw=data[key]?.value??data[key];
+   if(raw!==null&&raw!==undefined&&raw!==""&&Number.isFinite(Number(raw)))return Number(raw);
+ }return null};
+ const kills=numeric("kills","Kills"),deaths=numeric("deaths","Deaths");
+ return {
+   kd:numeric("kd","kD","killDeathRatio","kdr")??(kills!==null&&deaths>0?kills/deaths:null),
+   rp:numeric("rankPoints","rp","RankPoints"),
+   rank:segment?.metadata?.rank||board?.metadata?.rank||null,
+   wins:numeric("wins","Wins"),matches:numeric("matchesPlayed","matches"),
+   fetchedAt:payload?.fetchedAt||new Date().toISOString(),
+   source:payload?.source||"Provedor externo",
+   partial:Boolean(p.meta?.partial)
+ };
+}
+function externalCard(p){
+ if(!p.ubisoft)return '<span class="nw-team-link-status is-missing">TR​ACKER OBRIGATÓRIO · AGUARDANDO VÍNCULO</span>';
+ const entry=externalCache.get(p.id);
+ const status=entry?.state==="ready"?"CONSULTADO":entry?.state==="error"?"FONTE INDISPONÍVEL":entry?.state==="loading"?"ATUALIZANDO":"VÍNCULO REGISTRADO";
+ let stats='<small>Estatísticas externas ainda não consultadas.</small>';
+ if(entry?.state==="ready"){
+   const x=entry.data;
+   stats='<small>K/D EXTERNO <b>'+fmt(x.kd,2)+'</b></small><small>RP <b>'+fmt(x.rp)+'</b></small>';
+ }
+ return '<span class="nw-team-link-status is-linked">● '+status+' · '+safe(p.ubisoft)+' / '+safe(p.platform||"uplay")+'</span>'+
+ '<span class="nw-team-external-mini">'+stats+'</span>'+
+ '<span class="nw-team-link-date">Vínculo: '+safe(trackerDisplayTime(p.tracker_updated_at))+
+ (entry?.data?.fetchedAt?' · Dados: '+safe(trackerDisplayTime(entry.data.fetchedAt)):'')+'</span>';
+}
+function refreshSelectedExternal(){
+ const p=person(),el=$("nowayTeamPlayerLiveStats");
+ if(!p||!el)return;
+ const ext=externalCache.get(p.id);
+ el.innerHTML=p.ubisoft?
+   '<strong>CONTA VINCULADA PELO JOGADOR</strong><p>'+safe(p.ubisoft)+' / '+safe(p.platform||"uplay")+
+   ' · Vínculo atualizado em '+safe(trackerDisplayTime(p.tracker_updated_at))+'</p>'+
+   (ext?.state==="ready"?'<div class="nw-team-external-values"><span>K/D <b>'+fmt(ext.data.kd,2)+
+   '</b></span><span>RP <b>'+fmt(ext.data.rp)+'</b></span></div>'+
+   '<small>Atualizado em '+safe(trackerDisplayTime(ext.data.fetchedAt))+' · '+safe(ext.data.source)+
+   '. Dados externos, sujeitos à disponibilidade.</small>':
+   '<small>'+(ext?.state==="error"?"Dados externos indisponíveis no momento.": "Buscando dados externos...")+'</small>'):
+   '<strong>VÍNCULO PENDENTE</strong><p>Este jogador ainda precisa registrar o Tracker em Minha Conta.</p>';
+}
+async function refreshExternalLinked(force=false){
+ if(externalFetchRunning||!user)return;
+ const players=people.filter(p=>p.ubisoft);
+ if(!players.length)return;
+ externalFetchRunning=true;
+ const token=generation;
+ try{
+   // Consultas sequenciais com limite de atualização por jogador: não sobrecarrega o provedor.
+   for(const p of players){
+     if(token!==generation||document.hidden)break;
+     const key=p.platform+":"+p.ubisoft.toLowerCase();
+     const old=externalCache.get(p.id);
+     if(!force&&old?.key===key&&Date.now()-old.checked<300000)continue;
+     externalCache.set(p.id,{state:"loading",key,checked:Date.now()});
+     if(!$("nowayConsoleEquipe").hidden)renderRoster();
+     try{
+       const {data,error}=await db.functions.invoke("noway-r6-tracker",{body:{player:p.ubisoft,platform:p.platform||"uplay"}});
+       if(error||!data?.profile)throw Error(error?.message||"Resposta indisponível");
+       externalCache.set(p.id,{state:"ready",key,checked:Date.now(),data:extractExternal(data)});
+     }catch(error){
+       externalCache.set(p.id,{state:"error",key,checked:Date.now(),error:String(error?.message||error)});
+     }
+     if(token!==generation)break;
+     if(!$("nowayConsoleEquipe").hidden)renderRoster();
+     if(current===p.id)refreshSelectedExternal();
+   }
+ }finally{externalFetchRunning=false;}
+}
+function showTrackerRequirement(){
+ const box=$("nowayTeamTrackerRequirement");
+ if(!box)return;
+ const p=people.find(p=>p.id===user?.id);
+ const missing=p?.role==="jogador"&&!p.ubisoft;
+ box.hidden=!missing;
+ if(missing){
+   box.innerHTML='<span><strong>VÍNCULO DO TRACKER OBRIGATÓRIO</strong><small>Registre seu nickname e plataforma em Minha Conta para identificar seus dados competitivos na NOWAY.</small></span>'+
+     '<button type="button" id="nwTeamProfileLink">VINCULAR AGORA ↗</button>';
+   $("nwTeamProfileLink")?.addEventListener("click",()=>document.querySelector('[data-console-tab="profile"]')?.click());
+ }
+}
+
 const promptError=e=>{const t=$("nowaySystemNotice");if(t){t.hidden=false;t.textContent=String(e);t.classList.add("is-error");}};
 const stat=(label,value,desc)=>'<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong><em>'+safe(desc)+'</em></div>';
 function renderSummary(){
  const next=events.find(e=>e.kind==="partida")||events[0],roster=next?.roster||[];
  const vals=[
  ["INTEGRANTES",people.length,"Membros autorizados"],
- ["PRÓXIMOS JOGOS",events.filter(e=>e.kind==="partida").length,"Partidas na agenda"],
- ["CONFIRMADOS",next?roster.filter(r=>r.presence==="confirmado").length:"—","Próximo compromisso"],
+ ["TRACKERS VINCULADOS",people.filter(p=>Boolean(p.ubisoft)).length,"Perfis cadastrados pelo titular"],
+ ["JOGADORES PENDENTES",people.filter(p=>p.role==="jogador"&&!p.ubisoft).length,"Ainda não vincularam o R6 Tracker"],
  ["ATUAÇÕES REGISTRADAS",people.reduce((a,p)=>a+(p.stats?.matches||0),0),"Registros de desempenho"]
  ];
  $("nowayTeamHubSummary").innerHTML=vals.map(v=>'<div><small>'+v[0]+'</small><strong>'+safe(v[1])+'</strong><span>'+v[2]+'</span></div>').join("");
@@ -62,6 +157,7 @@ function renderRoster(){
    '<span><strong>'+safe(rankLabel(r))+'</strong><small>'+
    (r?'TEMPORADA '+safe(r.season)+' · '+(r.rp==null?"RP não registrado":fmt(r.rp)+" RP")+' · GESTÃO':'RANK AINDA NÃO REGISTRADO')+
    '</small></span></span>'+
+   '<span class="nw-team-card-link">'+externalCard(p)+'</span>'+
    '<span class="nw-team-card-stats"><span><small>K/D</small><b>'+(has?ratio(s.kills,s.deaths):"—")+'</b></span>'+
    '<span><small>KOST</small><b>'+(has?pct(s.kost,s.rounds):"—")+'</b></span>'+
    '<span><small>PARTIDAS</small><b>'+(has?fmt(s.matches):"—")+'</b></span></span>'+
@@ -120,7 +216,7 @@ async function openPlayer(id){
  $("nowayTeamPlayerContent").innerHTML='<div class="nw-detail-overview"><span class="nw-detail-avatar">'+avatar(p)+
  '</span><div><strong>'+safe(p.name)+'</strong><p>'+safe(roleLabel[p.role]||"EQUIPE")+
  (p.ubisoft?" · "+safe(p.ubisoft):"")+'</p><p>NOWAY Tracker / dados da equipe</p></div></div>'+
- renderRank(p)+'<div class="nw-detail-metrics">'+metrics(p)+'</div>'+
+ renderRank(p)+'<div class="nw-detail-external" id="nowayTeamPlayerLiveStats"></div><div class="nw-detail-metrics">'+metrics(p)+'</div>'+
  '<div id="nowayTeamPlayerHistoryPanel"><p class="noway-muted">Carregando histórico...</p></div>'+
  (canManage?'<div class="nw-detail-block"><h5>REGISTRAR RANK.</h5><form id="nowayTeamRankForm" class="nw-rank-form">'+
  '<label>TEMPORADA<input name="season" minlength="3" maxlength="48" placeholder="Y11S4" required></label>'+
@@ -133,6 +229,7 @@ async function openPlayer(id){
  $("nowayTeamPlayerExternal").textContent=p.ubisoft?"CONSULTAR "+p.ubisoft+" NO R6 ↗":"CONSULTAR PERFIL EXTERNO ↗";
  $("nowayTeamPlayerExternal").dataset.playerId=id;
  $("nowayTeamPlayerHistory").hidden=true;
+ refreshSelectedExternal();
  $("nowayTeamHubPlayer").scrollIntoView({behavior:"smooth",block:"start"});
  const form=$("nowayTeamRankForm");
  if(form){
@@ -177,7 +274,7 @@ async function checkAuth(){
  canManage=!pErr&&["owner","manager"].includes(profile?.role);
  return !pErr&&["owner","manager","jogador","gri"].includes(profile?.role);
 }
-async function loadHub(){
+async function loadHub(force=false){
  if(!active()||busy)return;
  busy=true;const run=++generation;$("nowayTeamHubRefresh").disabled=true;
  try{
@@ -186,14 +283,15 @@ async function loadHub(){
   if(run!==generation||!active())return;
   people=Array.isArray(data?.team)?data.team:[];
   events=Array.isArray(data?.upcoming)?data.upcoming:[];
-  renderSummary();renderFixtures();renderRoster();
+  renderSummary();renderFixtures();renderRoster();showTrackerRequirement();
+  void refreshExternalLinked(force);
  }catch(e){
   const block='<div class="nw-team-empty">Não foi possível carregar: '+safe(e.message)+'</div>';
   $("nowayTeamHubFixtures").innerHTML=block;$("nowayTeamHubRoster").innerHTML=block;
   promptError("Erro na central Equipe: "+e.message);
  }finally{busy=false;$("nowayTeamHubRefresh").disabled=false;}
 }
-$("nowayTeamHubRefresh").addEventListener("click",loadHub);
+$("nowayTeamHubRefresh").addEventListener("click",()=>loadHub(true));
 $("nowayTeamHubSearch").addEventListener("input",renderRoster);
 $("nowayTeamPlayerClose").addEventListener("click",()=>{
  current=null;$("nowayTeamHubPlayer").hidden=true;
@@ -217,7 +315,9 @@ $("nowayTeamPlayerExternal").addEventListener("click",()=>{
  }else $("nowayTrackerPlayer").focus();
  tools.scrollIntoView({behavior:"smooth",block:"start"});
 });
-window.addEventListener("noway:equipe-open",loadHub);
+window.addEventListener("noway:equipe-open",()=>loadHub());
+window.addEventListener("noway:agenda-open",()=>loadHub());
+window.addEventListener("noway:tracker-linked",()=>{externalCache.clear();loadHub(true);});
 document.addEventListener("visibilitychange",()=>{if(active()&&!document.hidden)loadHub();});
 setInterval(()=>{if(active()&&!document.hidden)loadHub();},60000);
 db.auth.onAuthStateChange(event=>{
