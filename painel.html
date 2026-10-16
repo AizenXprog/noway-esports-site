@@ -44,7 +44,7 @@
     <div class="noway-console-tab-group" data-console-nav-group="competitivo"><span class="noway-console-nav-label">COMPETITIVO</span>
       <button type="button" data-console-tab="agenda">AGENDA</button>
       <button type="button" data-console-tab="competitive">PARTIDAS</button>
-      <button type="button" data-console-tab="tracker">NOWAY TRACKER</button>
+      <button type="button" data-console-tab="tracker">MINHAS ESTATÍSTICAS</button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="atendimento"><span class="noway-console-nav-label">ATENDIMENTO</span>
       <button type="button" data-console-tab="recruitment">RECRUTAMENTO</button>
@@ -311,10 +311,36 @@
       <div class="noway-tracker-hero">
         <div><span class="noway-tracker-overline">NOWAY / RAINBOW SIX SIEGE / PLAYER INTELLIGENCE</span>
           <h3>NOWAY <em>TRACKER.</em></h3>
-          <p>Pesquise o perfil Ubisoft. Estatísticas, ranking e evolução vêm de uma fonte externa e são atualizados por consulta — sem preenchimento manual.</p>
+          <p>Seus dados do Rainbow Six aparecem ao abrir a aba, depois de vincular seu nickname. Também é possível pesquisar qualquer outro jogador.</p>
         </div>
         <span class="noway-tracker-mode"><i></i> DATA / EXTERNAL SOURCE</span>
       </div>
+      <section class="noway-tracker-self" aria-labelledby="nowayTrackerSelfTitle">
+        <div class="noway-tracker-self-head">
+          <div>
+            <span class="noway-tracker-overline">SEU NOWAY ID / VÍNCULO DE JOGADOR</span>
+            <h4 id="nowayTrackerSelfTitle">MEU PERFIL <em>UBISOFT.</em></h4>
+            <p id="nowayTrackerSelfStatus">Verificando sua conta vinculada...</p>
+          </div>
+          <button type="button" id="nowayTrackerMyProfile" class="noway-tracker-my-button" hidden>VER MINHAS ESTATÍSTICAS ↗</button>
+        </div>
+        <form id="nowayTrackerLinkForm" class="noway-tracker-link-form" hidden>
+          <label for="nowayTrackerLinkName">NICKNAME DO JOGO</label>
+          <input id="nowayTrackerLinkName" required maxlength="48" minlength="2"
+            autocomplete="off" placeholder="Seu usuário Ubisoft Connect" spellcheck="false">
+          <label for="nowayTrackerLinkPlatform">PLATAFORMA</label>
+          <select id="nowayTrackerLinkPlatform">
+            <option value="uplay">PC / UBISOFT</option><option value="psn">PLAYSTATION</option><option value="xbl">XBOX</option>
+          </select>
+          <button type="submit" id="nowayTrackerLinkSave">VINCULAR MINHA CONTA ↗</button>
+        </form>
+        <div class="noway-tracker-self-actions" id="nowayTrackerLinkActions" hidden>
+          <button type="button" id="nowayTrackerChangeLink">ALTERAR NICKNAME ↗</button>
+          <button type="button" id="nowayTrackerUnlink">DESVINCULAR</button>
+        </div>
+        <p class="noway-tracker-disclaimer">Este vínculo é informado pelo titular do NOWAY ID; não comprova a propriedade da conta Ubisoft.</p>
+      </section>
+      <div class="noway-tracker-search-title"><span>02 / PESQUISAR OUTROS JOGADORES</span><p>Consulte outro perfil por nickname, sem perder o seu vínculo.</p></div>
       <form id="nowayTrackerSearch" class="noway-tracker-search">
         <div class="noway-tracker-field">
           <label for="nowayTrackerPlayer">NOME DO JOGADOR</label>
