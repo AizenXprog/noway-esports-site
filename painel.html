@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a"><meta name="description" content="NOWAY ID — painel pessoal para membros, jogadores e gestão da NOWAY Esports."><title>NOWAY ID — Central da Equipe</title><link rel="icon" type="image/webp" href="assets/logo-white.webp"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-console.css"><link rel="stylesheet" href="noway-competitive.css"><link rel="stylesheet" href="noway-player-stats.css"><link rel="stylesheet" href="noway-console-clarity.css"><link rel="stylesheet" href="noway-recruitment-desk.css"></head><body data-noway-console="true">
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="theme-color" content="#08090a"><meta name="description" content="NOWAY ID — painel pessoal para membros, jogadores e gestão da NOWAY Esports."><title>NOWAY ID — Central da Equipe</title><link rel="icon" type="image/webp" href="assets/logo-white.webp"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="noway-console.css"><link rel="stylesheet" href="noway-competitive.css"><link rel="stylesheet" href="noway-player-stats.css"><link rel="stylesheet" href="noway-console-clarity.css"><link rel="stylesheet" href="noway-tracker.css"><link rel="stylesheet" href="noway-recruitment-desk.css"></head><body data-noway-console="true">
 <div class="reading-line"></div><div class="noise"></div>
 <header class="noway-console-header"><a href="/" class="noway-console-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ID.</b></span></a><div class="noway-console-header-right"><a href="recrutamento.html" class="noway-console-back">RECRUTAMENTO ↗</a><a href="/" class="noway-console-back">← VOLTAR AO SITE</a><button type="button" id="nowayHeaderLogin" class="header-login">MINHA CONTA ↗</button></div></header>
 <main class="noway-console-main">
@@ -38,13 +38,13 @@
       <button type="button" data-console-tab="profile">MINHA CONTA</button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="equipe"><span class="noway-console-nav-label">EQUIPE</span>
-      <button type="button" data-console-tab="team">MURAL / EQUIPE</button>
+      
       <button type="button" data-console-tab="chat">CHAT <span id="nowayChatUnread" class="noway-chat-unread" hidden>0</span></button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="competitivo"><span class="noway-console-nav-label">COMPETITIVO</span>
       <button type="button" data-console-tab="agenda">AGENDA</button>
       <button type="button" data-console-tab="competitive">PARTIDAS</button>
-      <button type="button" data-console-tab="stats">ESTATÍSTICAS</button>
+      <button type="button" data-console-tab="tracker">NOWAY TRACKER</button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="atendimento"><span class="noway-console-nav-label">ATENDIMENTO</span>
       <button type="button" data-console-tab="recruitment">RECRUTAMENTO</button>
@@ -94,14 +94,14 @@
           </div>
           <div class="noway-hq-shortcut-group" data-shortcut-group="equipe">
             <h5>02 / COMUNICAÇÃO DA EQUIPE</h5>
-            <button type="button" class="noway-hq-shortcut" data-console-open="team"><strong>EQUIPE E MURAL</strong><span>Comunicados e diretório dos integrantes</span><b>↗</b></button>
+            
             <button type="button" class="noway-hq-shortcut" data-console-open="chat"><strong>CHAT INTERNO</strong><span>Mensagens em tempo real da equipe</span><b>↗</b></button>
           </div>
           <div class="noway-hq-shortcut-group" data-shortcut-group="competicao">
             <h5>03 / DEPARTAMENTO COMPETITIVO</h5>
             <button type="button" class="noway-hq-shortcut" data-console-open="agenda"><strong>AGENDA</strong><span>Treinos, reuniões e compromissos</span><b>↗</b></button>
             <button type="button" class="noway-hq-shortcut" data-console-open="competitive"><strong>GESTÃO DE PARTIDAS</strong><span>Confrontos, escalações e resultados</span><b>↗</b></button>
-            <button type="button" class="noway-hq-shortcut" data-console-open="stats"><strong>PLAYER STATS</strong><span>Desempenho e histórico por jogador</span><b>↗</b></button>
+            <button type="button" class="noway-hq-shortcut" data-console-open="tracker"><strong>NOWAY TRACKER</strong><span>Consulta automática de jogadores e evolução no R6</span><b>↗</b></button>
           </div>
           <div class="noway-hq-shortcut-group" data-shortcut-group="gestao">
             <h5>04 / ADMINISTRAÇÃO</h5>
@@ -307,45 +307,47 @@
         </section>
       </div>
     </section>
-    <section id="nowayConsolePlayerStats" class="noway-console-view noway-player-stats" data-console-view="stats" hidden>
-      <div class="noway-stats-header"><div><span class="noway-tiny">NOWAY / PERFORMANCE DE RAINBOW SIX SIEGE</span>
-          <h3>PLAYER <em>STATS.</em></h3><p>Estatísticas verificáveis, registradas por confronto. Evolução individual sem números estimados.</p></div>
-        <div class="noway-stats-header-actions"><a href="tracker.html" class="noway-outline-action noway-tracker-public-link">VER TRACKER PÚBLICO ↗</a><button id="nowayStatsRefresh" type="button" class="noway-outline-action">ATUALIZAR ↻</button></div></div>
-      <div id="nowayStatsOverview" class="noway-stats-overview" aria-live="polite"></div>
-      <div class="noway-stats-grid">
-        <section class="noway-panel noway-stats-ranking">
-          <div class="noway-stats-panel-heading"><div><span class="noway-tiny">01 / TIME</span><h4>JOGADORES.</h4></div>
-            <label class="noway-stats-filter-label" for="nowayStatsSeason">PERÍODO
-              <select id="nowayStatsSeason"><option value="all">TODAS AS TEMPORADAS</option></select></label></div>
-          <p class="noway-stats-help">Selecione um integrante para ver seu histórico. Só entram no cálculo partidas com estatísticas registradas.</p>
-          <div id="nowayStatsPlayers" class="noway-stats-players"><p class="noway-muted">Carregando equipe...</p></div>
-        </section>
-        <section class="noway-panel noway-stats-player-detail">
-          <div id="nowayStatsPlayerDetail"><div class="noway-comp-empty"><span>NW / STATS</span><h4>ESCOLHA UM JOGADOR.</h4><p>Veja desempenho individual, K/D, KOST e estatísticas por confronto.</p></div></div>
-        </section>
+    <section id="nowayConsoleTracker" class="noway-console-view noway-tracker" data-console-view="tracker" hidden>
+      <div class="noway-tracker-hero">
+        <div><span class="noway-tracker-overline">NOWAY / RAINBOW SIX SIEGE / PLAYER INTELLIGENCE</span>
+          <h3>NOWAY <em>TRACKER.</em></h3>
+          <p>Pesquise o perfil Ubisoft. Estatísticas, ranking e evolução vêm de uma fonte externa e são atualizados por consulta — sem preenchimento manual.</p>
+        </div>
+        <span class="noway-tracker-mode"><i></i> DATA / EXTERNAL SOURCE</span>
       </div>
-      <section id="nowayStatsAdmin" class="noway-panel noway-stats-admin" hidden>
-        <div class="noway-stats-panel-heading"><div><span class="noway-tiny">02 / FUNDADOR E GESTÃO</span><h4>REGISTRAR DESEMPENHO.</h4></div></div>
-        <p class="noway-stats-help">Preencha os números após a partida. É necessário um confronto finalizado e o jogador convocado no Competitive. KOST significa quantos rounds tiveram Kill, Objective, Survival ou Trade (contar cada round apenas uma vez).</p>
-        <form id="nowayStatsForm">
-          <div class="noway-stats-form-choices">
-            <div><label for="nowayStatsPlayerSelect">JOGADOR</label><select id="nowayStatsPlayerSelect" required></select></div>
-            <div><label for="nowayStatsMatchSelect">CONFRONTO FINALIZADO</label><select id="nowayStatsMatchSelect" required></select></div>
-          </div>
-          <div class="noway-stats-form-values">
-            <div><label for="nowayStatsKills">KILLS</label><input id="nowayStatsKills" type="number" min="0" max="200" required></div>
-            <div><label for="nowayStatsDeaths">DEATHS</label><input id="nowayStatsDeaths" type="number" min="0" max="100" required></div>
-            <div><label for="nowayStatsAssists">ASSISTS</label><input id="nowayStatsAssists" type="number" min="0" max="200" required></div>
-            <div><label for="nowayStatsRounds">ROUNDS JOGADOS</label><input id="nowayStatsRounds" type="number" min="1" max="100" required placeholder="Ex.: 12"></div>
-            <div><label for="nowayStatsSurvived">ROUNDS SOBREVIVIDOS</label><input id="nowayStatsSurvived" type="number" min="0" max="100" required></div>
-            <div><label for="nowayStatsKost">ROUNDS KOST</label><input id="nowayStatsKost" type="number" min="0" max="100" required></div>
-            <div><label for="nowayStatsEntryKills">ENTRY KILLS</label><input id="nowayStatsEntryKills" type="number" min="0" max="200" required></div>
-            <div><label for="nowayStatsEntryDeaths">ENTRY DEATHS</label><input id="nowayStatsEntryDeaths" type="number" min="0" max="100" required></div>
-          </div>
-          <div class="noway-stats-form-actions"><button type="submit" id="nowayStatsSave" class="btn btn-yellow">SALVAR ESTATÍSTICAS ↗</button>
-            <button type="button" id="nowayStatsOpenCompetitive" class="noway-outline-action">ABRIR COMPETITIVE ↗</button></div>
-        </form>
-      </section>
+      <form id="nowayTrackerSearch" class="noway-tracker-search">
+        <div class="noway-tracker-field">
+          <label for="nowayTrackerPlayer">NOME DO JOGADOR</label>
+          <input id="nowayTrackerPlayer" autocomplete="off" spellcheck="false" maxlength="48" minlength="2" required
+            placeholder="Usuário Ubisoft Connect" aria-describedby="nowayTrackerHint">
+        </div>
+        <div class="noway-tracker-platform">
+          <label for="nowayTrackerPlatform">PLATAFORMA</label>
+          <select id="nowayTrackerPlatform"><option value="uplay">PC / UBISOFT</option><option value="psn">PLAYSTATION</option><option value="xbl">XBOX</option></select>
+        </div>
+        <button type="submit" id="nowayTrackerSubmit" class="noway-tracker-submit">ANALISAR PERFIL <span aria-hidden="true">↗</span></button>
+      </form>
+      <p id="nowayTrackerHint" class="noway-tracker-hint">Basta informar o nome usado na plataforma. Nenhuma senha do jogador é solicitada.</p>
+      <div id="nowayTrackerState" class="noway-tracker-state" role="status" aria-live="polite">
+        <span class="noway-tracker-state-mark">✳</span>
+        <div><strong>UMA PESQUISA. TODO O DESEMPENHO.</strong><p>Digite um nome para consultar informações reais de Rainbow Six Siege. Os campos que o provedor não disponibilizar permanecerão vazios.</p></div>
+      </div>
+      <div id="nowayTrackerResults" hidden>
+        <div class="noway-tracker-profile">
+          <div class="noway-tracker-identity"><span id="nowayTrackerAvatar" class="noway-tracker-avatar">NW</span>
+            <div><span class="noway-tracker-overline">PLAYER / PERFORMANCE REPORT</span><h4 id="nowayTrackerName">—</h4><p id="nowayTrackerMeta">—</p></div></div>
+          <a id="nowayTrackerExternal" href="https://r6.tracker.network/" target="_blank" rel="noopener noreferrer" class="noway-tracker-external">CONSULTAR NO TRACKER.GG ↗</a>
+        </div>
+        <div id="nowayTrackerMetrics" class="noway-tracker-metrics"></div>
+        <div class="noway-tracker-bottom">
+          <section class="noway-tracker-chart-panel"><div class="noway-tracker-subhead"><span>01 / PROGRESSÃO</span><h5>EVOLUÇÃO DE RP.</h5></div>
+            <div id="nowayTrackerChart" class="noway-tracker-chart"></div></section>
+          <section class="noway-tracker-insight-panel"><div class="noway-tracker-subhead"><span>02 / INTERPRETAÇÃO</span><h5>LEITURA DE JOGO.</h5></div>
+            <div id="nowayTrackerInsights" class="noway-tracker-insights"></div></section>
+        </div>
+        <div id="nowayTrackerSeason" class="noway-tracker-season"></div>
+        <p class="noway-tracker-source" id="nowayTrackerSource">Fonte: R6 Arenyze. Dados externos, sujeitos à atualização e disponibilidade do provedor.</p>
+      </div>
     </section>
     <section id="nowayConsoleRecruitment" class="noway-console-view noway-recruit-desk" data-console-view="recruitment" hidden>
  <div class="noway-console-view-header"><div><span class="noway-tiny">RECRUTAMENTO / FOUNDER · TEAM MANAGER · GRI</span>
@@ -404,4 +406,4 @@
 </div>
 </section>
 </main><footer class="noway-console-footer"><div class="wrap"><span>© NOWAY ESPORTS / PAINEL DE CONTROLE</span><a href="https://discord.gg/USZvdCUAEb" target="_blank" rel="noopener noreferrer">DISCORD DA COMUNIDADE ↗</a></div></footer>
-<script type="module" src="noway-id.js"></script><script type="module" src="noway-console.js"></script><script type="module" src="noway-recruitment-desk.js"></script></body></html>
+<script type="module" src="noway-id.js"></script><script type="module" src="noway-console.js"></script><script type="module" src="noway-tracker.js"></script><script type="module" src="noway-recruitment-desk.js"></script></body></html>
