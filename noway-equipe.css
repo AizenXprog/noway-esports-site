@@ -1,0 +1,151 @@
+/* NOWAY / EQUIPE + TRACKER — hub unificado. Design editorial e responsivo */
+.noway-team-hub-view[hidden],.nw-team-player-detail[hidden]{display:none!important}
+.noway-team-hub-view{min-width:0;color:#f2f7ef}
+.nw-team-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;
+ padding:clamp(23px,4vw,48px);border:1px solid #657d53;
+ background:radial-gradient(ellipse at 85% 15%,#f2ff0018,transparent 56%),linear-gradient(145deg,#2a3525,#121b15 70%)}
+.nw-team-eyebrow,.nw-team-hero .noway-tiny{font:900 10px/1.5 Inter,sans-serif;color:#d8e9b8;letter-spacing:.13em}
+.nw-team-eyebrow>span{color:#f2ff00;font-size:17px;margin-right:9px}
+.nw-team-hero h3{font:900 clamp(60px,7vw,99px)/.87 "Barlow Condensed",sans-serif;color:#fff;margin:16px 0 17px}
+.nw-team-hero h3 em,.nw-team-section-head h4 em{color:#f2ff00;font-style:normal}
+.nw-team-hero p{font:550 12px/1.85 Inter,sans-serif;color:#c4d2bd;max-width:670px;margin:0}
+.nw-team-hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:18px;flex:0 0 auto}
+.nw-team-live{display:inline-flex;align-items:center;gap:8px;font:900 9px Inter,sans-serif;color:#f2ff00;letter-spacing:.07em}
+.nw-team-live span{width:7px;height:7px;background:#f2ff00;border-radius:50%;box-shadow:0 0 14px #f2ff006a}
+.nw-team-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:13px 0 52px}
+.nw-team-summary>div{min-width:0;display:flex;flex-direction:column;gap:10px;padding:20px 19px;
+ background:#202920;border:1px solid #435442}
+.nw-team-summary small{color:#b5c6af;font:900 9px/1.4 Inter,sans-serif;letter-spacing:.075em}
+.nw-team-summary strong{font:900 clamp(34px,4vw,56px)/.95 "Barlow Condensed",sans-serif;color:#f2ff00}
+.nw-team-summary span{color:#96a894;font:600 10px/1.5 Inter,sans-serif}
+.nw-team-hub-sections{display:flex;flex-direction:column;gap:52px;min-width:0}
+.nw-team-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:20px}
+.nw-team-section-head .noway-tiny{color:#d2debb;font:900 10px Inter,sans-serif;letter-spacing:.13em}
+.nw-team-section-head h4{font:900 clamp(43px,5vw,65px)/.92 "Barlow Condensed",sans-serif;margin:13px 0 9px;color:#fff}
+.nw-team-section-head p{font:500 11px/1.75 Inter,sans-serif;color:#a9baaa;margin:0;max-width:640px}
+.nw-team-link{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#263423;
+ border:1px solid #7a8b5c;color:#f2ff00;cursor:pointer;padding:13px 15px;
+ font:900 10px/1.35 Inter,sans-serif;text-decoration:none;white-space:normal;text-align:center}
+.nw-team-link:hover,.nw-team-link:focus-visible{background:#34442d;border-color:#f2ff00}
+.nw-team-fixture-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.nw-fixture{min-width:0;padding:19px 20px;background:linear-gradient(145deg,#232d23,#19221c);
+ border:1px solid #4f6246;border-top:2px solid #f2ff00}
+.nw-fixture-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+ font:900 9px Inter,sans-serif;color:#bdcea9;letter-spacing:.08em}
+.nw-fixture h5{font:900 33px/1 "Barlow Condensed",sans-serif;color:#fff;margin:16px 0 8px}
+.nw-fixture>p{font:650 11px/1.7 Inter,sans-serif;color:#becdb8;margin:0 0 14px}
+.nw-fixture-roster{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.nw-fixture-roster span{border:1px solid #5d7552;color:#dae8d4;background:#2b3a29;padding:7px 9px;font:750 10px Inter,sans-serif}
+.nw-fixture-roster .is-confirmed{border-color:#b8cc65;color:#f2ff00}
+.nw-fixture-roster .is-absent{border-color:#96675b;color:#e9b5a7}
+.nw-fixture-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #3f513e;
+ padding-top:12px;font:800 10px Inter,sans-serif;color:#baccad}
+.nw-fixture-foot b{color:#f2ff00}
+.nw-fixture-foot button{background:transparent;border:none;color:#f2ff00;cursor:pointer;font:900 9px Inter,sans-serif}
+.nw-team-empty{grid-column:1/-1;padding:28px;border:1px dashed #485848;background:#1a241c;color:#b9cbb4;
+ font:600 12px/1.8 Inter,sans-serif}
+.nw-team-roster-actions{display:flex;flex-direction:column;gap:7px;min-width:210px}
+.nw-team-roster-actions label{color:#b0c6aa;font:900 9px Inter,sans-serif}
+.nw-team-roster-actions input{padding:13px 15px;background:#1c291d;color:#fff;border:1px solid #647758;
+ font:700 12px Inter,sans-serif;max-width:100%;outline-offset:2px}
+.nw-team-roster-actions input:focus-visible{outline:2px solid #f2ff00}
+.nw-team-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.nw-team-card{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:14px;min-width:0;
+ text-align:left;cursor:pointer;padding:18px;border:1px solid #475749;background:linear-gradient(145deg,#212923,#161c18);
+ color:#f4f9ef;transition:border-color .2s,background .2s,transform .2s}
+.nw-team-card::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:#f2ff00;opacity:0;transition:opacity .2s}
+.nw-team-card:hover,.nw-team-card:focus-visible{border-color:#f2ff00;background:#2b3829;transform:translateY(-3px);outline:none}
+.nw-team-card:hover::before{opacity:1}
+.nw-team-card-top{display:flex;align-items:center;gap:12px}
+.nw-team-card-photo{display:grid;place-items:center;width:61px;height:61px;flex:0 0 61px;overflow:hidden;
+ border:1px solid #607951;background:#314331;border-radius:6px;font:900 28px "Barlow Condensed",sans-serif;color:#f2ff00}
+.nw-team-card-photo img{width:100%;height:100%;object-fit:cover}
+.nw-team-card-name{display:flex;flex-direction:column;gap:7px;min-width:0}
+.nw-team-card-name strong{color:#fff;font:900 29px/.95 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.nw-team-card-name small{font:900 9px/1.4 Inter,sans-serif;color:#b3caa5}
+.nw-team-card-rank{display:flex;align-items:center;gap:13px;min-height:76px;padding:12px;background:#2b3428;border:1px solid #465d42}
+.nw-team-card-rank img{width:54px;height:54px;object-fit:contain;flex:0 0 54px}
+.nw-team-card-rank>div{display:flex;flex-direction:column;gap:7px}
+.nw-team-card-rank strong{font:900 20px/1 "Barlow Condensed",sans-serif}
+.nw-team-card-rank small{font:600 9px/1.45 Inter,sans-serif;color:#adbfa3}
+.nw-team-card-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nw-team-card-stats>span{display:flex;flex-direction:column;gap:7px;min-width:0}
+.nw-team-card-stats small{color:#9cae98;font:900 9px Inter,sans-serif}
+.nw-team-card-stats b{color:#f2ff00;font:900 27px/1 "Barlow Condensed",sans-serif}
+.nw-team-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #3a4d3c;padding-top:12px;
+ color:#d4e0cb;font:900 9px Inter,sans-serif;letter-spacing:.06em}
+.nw-team-card-foot span:last-child{font-size:17px;color:#f2ff00}
+.nw-team-player-detail{padding:clamp(16px,2.4vw,30px);border:1px solid #a3b868;background:radial-gradient(ellipse at 90% 0%,#f2ff0012,transparent 50%),#182119}
+.nw-team-player-titlebar{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:25px}
+.nw-team-player-titlebar h4{font:900 clamp(42px,5vw,70px)/.95 "Barlow Condensed",sans-serif;margin:8px 0;color:#fff}
+.nw-detail-overview{display:flex;align-items:center;gap:24px;margin-bottom:17px}
+.nw-detail-avatar{display:grid;place-items:center;width:110px;height:110px;flex:0 0 110px;background:#2b3d2d;border:2px solid #f2ff00;
+ color:#f2ff00;font:900 50px "Barlow Condensed",sans-serif;overflow:hidden}
+.nw-detail-avatar img{width:100%;height:100%;object-fit:cover}
+.nw-detail-overview>div>strong{display:block;color:#fff;font:900 33px/1 "Barlow Condensed",sans-serif;margin-bottom:9px}
+.nw-detail-overview>div>p{color:#b1c6ac;font:600 11px/1.6 Inter,sans-serif;margin:6px 0}
+.nw-detail-ranking{display:flex;gap:10px;align-items:center;background:#283725;border:1px solid #506448;padding:13px;max-width:450px;margin:15px 0}
+.nw-detail-ranking img{width:79px;height:79px;object-fit:contain}
+.nw-detail-ranking>div{display:flex;flex-direction:column;gap:5px}
+.nw-detail-ranking strong{font:900 29px/1 "Barlow Condensed",sans-serif}
+.nw-detail-ranking small{color:#aabd9d;font:600 10px/1.6 Inter,sans-serif}
+.nw-detail-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.nw-detail-metrics>div{background:#263328;border:1px solid #435544;display:flex;flex-direction:column;gap:7px;padding:17px;min-width:0}
+.nw-detail-metrics small{color:#b2c8ad;font:900 9px Inter,sans-serif}
+.nw-detail-metrics strong{color:#f2ff00;font:900 33px/.95 "Barlow Condensed",sans-serif}
+.nw-detail-metrics em{font:600 9px/1.4 Inter,sans-serif;font-style:normal;color:#9dac97}
+.nw-detail-block{border:1px solid #405341;background:#1c261e;padding:20px;margin-top:14px}
+.nw-detail-block h5{color:#fff;font:900 30px/1 "Barlow Condensed",sans-serif;margin:0 0 16px}
+.nw-detail-history{overflow-x:auto}
+.nw-detail-history table{width:100%;border-collapse:collapse;min-width:510px;text-align:left}
+.nw-detail-history th{color:#aabda6;font:900 9px Inter,sans-serif;border-bottom:1px solid #52674b;padding:10px}
+.nw-detail-history td{font:650 11px/1.5 Inter,sans-serif;border-bottom:1px solid #354635;padding:12px 10px}
+.nw-detail-history td strong{color:#f2ff00}
+.nw-detail-chart svg{width:100%;height:auto;display:block}
+.nw-team-player-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
+.nw-rank-form{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr auto;align-items:end;gap:9px;margin-top:18px}
+.nw-rank-form>label{display:flex;flex-direction:column;gap:8px;color:#b8ceaf;font:900 9px Inter,sans-serif}
+.nw-rank-form input,.nw-rank-form select{min-width:0;width:100%;height:41px;padding:9px;background:#142017;color:#fff;border:1px solid #5a7758;font:600 11px Inter,sans-serif}
+.nw-rank-form button{min-height:41px;padding:8px 11px;border:1px solid #f2ff00;background:#f2ff00;color:#151b12;font:900 9px Inter,sans-serif;cursor:pointer}
+.nw-rank-explain{font:600 10px/1.7 Inter,sans-serif;color:#a7b69f;margin-top:10px}
+.nw-team-tracker-tools{border:1px solid #596f51;background:#1c261e}
+.nw-team-tracker-tools>summary{list-style:none;display:flex;align-items:center;gap:10px;cursor:pointer;color:#f2ff00;padding:17px 21px;font:900 12px Inter,sans-serif}
+.nw-team-tracker-tools>summary::-webkit-details-marker{display:none}
+.nw-team-tracker-tools>summary span{font-size:19px}
+.nw-team-tracker-tools>summary b{margin-left:auto}
+.nw-team-tracker-tools>p{font:550 11px/1.7 Inter,sans-serif;color:#b9c8b4;padding:0 21px}
+.nw-team-tracker-tools .noway-tracker{padding:0 15px 15px}
+.nw-team-tracker-tools #nowayConsoleTracker[hidden]{display:none!important}
+.nw-team-communication-head{margin-top:0}
+.noway-team-hub-view .noway-team-space{display:flex;flex-direction:column;gap:23px;min-width:0}
+.noway-team-hub-view .noway-team-head{display:none}
+.noway-team-hub-view .noway-team-grid{grid-template-columns:1fr}
+.noway-team-hub-view .noway-team-directory{display:none}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat{
+ height:clamp(550px,calc(100dvh - 130px),780px)!important;min-height:520px!important;padding:18px!important;
+}
+.noway-dashboard[data-console-active="equipe"] .noway-chat-scroll-shell{min-height:290px}
+.noway-team-hub-view .noway-team-chat-list{min-height:0!important}
+.noway-team-hub-view .noway-team-chat-form{flex-shrink:0}
+body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
+ position:fixed!important;inset:12px!important;width:auto!important;height:auto!important;min-height:0!important;z-index:1200!important
+}
+.nw-team-attribution{padding:17px 0 0;color:#819481;font:600 9px/1.7 Inter,sans-serif}
+@media(max-width:1150px){.nw-team-roster-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nw-rank-form{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.nw-team-fixture-grid{grid-template-columns:1fr}.nw-team-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.nw-detail-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){
+ .nw-team-hero{flex-direction:column;align-items:flex-start;padding:23px 18px}.nw-team-hero h3{font-size:clamp(54px,11vw,78px)}
+ .nw-team-hero-actions{flex-direction:row;align-items:center;flex-wrap:wrap}
+ .nw-team-summary{margin-bottom:35px}.nw-team-summary>div{padding:15px}
+ .nw-team-hub-sections{gap:36px}.nw-team-section-head{align-items:flex-start;flex-direction:column}
+ .nw-team-roster-actions{width:100%}.nw-team-roster-actions input{width:100%}
+ .nw-team-roster-grid{grid-template-columns:1fr}
+ .nw-team-card{padding:17px}.nw-team-card-rank img{width:47px;height:47px}
+ .nw-detail-overview{align-items:flex-start;gap:15px}.nw-detail-avatar{width:80px;height:80px;flex-basis:80px}
+ .nw-detail-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nw-team-player-titlebar{flex-direction:column}
+ .nw-rank-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat{height:600px!important;min-height:540px!important;padding:10px!important}
+}
+@media(max-width:390px){.nw-rank-form{grid-template-columns:1fr}.nw-team-summary{gap:6px}}
+@media(prefers-reduced-motion:reduce){.nw-team-card{transition:none}}
