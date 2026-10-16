@@ -598,3 +598,110 @@ body[data-noway-console="true"] .nw-profile-required-alert button:hover{backgrou
  body[data-noway-console="true"] .nw-profile-required-alert{flex-direction:column;align-items:stretch;padding:16px}
  body[data-noway-console="true"] .nw-profile-required-alert button{width:100%}
 }
+
+
+/* NOWAY / Central de alertas de recrutamento — Founder, TM e GRI */
+body[data-noway-console="true"] #nowayConsoleTabs .nw-recruit-unread{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:21px;height:21px;padding:2px 5px;flex:0 0 auto;border-radius:6px;
+ background:#f2ff00;color:#111;box-shadow:0 0 0 3px #f2ff0019;
+ font:900 10px/1 Inter,sans-serif;letter-spacing:0;
+ animation:nwRecruitPulse 2.8s ease-in-out infinite
+}
+body[data-noway-console="true"] #nowayConsoleTabs .nw-recruit-unread[hidden]{display:none!important}
+body[data-noway-console="true"] #nowayConsoleTabs button.is-active .nw-recruit-unread{
+ color:#f2ff00;background:#141415
+}
+body[data-noway-console="true"] #nowayConsoleTabs button.has-recruit-unread:not(.is-active){
+ background:#292a20!important;border-color:#70764a!important;color:#fff!important
+}
+body[data-noway-console="true"] .nw-recruit-overview-prompt{
+ display:flex;align-items:center;gap:13px;text-align:left;width:100%;
+ background:linear-gradient(105deg,#2a2c23,#202023);border:1px solid #7a8150;
+ border-left:3px solid #f2ff00;border-radius:11px;padding:14px 19px;
+ cursor:pointer;transition:transform .2s,border-color .2s;color:#fff
+}
+body[data-noway-console="true"] .nw-recruit-overview-prompt[hidden]{display:none!important}
+body[data-noway-console="true"] .nw-recruit-overview-prompt:hover{
+ transform:translateY(-2px);border-color:#f2ff00
+}
+body[data-noway-console="true"] .nw-recruit-overview-prompt>span:nth-child(2){
+ display:flex;flex-direction:column;flex:1;min-width:0;gap:6px
+}
+body[data-noway-console="true"] .nw-recruit-overview-prompt strong{
+ color:#f2ff00;font:900 12px/1.4 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-overview-prompt small{
+ color:#cfcfd0;font:600 10px/1.65 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-overview-dot{font-size:20px;color:#f2ff00}
+body[data-noway-console="true"] .nw-recruit-overview-prompt>b{
+ font:900 9px Inter,sans-serif;color:#f2ff00;flex:0 0 auto
+}
+body[data-noway-console="true"] .nw-recruit-desk-banner{
+ display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+ background:#262720;border:1px solid #7e8454;border-radius:9px;
+ padding:13px 17px;margin:15px 0 18px
+}
+body[data-noway-console="true"] .nw-recruit-desk-banner[hidden]{display:none!important}
+body[data-noway-console="true"] .nw-recruit-desk-banner>span{display:flex;flex-direction:column;gap:5px;flex:1;min-width:220px}
+body[data-noway-console="true"] .nw-recruit-desk-banner strong{
+ color:#f2ff00;font:900 10px Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-desk-banner small{
+ color:#c3c3bd;font:600 10px/1.5 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-desk-banner>button{
+ border:1px solid #62635f;border-radius:7px;background:#34343a;
+ color:#f5f5f5;padding:10px 12px;cursor:pointer;
+ font:900 9px Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-desk-banner>button:first-of-type{
+ color:#111;background:#f2ff00;border-color:#f2ff00
+}
+body[data-noway-console="true"] .noway-desk-entry.has-unread{
+ border-color:#9ba651!important;box-shadow:inset 3px 0 #f2ff00
+}
+body[data-noway-console="true"] .nw-recruit-item-unread{
+ display:inline-flex;margin-left:7px;padding:3px 6px;
+ border:1px solid #a6b04a;border-radius:4px;color:#f2ff00;font:900 9px Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-toast{
+ position:fixed;z-index:1255;bottom:24px;right:23px;max-width:min(435px,calc(100vw - 30px));
+ display:flex;align-items:center;gap:12px;padding:17px 16px;
+ color:#fff;background:linear-gradient(124deg,#29292c,#161618);
+ border:1px solid #b6c04e;border-left:3px solid #f2ff00;
+ border-radius:10px;box-shadow:0 15px 50px #000b;
+ animation:nwRecruitSlide .32s cubic-bezier(.2,.8,.2,1) both
+}
+body[data-noway-console="true"] .nw-recruit-toast[hidden]{display:none!important}
+body[data-noway-console="true"] .nw-recruit-toast-mark{
+ color:#f2ff00;font-size:26px
+}
+body[data-noway-console="true"] .nw-recruit-toast-message{
+ display:flex;flex:1;min-width:0;flex-direction:column;gap:5px
+}
+body[data-noway-console="true"] .nw-recruit-toast-message strong{
+ font:900 11px/1.4 Inter,sans-serif;color:#f2ff00
+}
+body[data-noway-console="true"] .nw-recruit-toast-message small{
+ color:#c9c9cc;font:600 10px/1.6 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-recruit-toast>button{
+ flex:0 0 auto;cursor:pointer;background:#303033;
+ border:1px solid #66666a;color:#fff;border-radius:6px;
+ padding:9px 10px;font:900 10px Inter,sans-serif
+}
+body[data-noway-console="true"] #nwRecruitToastOpen{background:#f2ff00;border-color:#f2ff00;color:#101010}
+@keyframes nwRecruitPulse{0%,100%{box-shadow:0 0 0 2px #f2ff0012}50%{box-shadow:0 0 0 6px #f2ff0032}}
+@keyframes nwRecruitSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:650px){
+ body[data-noway-console="true"] .nw-recruit-overview-prompt{flex-wrap:wrap;padding:12px}
+ body[data-noway-console="true"] .nw-recruit-overview-prompt>b{flex-basis:100%;padding-left:27px}
+ body[data-noway-console="true"] .nw-recruit-toast{left:12px;right:12px;bottom:12px;max-width:none}
+ body[data-noway-console="true"] .nw-recruit-desk-banner>button{flex:1}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-noway-console="true"] .nw-recruit-toast,
+ body[data-noway-console="true"] .nw-recruit-unread{animation:none}
+}
