@@ -176,7 +176,7 @@ async function refreshMembers() {
     if(item.role==="owner")return '<div class="noway-member-row"><span>'+clean(item.display_name)+'</span><strong>FOUNDER / OWNER</strong></div>';
     return '<div class="noway-member-row"><span>'+clean(item.display_name)+'</span>'+
       '<select aria-label="Cargo de '+clean(item.display_name)+'" data-member-role="'+clean(item.id)+'">'+
-      ["membro","jogador","manager"].map(role=>'<option value="'+role+'"'+(role===item.role?" selected":"")+'>'+labels[role]+'</option>').join("")+
+      ["membro","jogador","gri","manager"].map(role=>'<option value="'+role+'"'+(role===item.role?" selected":"")+'>'+labels[role]+'</option>').join("")+
       '</select><button type="button" class="noway-mini-action" data-save-role="'+clean(item.id)+'">SALVAR</button></div>';
   }).join("")||'<p class="noway-muted">Nenhum usuário cadastrado.</p>';
   container.querySelectorAll("[data-save-role]").forEach(btn=>btn.addEventListener("click",async()=>{
@@ -341,7 +341,7 @@ if(document.body.dataset.nowayConsole==="true"){
 
 // NOWAY Team Hub v1 — espaços de Jogador, Gerência e Owner.
 // O servidor valida todos os papéis em RPC e RLS. Esconder painéis não dá permissão.
-const teamRoles=new Set(["jogador","manager","owner"]);
+const teamRoles=new Set(["jogador","manager","owner","gri"]);
 let teamChannel=null,teamPollCounter=0;
 let teamDirectory=[],teamMessageSignature=null,teamNewsSignature=null;
 let teamChatList=[], teamKnownIds=new Set(),teamChatReady=false,chatRequestId=0;
@@ -373,7 +373,7 @@ function stopTeamFeed(){
 function canReadTeam(){return Boolean(signedUser&&teamRoles.has(profile?.role));}
 function canManageTeam(){return profile?.role==="manager"||profile?.role==="owner";}
 function teamRoleLabel(role){
-  return {owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR"}[role]||"EQUIPE";
+  return {owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR",gri:"GRI / JOGADOR"}[role]||"EQUIPE";
 }
 function teamTime(date){
   const d=new Date(date);
@@ -389,11 +389,13 @@ async function loadTeamWorkspace(run){
   const level=profile.role;
   const titles={
     jogador:"ESPAÇO DO JOGADOR.",
+    gri:"JOGADOR / RECRUTAMENTO.",
     manager:"ESPAÇO DA GESTÃO.",
     owner:"CENTRAL DA EQUIPE."
   };
   const subtitles={
     jogador:"Seus comunicados, companheiros e conversas internas. Um canal só para a NOWAY.",
+    gri:"Acesse os recursos do jogador e as avaliações de recrutamento com seu cargo GRI.",
     manager:"Organize os comunicados e mantenha o elenco conectado. A administração de contas continua com o Founder.",
     owner:"Acompanhe a equipe, publique comunicados e converse diretamente com jogadores e gestão."
   };
