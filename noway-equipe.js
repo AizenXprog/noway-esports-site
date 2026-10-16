@@ -50,7 +50,7 @@ function extractExternal(payload){
  };
 }
 function externalCard(p){
- if(!p.ubisoft)return '<span class="nw-team-link-status is-missing">TR​ACKER OBRIGATÓRIO · AGUARDANDO VÍNCULO</span>';
+ if(!p.ubisoft)return '<span class="nw-team-link-status is-missing">TRACKER OBRIGATÓRIO · AGUARDANDO VÍNCULO</span>';
  const entry=externalCache.get(p.id);
  const status=entry?.state==="ready"?"CONSULTADO":entry?.state==="error"?"FONTE INDISPONÍVEL":entry?.state==="loading"?"ATUALIZANDO":"VÍNCULO REGISTRADO";
  let stats='<small>Estatísticas externas ainda não consultadas.</small>';
