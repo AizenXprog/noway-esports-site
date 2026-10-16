@@ -200,6 +200,42 @@ async function refreshExternalLinked(force=false){
   }
  }
 }
+
+/* Usa exclusivamente dados reais ja consultados. O chat persiste a citacao como texto. */
+const statShareOptions=[["headshots","TAXA DE HS",1,"%"],["kd","K/D",2,""],["winRate","WIN RATE",1,"%"],
+ ["rank","RANK",0,""],["rankPoints","RP",0,""],["wins","VITÓRIAS",0,""],["kills","KILLS",0,""],["matches","PARTIDAS",0,""]];
+const shareAvailable=(stats,key)=>key==="rank"?typeof stats?.rank==="string"&&!!stats.rank.trim():
+ typeof stats?.[key]==="number"&&Number.isFinite(stats[key]);
+function chooseSharedStat(p,key){
+ const x=live(p),spec=statShareOptions.find(o=>o[0]===key);
+ if(!x||!spec||!shareAvailable(x,key))return;
+ const value=key==="rank"?x.rank:fmt(x[key],spec[2])+spec[3];
+ const quote="▣ NOWAY TRACKER · "+p.name+" · "+spec[1]+": "+value;
+ const input=$("nowayTeamChatBody");if(!input)return;
+ if(quote.length+input.value.length+1>1200)return promptError("Reduza o texto para marcar a estatística.");
+ input.value=quote+(input.value.trim()?"\n"+input.value.trim():"\n");
+ $("nowayChatStatPicker").hidden=true;
+ document.querySelector("#nowayTeamWorkspace .noway-team-chat")?.scrollIntoView({behavior:"smooth",block:"center"});
+ input.focus();input.setSelectionRange(input.value.length,input.value.length);
+}
+function showSharedStatPicker(selectedId){
+ const panel=$("nowayChatStatPicker"),root=$("nowayChatStatOptions");if(!panel||!root)return;
+ const available=people.filter(p=>statShareOptions.some(([key])=>shareAvailable(live(p),key)));
+ if(!available.length){
+  root.innerHTML='<p class="nw-chat-stat-empty">Nenhuma estatística do R6 disponível nesta consulta. Use Atualizar Painel para consultar os jogadores.</p>';
+  panel.hidden=false;return;
+ }
+ const p=available.find(p=>p.id===selectedId)||available[0],stats=live(p);
+ root.innerHTML='<div class="nw-stat-chat-players">'+available.map(person=>
+  '<button type="button" data-share-player="'+safe(person.id)+'" class="'+(person.id===p.id?'is-current':'')+'">'+safe(person.name)+'</button>').join("")+'</div>'+
+  '<div class="nw-stat-chat-metrics">'+statShareOptions.filter(([key])=>shareAvailable(stats,key)).map(([key,label,precision,unit])=>
+   '<button type="button" data-share-metric="'+safe(key)+'"><small>'+safe(label)+'</small><strong>'+
+   safe(key==="rank"?stats.rank:fmt(stats[key],precision)+unit)+'</strong><em>MARCAR ↗</em></button>').join("")+'</div>';
+ root.querySelectorAll("[data-share-player]").forEach(btn=>btn.addEventListener("click",()=>showSharedStatPicker(btn.dataset.sharePlayer)));
+ root.querySelectorAll("[data-share-metric]").forEach(btn=>btn.addEventListener("click",()=>chooseSharedStat(p,btn.dataset.shareMetric)));
+ panel.hidden=false;$("nowayChatEventPicker").hidden=true;
+}
+
 function showTrackerRequirement(){
  const box=$("nowayTeamTrackerRequirement");
  if(!box)return;
@@ -214,7 +250,7 @@ function showTrackerRequirement(){
 }
 
 const promptError=e=>{const t=$("nowaySystemNotice");if(t){t.hidden=false;t.textContent=String(e);t.classList.add("is-error");}};
-const stat=(label,value,desc,movement='')=>'<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong>'+movement+'<em>'+safe(desc)+'</em></div>';
+const stat=(label,value,desc,movement='',share='')=>'<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong>'+movement+'<em>'+safe(desc)+'</em>'+share+'</div>';
 function renderSummary(){
  const next=events.find(e=>e.kind==="partida")||events[0],roster=next?.roster||[];
  const vals=[
@@ -293,7 +329,11 @@ function metrics(p){
  ].map((v,i)=>{
   const keys=["kd","winRate","headshots","matches","wins","losses","kills","deaths","rankPoints","level"];
   const digits=[2,1,1,0,0,0,0,0,0,0];
-  return stat(...v,deltaBadge(p,keys[i],digits[i],i===1||i===2?"%":""));
+  const key=keys[i];
+  const share=statShareOptions.some(([k])=>k===key)&&shareAvailable(x,key)?
+   '<button type="button" class="nw-profile-stat-share" data-share-r6="'+safe(p.id)+
+   '" data-share-key="'+safe(key)+'">↗ MARCAR NO CHAT</button>':"";
+  return stat(...v,deltaBadge(p,key,digits[i],i===1||i===2?"%":""),share);
  }).join("");
 }
 function renderExternalHistory(p){
@@ -397,6 +437,15 @@ async function loadHub(force=false){
 }
 $("nowayTeamHubRefresh").addEventListener("click",()=>loadHub(true));
 $("nowayTeamHubSearch").addEventListener("input",renderRoster);
+$("nowayChatStatButton")?.addEventListener("click",()=>{
+ const panel=$("nowayChatStatPicker");if(panel.hidden)showSharedStatPicker();else panel.hidden=true;
+});
+$("nowayChatStatClose")?.addEventListener("click",()=>$("nowayChatStatPicker").hidden=true);
+$("nowayTeamPlayerContent").addEventListener("click",event=>{
+ const btn=event.target.closest?.("[data-share-r6]");if(!btn)return;
+ const p=people.find(p=>p.id===btn.dataset.shareR6);
+ if(p)chooseSharedStat(p,btn.dataset.shareKey);
+});
 $("nowayTeamPlayerClose").addEventListener("click",()=>{
  current=null;$("nowayTeamHubPlayer").hidden=true;
  $("nowayTeamHubRoster").scrollIntoView({behavior:"smooth",block:"start"});

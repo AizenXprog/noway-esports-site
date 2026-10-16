@@ -248,3 +248,24 @@ body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team
 .nw-rank-delta{display:inline-flex!important;align-items:center;gap:7px;margin-top:5px;font:900 16px/1 Inter,sans-serif}
 .nw-rank-delta>small{font:750 9px/1.4 Inter,sans-serif!important;color:inherit!important}
 @media(max-width:700px){.nw-delta>small{font-size:9px!important}}
+
+/* Somente valores do resumo de jogadores: porcentagens em uma unica linha. */
+body[data-noway-console="true"] .nw-team-card-stats b{font-size:clamp(22px,2vw,27px)!important;white-space:nowrap;letter-spacing:-.025em}
+.nw-stat-chat-picker[hidden]{display:none!important}
+.nw-stat-chat-picker{background:#1d241b;border:1px solid #758d51;padding:13px;margin-top:10px;max-height:340px;overflow-y:auto}
+.nw-stat-chat-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.nw-stat-chat-head strong{font:900 10px Inter,sans-serif;color:#f2ff00}
+.nw-stat-chat-head button{background:transparent;border:0;color:#fff;cursor:pointer}
+.nw-stat-chat-players{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}
+.nw-stat-chat-players button{border:1px solid #556949;background:#293128;color:#eee;padding:9px 12px;cursor:pointer;font:900 10px Inter,sans-serif}
+.nw-stat-chat-players button.is-current,.nw-stat-chat-players button:hover{border-color:#f2ff00;color:#f2ff00}
+.nw-stat-chat-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px}
+.nw-stat-chat-metrics button{background:#293128;border:1px solid #536849;padding:11px;cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.nw-stat-chat-metrics button:hover{border-color:#f2ff00}
+.nw-stat-chat-metrics small{font:900 9px Inter,sans-serif;color:#bbc8b1}
+.nw-stat-chat-metrics strong{font:900 25px "Barlow Condensed",sans-serif;color:#f2ff00}
+.nw-stat-chat-metrics em{font:900 9px Inter,sans-serif;font-style:normal;color:#d6e4cd}
+.nw-chat-stat-empty{font:600 11px/1.6 Inter,sans-serif;color:#c4d0bf}
+.nw-detail-metrics .nw-profile-stat-share{align-self:flex-start;padding:6px 0;margin-top:7px;background:transparent;border:0;color:#dce985;cursor:pointer;font:900 9px Inter,sans-serif}
+.nw-detail-metrics .nw-profile-stat-share:hover{text-decoration:underline}
+@media(max-width:700px){body[data-noway-console="true"] .nw-team-card-stats b{font-size:23px!important}.nw-stat-chat-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
