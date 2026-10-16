@@ -710,9 +710,15 @@ function updateTeamUnread(){
   if(tab)tab.classList.toggle("has-unread",teamUnread>0);
   document.title=teamUnread>0?"● ("+teamUnread+") "+originalNowayTitle:originalNowayTitle;
 }
+function chatIsVisible(){
+ const el=$id("nowayTeamChatList");
+ if(!el||document.hidden||!document.hasFocus()||el.closest("[hidden]"))return false;
+ const r=el.getBoundingClientRect();
+ return r.bottom>60&&r.top<window.innerHeight-60;
+}
 function resetTeamUnread(){
-  teamUnread=0;updateTeamUnread();hideTeamToast();
-  goToChatBottom(false);
+ teamUnread=0;updateTeamUnread();hideTeamToast();
+ if(chatIsVisible())goToChatBottom(false);
 }
 function primeChatSound(){
   if(!chatSoundOn||!canReadTeam())return;
@@ -743,7 +749,7 @@ function announceTeamMessages(messages){
   const msg=messages[messages.length-1];
   const active=document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe";
   const focused=!document.hidden&&document.hasFocus();
-  if(!active||!focused)teamUnread=Math.min(99,teamUnread+messages.length);
+  if(!active||!focused||!chatIsVisible())teamUnread=Math.min(99,teamUnread+messages.length);
   updateTeamUnread();
   const t=$id("nowayChatToast");
   if(t){
@@ -869,7 +875,10 @@ if(document.body.dataset.nowayConsole==="true"){
   $id("nowayChatToastClose")?.addEventListener("click",hideTeamToast);
   $id("nowayChatToastOpen")?.addEventListener("click",()=>{
     document.querySelector('[data-console-tab="equipe"]')?.click();
-    resetTeamUnread();
+    requestAnimationFrame(()=>{
+      document.querySelector(".noway-team-chat")?.scrollIntoView({behavior:"smooth",block:"center"});
+      setTimeout(resetTeamUnread,350);
+    });
   });
   $id("nowayChatReferenceClose")?.addEventListener("click",clearTeamReference);
   $id("nowayChatAttachButton")?.addEventListener("click",()=>$id("nowayChatImageInput").click());
@@ -888,7 +897,12 @@ if(document.body.dataset.nowayConsole==="true"){
   $id("nowayChatMediaClear")?.addEventListener("click",clearChatPhoto);
   $id("nowayChatEventButton")?.addEventListener("click",showTeamEventPicker);
   $id("nowayChatEventPickerClose")?.addEventListener("click",()=>$id("nowayChatEventPicker").hidden=true);
-  window.addEventListener("noway:chat-open",resetTeamUnread);
+  document.addEventListener("scroll",()=>{
+   if(teamUnread&&chatIsVisible()&&chatIsNearEnd())resetTeamUnread();
+ },{passive:true});
+ window.addEventListener("noway:chat-open",()=>{
+  if(chatIsVisible())resetTeamUnread();
+});
   window.addEventListener("noway:attach-event",async event=>{
     if(!canReadTeam())return;
     await refreshTeamEvents();
@@ -898,7 +912,7 @@ if(document.body.dataset.nowayConsole==="true"){
     $id("nowayTeamChatBody").focus();
   });
   document.addEventListener("visibilitychange",()=>{
-    if(!document.hidden&&document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe")
+    if(!document.hidden&&document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe"&&chatIsVisible())
       resetTeamUnread();
   });
 }
