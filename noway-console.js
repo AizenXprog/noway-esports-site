@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 const roles={owner:"FOUNDER / OWNER",manager:"TEAM MANAGER",gri:"GRI / RECRUTAMENTO",jogador:"JOGADOR",membro:"MEMBRO"};
 const kinds={partida:"PARTIDA",treino:"TREINO",reuniao:"REUNIÃO",evento:"EVENTO"};
-const activeRoles=new Set(["owner","manager","jogador"]);
+const activeRoles=new Set(["owner","manager","jogador","gri"]);
 let me=null,account=null,events=[],calendar=new Date(),selectedDay=null;
 let accountsOffset=0,accountSearch="",accountPages=0,accountFetchRun=0,searchTimer=0,loadEventsPromise=null;
 let hqSnapshot=null,hqActivity=[],hqInbox=[],hqLoadedAt=0,hqLoading=false,hqRun=0,hqIdentity=null;
