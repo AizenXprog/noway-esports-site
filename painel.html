@@ -44,7 +44,7 @@
       <button type="button" data-console-tab="competitive"><svg class="nw-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 6.7 6.7m4.6 4.6L21 21m-4-17-4 4m-3 3-6 6m2.5 4H3v-3.5M18 3h3v3m-8 8-3 3"/></svg><span class="nw-nav-copy"><strong>Competitivo</strong><small>Partidas e resultados</small></span><span class="nw-nav-arrow" aria-hidden="true">↗</span></button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="atendimento"><span class="noway-console-nav-label">03 / ATENDIMENTO</span>
-      <button type="button" data-console-tab="recruitment"><svg class="nw-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.3"/><path d="M2.5 20v-2a6.5 6.5 0 0 1 13 0v2M18 8v8m-4-4h8"/></svg><span class="nw-nav-copy"><strong>Recrutamento</strong><small>Candidatos e pareceres</small></span><span class="nw-nav-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" data-console-tab="recruitment"><svg class="nw-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.3"/><path d="M2.5 20v-2a6.5 6.5 0 0 1 13 0v2M18 8v8m-4-4h8"/></svg><span class="nw-nav-copy"><strong>Recrutamento</strong><small>Candidatos e pareceres</small></span><span id="nowayRecruitUnreadCount" class="nw-recruit-unread" hidden aria-label="Novas notificações de recrutamento">0</span><span class="nw-nav-arrow" aria-hidden="true">↗</span></button>
       <button type="button" data-console-tab="contacts"><svg class="nw-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-6 3V6a2 2 0 0 1 1-2Z"/><path d="M7 10h10M7 14h7"/></svg><span class="nw-nav-copy"><strong>Conversas</strong><small>Mensagens privadas</small></span><span class="nw-nav-arrow" aria-hidden="true">↗</span></button>
     </div>
     <div class="noway-console-tab-group" data-console-nav-group="conta"><span class="noway-console-nav-label">04 / CONTA E ACESSO</span>
@@ -235,7 +235,11 @@
         <small id="nowayHQLastUpdated">Aguardando carregamento</small>
       </div>
     </section>
-    <div id="nowayTrackerOverviewPrompt" class="nw-profile-required-alert" hidden role="status">
+    <button type="button" id="nwRecruitOverviewPrompt" class="nw-recruit-overview-prompt" hidden aria-label="Abrir notificações de recrutamento">
+  <span class="nw-recruit-overview-dot">●</span><span><strong id="nwRecruitOverviewTitle">RECRUTAMENTO / NOVAS MENSAGENS</strong>
+   <small id="nwRecruitOverviewText">Há candidatos aguardando atendimento.</small></span><b>ABRIR CENTRAL ↗</b>
+</button>
+  <div id="nowayTrackerOverviewPrompt" class="nw-profile-required-alert" hidden role="status">
   <span><strong>SEU R6 TRACKER AINDA NÃO FOI VINCULADO.</strong>
   <small>Jogadores da NOWAY devem cadastrar seu nickname e plataforma em Minha Conta. Depois disso, os demais integrantes poderão consultar o vínculo e os dados disponíveis.</small></span>
   <button type="button" id="nowayTrackerOverviewLink">VINCULAR EM MINHA CONTA ↗</button>
@@ -415,11 +419,23 @@
       </div>
     </section>
 
-    <section id="nowayConsoleRecruitment" class="noway-console-view noway-recruit-desk" data-console-view="recruitment" hidden>
+    <div id="nwRecruitToast" class="nw-recruit-toast" hidden role="status" aria-live="polite">
+  <span class="nw-recruit-toast-mark" aria-hidden="true">✳</span>
+  <span class="nw-recruit-toast-message"><strong id="nwRecruitToastTitle">NOVA ATIVIDADE NO RECRUTAMENTO</strong>
+    <small id="nwRecruitToastBody">Uma candidatura precisa de atenção.</small></span>
+  <button id="nwRecruitToastOpen" type="button">VER ↗</button>
+  <button id="nwRecruitToastClose" type="button" aria-label="Fechar aviso">×</button>
+</div>
+<section id="nowayConsoleRecruitment" class="noway-console-view noway-recruit-desk" data-console-view="recruitment" hidden>
  <div class="noway-console-view-header"><div><span class="noway-tiny">RECRUTAMENTO / FOUNDER · TEAM MANAGER · GRI</span>
  <h3>ATENDIMENTO DE <em>RECRUTAMENTO.</em></h3><p>Converse com candidatos e registre análises. O GRI pode indicar testes; decisões finais e encerramentos permanecem com Founder e TM.</p></div>
  <button type="button" id="nowayDeskRefresh" class="noway-outline-action">ATUALIZAR ↻</button></div>
- <div class="noway-desk-layout"><aside class="noway-desk-sidebar">
+ <div id="nwRecruitDeskBanner" class="nw-recruit-desk-banner" hidden role="status">
+  <span><strong id="nwRecruitDeskBannerTitle">NOVIDADES NO RECRUTAMENTO</strong><small id="nwRecruitDeskBannerText">Selecione as candidaturas indicadas para acompanhar as respostas.</small></span>
+  <button type="button" id="nwRecruitReadFirst">VER PENDÊNCIAS ↗</button>
+  <button type="button" id="nwRecruitDesktopOptIn" title="Ativar notificações do navegador">AVISOS DESKTOP</button>
+</div>
+<div class="noway-desk-layout"><aside class="noway-desk-sidebar">
  <label for="nowayDeskFilter">FILTRAR CANDIDATURAS</label><select id="nowayDeskFilter"><option value="all">TODAS</option>
  <option value="recebida">RECEBIDAS</option><option value="em_analise">EM ANÁLISE</option><option value="teste">EM TESTES</option>
  <option value="aprovada">APROVADAS</option><option value="recusada">NÃO SELECIONADAS</option>
