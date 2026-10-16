@@ -719,7 +719,7 @@ window.addEventListener("noway:go-to-event",event=>{
 
 // NOWAY Competitive / v1 — jogos são eventos reais da Agenda, sem dados simulados.
 const competitiveState={
- matches:new Map(),roster:[],maps:[],people:[],selected:null,filter:"upcoming",
+ matches:new Map(),roster:[],maps:[],people:[],guestScrimIds:new Set(),selected:null,filter:"upcoming",
  lastLoaded:0,loading:false,request:0,userId:null
 };
 const compResultLabels={pendente:"A DEFINIR",vitoria:"VITÓRIA",derrota:"DERROTA",empate:"EMPATE"};
@@ -750,20 +750,22 @@ async function refreshCompetitive(force=false){
  const current=me.id,run=++competitiveState.request;
  $("nowayCompRefresh").disabled=true;
  try{
-   const [matches,roster,maps,people]=await Promise.all([
-     db.from("noway_competitive_matches").select("event_id,best_of,result,our_score,opponent_score,preparation,updated_at"),
+   const [matches,roster,maps,people,guestScrims]=await Promise.all([
+     db.from("noway_competitive_matches").select("event_id,best_of,result,our_score,opponent_score,publish_public,featured,preparation,updated_at"),
      db.from("noway_competitive_roster").select("event_id,player_id,starter,presence,responded_at"),
      db.from("noway_competitive_maps").select("event_id,slot,map_name,action,our_rounds,their_rounds"),
-     db.rpc("noway_team_directory_v2")
+     db.rpc("noway_team_directory_v2"),
+     isManager()?db.from("noway_scrim_requests").select("event_id").eq("kind","scrim").eq("status","confirmed"):Promise.resolve({data:[],error:null})
    ]);
    if(!signed()||me.id!==current||run!==competitiveState.request)return;
-   for(const [name,response] of [["partidas",matches],["convocações",roster],["mapas",maps],["diretório",people]]){
+   for(const [name,response] of [["partidas",matches],["convocações",roster],["mapas",maps],["diretório",people],["scrims externas",guestScrims]]){
      if(response.error)throw Error("Falha ao carregar "+name+": "+response.error.message);
    }
    competitiveState.matches=new Map((matches.data||[]).map(m=>[m.event_id,m]));
    competitiveState.roster=roster.data||[];
    competitiveState.maps=maps.data||[];
    competitiveState.people=people.data||[];
+   competitiveState.guestScrimIds=new Set((guestScrims.data||[]).map(x=>x.event_id).filter(Boolean));
    competitiveState.userId=current;
    competitiveState.lastLoaded=Date.now();
    renderCompetitive();
@@ -933,9 +935,14 @@ function openCompetitiveEditor(){
  $("nowayCompOurScore").value=m?.our_score??"";
  $("nowayCompOpponentScore").value=m?.opponent_score??"";
  $("nowayCompPreparation").value=m?.preparation||"";
+ const canPublish=event.kind==="partida"||competitiveState.guestScrimIds.has(event.id);
+ $("nowayCompPublicationSection").hidden=!canPublish;
+ $("nowayCompPublishPublic").checked=canPublish&&Boolean(m?.publish_public);
+ $("nowayCompFeatured").checked=canPublish&&Boolean(m?.featured);
+ $("nowayCompFeatured").disabled=!$("nowayCompPublishPublic").checked;
  const current=new Map(compGetRoster(event.id).map(r=>[r.player_id,r]));
  const container=$("nowayCompRosterEditor");
- const staff=competitiveState.people.filter(p=>["jogador","manager","owner"].includes(p.role));
+ const staff=competitiveState.people.filter(p=>["jogador","manager","owner","gri"].includes(p.role));
  container.innerHTML=staff.length?staff.map(p=>{
    const item=current.get(p.id);
    return '<div class="noway-comp-pick-row" data-comp-player="'+compEsc(p.id)+'">'+
@@ -983,14 +990,18 @@ async function saveCompetitiveSetup(ev){
    maps.push({slot:maps.length+1,map_name:name,action:row.querySelector(".comp-map-action").value,
      our_rounds:us===""?null:Number(us),their_rounds:themRounds===""?null:Number(themRounds)});
  }
+ const publish=$("nowayCompPublishPublic").checked&&!$("nowayCompPublicationSection").hidden;
+ const featured=publish&&$("nowayCompFeatured").checked;
+ if(publish&&($("nowayCompResult").value==="pendente"||our===""||them===""))
+  return notice("Informe o resultado e os dois placares antes de publicar no site.",true);
  const form=$("nowayCompForm"),save=form.querySelector('[type="submit"]');
  save.disabled=true;
  try{
-   const {error}=await db.rpc("noway_competitive_save",{
+   const {error}=await db.rpc("noway_competitive_save_v2",{
      p_event_id:event.id,p_best_of:Number(b),p_result:$("nowayCompResult").value,
      p_our_score:our===""?null:Number(our),p_opponent_score:them===""?null:Number(them),
      p_preparation:$("nowayCompPreparation").value.trim(),
-     p_roster:lineup,p_maps:maps
+     p_roster:lineup,p_maps:maps,p_publish_public:publish,p_featured:featured
    });
    if(error)throw error;
    competitiveState.selected=event.id;
@@ -998,7 +1009,8 @@ async function saveCompetitiveSetup(ev){
    $("nowayCompForm").hidden=true;$("nowayCompDetail").hidden=false;
    
    await refreshCompetitive(true);
-   notice("Confronto salvo! Escalação, mapas e resultados atualizados.");
+   notice(publish?(featured?"Resultado publicado no site como DESTAQUE.":"Resultado publicado em Últimos Confrontos."):
+    "Confronto salvo internamente. A publicação pública está desativada.");
  }catch(error){
    notice("Não foi possível salvar a preparação: "+error.message,true);
  }finally{save.disabled=false;}
@@ -1008,4 +1020,8 @@ async function saveCompetitiveSetup(ev){
 
 
 bind();
+$("nowayCompPublishPublic").addEventListener("change",event=>{
+ $("nowayCompFeatured").disabled=!event.target.checked;
+ if(!event.target.checked)$("nowayCompFeatured").checked=false;
+});
 loadAccount();

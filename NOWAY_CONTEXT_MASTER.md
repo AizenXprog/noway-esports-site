@@ -338,3 +338,13 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Quando um confronto originado na Central de Desafios é cancelado ou excluído da Agenda pela gestão, a solicitação externa correspondente passa a `cancelled` sem violar a integridade da FK `event_id`. A função de gatilho não pode ser executada diretamente por `authenticated`/anon; somente triggers.
 - Último código GitHub deste bloco antes desta nota: `bc1e257c42fcf173dbb211d315053b78e96e4cf9`. Status GitHub/Vercel explicitamente `failure: Deployment rate limited — retry in 24 hours`; produção READY mais recente recuperada anteriormente `9b3e01aae95fc9c1f78a559b1755b30319da38c0`. Revalidar antes de dizer que o pacote inteiro está no ar.
 - QA pendente: sessão real de representante externo (registro, aprovação, solicitação, contraproposta e aceite), Founder/TM, verificação de conflito e responsividade. Testes estáticos JS passam, consultas de metadados RLS e grants confirmadas. Não criar registros fictícios no banco de produção para testar.
+
+
+## Resultados públicos seletivos e Tracker somente interno — 16/10/2026
+- O editor Competitivo do NOWAY ID recebeu controles PUBLICAR EM ÚLTIMOS CONFRONTOS e DESTAQUE PRINCIPAL, ambos desligados por padrão. Founder e Team Manager validam a divulgação depois de registrar placar real.
+- Supabase: noway_competitive_matches recebeu publish_public e featured boolean not null default false, e restrição featured implies publish_public. Novo RPC noway_competitive_save_v2 chama o RPC original e persiste a publicação numa transação segura; bloqueia resultados incompletos, eventos futuros, treinos internos e scrims externas não confirmadas.
+- noway_public_recent_matches agora aceita scrims externas confirmadas e partidas/disputas finalizadas somente quando publish_public é true, ordena destaques primeiro, retorna match_type e featured, sem expor notas internas.
+- Home: reutiliza Últimos Confrontos. Marcador de DESTAQUE e tipo SCRIM / DISPUTA / PARTIDA, com atualizações periódicas enquanto aberta e atualização a cada visita.
+- Privacy: Tracker privado preservado no NOWAY ID e removidos TODOS os links para tracker.html da Home pública (desktop, mobile, rodapé e CTA abaixo do histórico). A rota tracker.html não foi apagada.
+- Ajuste de escalação: GRI incluído no editor competitivo como jogador, sem aumentar permissões.
+- Testes JS sintáticos e HTML de novos controles; SQL de RLS/grants e consulta pública vazio validados. Não houve testes end-to-end com usuários reais. Revalidar publicação Vercel após rate limit.

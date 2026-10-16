@@ -414,7 +414,13 @@
               </datalist>
             </div>
             <div class="noway-comp-editor-section"><label for="nowayCompPreparation">ANOTAÇÕES E ESTRATÉGIAS DA EQUIPE</label><textarea id="nowayCompPreparation" rows="4" maxlength="4000" placeholder="Planos de jogo, prioridades, adversário, comunicação e observações..."></textarea></div>
-            <div class="noway-comp-form-actions"><button type="submit" class="btn btn-yellow">SALVAR PREPARAÇÃO ↗</button><button id="nowayCompEditEvent" type="button" class="noway-outline-action">EDITAR NA AGENDA ↗</button></div>
+            <div class="noway-comp-editor-section nw-comp-publish-section" id="nowayCompPublicationSection" hidden>
+  <div class="noway-comp-editor-heading"><div><span class="noway-tiny">04 / PUBLICAÇÃO</span><h5>RESULTADO NO SITE.</h5></div><small>Aprovação da gestão</small></div>
+  <label class="nw-comp-publish-option"><input type="checkbox" id="nowayCompPublishPublic"><span><strong>PUBLICAR EM ÚLTIMOS CONFRONTOS</strong><small>Exibir este resultado finalizado no histórico público da NOWAY.</small></span></label>
+  <label class="nw-comp-publish-option"><input type="checkbox" id="nowayCompFeatured"><span><strong>DESTAQUE PRINCIPAL</strong><small>Priorizar esta partida entre os confrontos mais importantes.</small></span></label>
+  <p class="nw-comp-publish-hint">Scrims externas confirmadas podem ser publicadas. Treinos internos continuam privados. Resultados nunca são publicados sem autorização.</p>
+</div>
+<div class="noway-comp-form-actions"><button type="submit" class="btn btn-yellow">SALVAR PREPARAÇÃO ↗</button><button id="nowayCompEditEvent" type="button" class="noway-outline-action">EDITAR NA AGENDA ↗</button></div>
           </form>
         </section>
       </div>

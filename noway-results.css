@@ -56,3 +56,10 @@
 .noway-results-tracker-link:hover,.noway-results-tracker-link:focus-visible{
  color:#0d140a;background:#f2ff00;border-color:#f2ff00}
 @media(max-width:620px){.noway-results-tracker-link{display:flex;font-size:9px;padding:13px}}
+
+/* Marca apenas resultados escolhidos como principais; usa os cards existentes. */
+.nw-result-badges{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.nw-result-badges>strong{color:#f2ff00;border:1px solid #708547;padding:6px 9px;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.09em}
+.noway-results-card.derrota .nw-result-badges>strong{color:#efad96;border-color:#9b6052}
+.noway-results-card.empate .nw-result-badges>strong{color:#c3cdd1;border-color:#778589}
+.nw-result-featured{font:900 9px Inter,sans-serif;color:#151a0f;background:#f2ff00;padding:8px}

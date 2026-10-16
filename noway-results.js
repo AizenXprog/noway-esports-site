@@ -9,6 +9,7 @@
   const apikey="sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e";
   const escape=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const resultName={vitoria:"VITÓRIA",derrota:"DERROTA",empate:"EMPATE"};
+  const matchName={scrim:"SCRIM",disputa:"DISPUTA",partida:"PARTIDA"};
   const dateString=ts=>{
     try{return new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"short",year:"numeric"}).format(new Date(ts));}
     catch{return "—";}
@@ -37,11 +38,13 @@
         return '<article class="noway-results-card '+escape(game.result)+'">'+
           '<div class="noway-results-card-top"><span>CONFRONTO '+String(i+1).padStart(2,"0")+
           ' / '+escape(dateString(game.played_at))+'</span>'+
-          '<strong>'+escape(result)+'</strong></div>'+
+          '<div class="nw-result-badges">'+(game.featured?'<span class="nw-result-featured">★ DESTAQUE</span>':"")+
+          '<strong>'+escape(result)+'</strong></div></div>'+
           '<div class="noway-results-scoreboard"><div class="noway-results-team home"><span>NOWAY ESPORTS</span><b>NOWAY</b></div>'+
           '<div class="noway-results-final"><strong>'+escape(score)+'</strong><span>MD'+escape(game.best_of||1)+' / FINAL</span></div>'+
           '<div class="noway-results-team rival"><span>ADVERSÁRIO</span><b>'+escape(game.opponent||"A DEFINIR")+'</b></div></div>'+
-          '<div class="noway-results-card-bottom"><span>'+escape(game.competition||"PARTIDA COMPETITIVA")+'</span>'+
+          '<div class="noway-results-card-bottom"><span>'+escape(matchName[game.match_type]||"PARTIDA")+
+          ' · '+escape(game.competition||"COMPETITIVO")+'</span>'+
           (maps.length?'<div>'+maps.map(map=>
             '<span class="noway-results-map">'+escape(map.name)+' <b>'+escape(map.our_rounds)+'–'+escape(map.opponent_rounds)+'</b></span>'
            ).join("")+'</div>':'')+'</div>'+
@@ -60,6 +63,7 @@
     }
   }
   refresh?.addEventListener("click",loadResults);
+  setInterval(()=>{if(!document.hidden&&Date.now()-loadResults.lastRun>300000)loadResults();},60000);
   loadResults();
   document.addEventListener("visibilitychange",()=>{
     if(!document.hidden&&Date.now()-loadResults.lastRun>120000){loadResults.lastRun=Date.now();loadResults();}
