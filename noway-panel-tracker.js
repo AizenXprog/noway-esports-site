@@ -247,4 +247,11 @@ db.auth.onAuthStateChange((event)=>{
 if(location.hash==="#tracker")setTimeout(()=>initializeMyStats(true),450);
 if(location.hash==="#profile")setTimeout(()=>initializeMyStats(true),450);
 if(!["#profile","#tracker"].includes(location.hash))setTimeout(()=>initializeMyStats(false),500);
+/* Atualização periódica sem ação manual, somente enquanto o perfil está aberto. */
+setInterval(()=>{
+ const profile=$("nowayConsoleProfile");
+ if(!document.hidden&&profile&&!profile.hidden&&myAccount&&!loading){
+   void searchMyStats(false);
+ }
+},300000);
 
