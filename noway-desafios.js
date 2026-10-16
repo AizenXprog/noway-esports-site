@@ -21,6 +21,8 @@ async function refresh(){const seq=++refreshCounter;const auth=await db.auth.get
  if(!team)return;
  $("nwTeamName").textContent=team.name;$("nwTeamTag").textContent=team.tag;
  $("nwTeamInfo").textContent=[team.region,{pc:"PC / UBISOFT",console:"CONSOLE",crossplay:"CROSSPLAY"}[team.platform],team.discord].filter(Boolean).join(" · ");
+ $("nwTeamContactForm").elements.namedItem("discord").value=team.discord||"";
+ $("nwTeamContactForm").elements.namedItem("description").value=team.description||"";
  const st=$("nwTeamStatus");st.textContent=statusText[team.status]||team.status;st.className="nw-status "+team.status;
  $("nwAwaitApproval").hidden=team.status!=="pending";$("nwSuspended").hidden=team.status!=="suspended";
  $("nwRequestFormPanel").hidden=team.status!=="approved";
@@ -80,6 +82,15 @@ $("nwTeamRegisterForm").addEventListener("submit",async event=>{
  setBusy(form,false);
  if(error)return notice("Não foi possível cadastrar: "+error.message,true);
  notice("Cadastro recebido. Sua organização será analisada pela NOWAY.");await refresh();
+});
+$("nwTeamContactForm").addEventListener("submit",async event=>{
+ event.preventDefault();const form=event.currentTarget,fd=new FormData(form);setBusy(form,true);
+ const {error}=await db.rpc("noway_guest_update_contact",{
+  p_discord:String(fd.get("discord")||"").trim(),p_description:String(fd.get("description")||"").trim()
+ });
+ setBusy(form,false);
+ if(error)return notice("Falha ao salvar contato: "+error.message,true);
+ notice("Contato da organização atualizado.");await refresh();
 });
 $("nwScrimRequestForm").addEventListener("submit",async event=>{
  event.preventDefault();const form=event.currentTarget,fd=new FormData(form);

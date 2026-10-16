@@ -40,6 +40,7 @@ function render(){
  const byId=new Map(teams.map(t=>[t.id,t]));
  $("nwDeskRequests").innerHTML=requests.filter(x=>filterRequests==="all"||x.status===filterRequests).map(r=>{
  const actions=r.status==="pending"?
+ '<label class="nw-desk-response">MENSAGEM À EQUIPE (MOTIVO OU ORIENTAÇÃO)<textarea data-req-note="'+safe(r.id)+'" rows="2" maxlength="600" placeholder="Escreva uma resposta para acompanhar a decisão."></textarea></label>'+
  '<div class="nw-desk-buttons"><button class="primary" data-req-action="confirm" data-req-id="'+safe(r.id)+'">CONFIRMAR NA AGENDA ↗</button>'+
  '<button data-counter-open="'+safe(r.id)+'">NOVO HORÁRIO</button><button data-req-action="decline" data-req-id="'+safe(r.id)+'">RECUSAR</button></div>'+
  '<form class="nw-desk-counter" data-counter-form="'+safe(r.id)+'" hidden><label>CONTRAPROPOSTA / DATA E HORA<input name="time" type="datetime-local" required></label>'+
@@ -55,6 +56,10 @@ function render(){
 }
 async function act(button,kind,id,action,time=null,note=""){
  if(busy)return;
+ if(kind==="request"&&action!=="counter"){
+  note=String($("nwDeskRequests").querySelector('[data-req-note="'+id+'"]')?.value||"").trim();
+  if(action==="decline"&&!note)return notice("Informe o motivo da recusa para a outra organização.",true);
+ }
  if(action!=="counter"&&!confirm(action==="confirm"?"Confirmar confronto e adicioná-lo à Agenda NOWAY?":"Confirmar esta ação?"))return;
  busy=true;button.disabled=true;
  const rpc=kind==="team"?"noway_guest_team_decide":"noway_guest_staff_decide";

@@ -37,3 +37,8 @@
 .nw-desk-counter input,.nw-desk-counter textarea{border:1px solid #6b8063;background:#101810;color:#fff;padding:10px;font:600 11px Inter,sans-serif}
 .nw-desk-empty{padding:18px;background:#273026;border:1px dashed #587054;color:#a9b9a9;font:700 11px Inter,sans-serif}
 @media(max-width:1080px){.nw-desk-columns{grid-template-columns:1fr}.nw-desk-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.nw-desk-response{display:flex;flex-direction:column;gap:8px;margin:12px 0;
+ color:#bbcfb8;font:900 9px Inter,sans-serif}
+.nw-desk-response textarea{border:1px solid #536e52;background:#141c15;color:#fff;
+ padding:11px;font:600 11px/1.5 Inter,sans-serif;resize:vertical}

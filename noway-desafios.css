@@ -64,3 +64,9 @@ input,textarea,select{border:1px solid #596459;background:#0f1410;color:#f5f5f2;
 .nw-footer{padding:30px clamp(20px,5vw,64px);border-top:1px solid #384336;display:flex;justify-content:space-between;gap:20px;color:#9eac9d;font:800 10px Inter,sans-serif}.nw-footer>div{display:flex;gap:22px}
 @media(max-width:850px){.nw-challenges-hero-grid,.nw-auth{grid-template-columns:1fr}.nw-challenges-manifest{min-height:290px}.nw-manifest-mark{font-size:165px}.nw-request-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.nw-challenges-header nav{gap:10px}.nw-challenges-header nav a{font-size:9px}.nw-challenges-header{min-height:72px}.nw-brand strong{font-size:18px}.nw-brand img{width:34px;height:34px}.nw-process{grid-template-columns:1fr;gap:9px;margin-bottom:70px}.nw-fields,.nw-kind-picker{grid-template-columns:1fr}.nw-span-two{grid-column:auto}.nw-section-header{align-items:flex-start;flex-direction:column;gap:8px}.nw-team-identity{align-items:flex-start;flex-direction:column}.nw-footer{flex-direction:column}.nw-challenges-hero{padding-top:60px}.nw-challenges-hero h1{font-size:clamp(60px,15vw,83px)}.nw-challenges-manifest{min-height:260px}.nw-manifest-mark{font-size:160px}}
+.nw-team-contact-edit{background:#1c261c;border:1px solid #465b44;margin:0 0 17px}
+.nw-team-contact-edit summary{list-style:none;display:flex;justify-content:space-between;gap:12px;
+ font:900 10px Inter,sans-serif;letter-spacing:.06em;color:#b8d3ac;padding:16px;cursor:pointer}
+.nw-team-contact-edit summary::-webkit-details-marker{display:none}
+.nw-team-contact-edit summary:hover{color:#f2ff00}
+.nw-team-contact-edit form{padding:0 16px 18px}
