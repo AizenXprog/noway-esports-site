@@ -245,7 +245,7 @@ async function checkAuth(){
  if(!user)return false;
  const {data:profile,error:pErr}=await db.from("noway_profiles").select("role").eq("id",user.id).maybeSingle();
  canManage=!pErr&&["owner","manager"].includes(profile?.role);
- return !pErr&&["owner","manager","jogador","gri"].includes(profile?.role);
+ return !pErr&&["owner","manager","jogador"].includes(profile?.role);
 }
 async function loadHub(force=false){
  if(!active()||busy)return;
