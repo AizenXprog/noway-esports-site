@@ -162,10 +162,11 @@ function syncRoles(){
   $("nowayEventCreate").hidden=!isManager();
   $("nowayCompCreate").hidden=!isManager();
   const greet={owner:"CENTRAL DO FOUNDER.",manager:"CENTRAL DA GESTÃO.",gri:"GESTÃO DE RECRUTAMENTO.",jogador:"ÁREA DO JOGADOR.",membro:"SUA CONTA NOWAY."};
-  $("nowayOverviewGreeting").textContent=greet[account.role]||"NOWAY ID.";
+  const firstName=String(account?.display_name||"").trim().split(/\s+/)[0].slice(0,32);
+  $("nowayOverviewGreeting").textContent=firstName?"OLÁ, "+firstName.toUpperCase()+".":(greet[account.role]||"NOWAY ID.");
   $("nowayOverviewDesc").textContent=isOwner()?"Controle o elenco, eventos, contatos e as contas cadastradas.":
     isManager()?"Agenda, comunicados e conversas da equipe em um só lugar.":
-    account?.role==="gri"?"Analise candidaturas e converse com candidatos, sem acesso administrativo geral.":
+    account?.role==="gri"?"Sua central de jogador, comunicados e análise de candidatos, sem permissões administrativas gerais.":
     isStaff()?"Confira seus compromissos, comunicados e mensagens da equipe.":
     "Sua identidade e suas conversas com a NOWAY, sem complicação.";
   $("nowayConsoleWelcomeText").textContent=isStaff()?
