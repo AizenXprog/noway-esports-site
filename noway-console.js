@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 const roles={owner:"FOUNDER / OWNER",manager:"TEAM MANAGER",gri:"GRI / RECRUTAMENTO",jogador:"JOGADOR",membro:"MEMBRO"};
 const kinds={partida:"PARTIDA",treino:"TREINO",reuniao:"REUNIÃO",evento:"EVENTO"};
-const activeRoles=new Set(["owner","manager","jogador","gri"]);
+const activeRoles=new Set(["owner","manager","jogador"]);
 let me=null,account=null,events=[],calendar=new Date(),selectedDay=null;
 let accountsOffset=0,accountSearch="",accountPages=0,accountFetchRun=0,searchTimer=0,loadEventsPromise=null;
 let hqSnapshot=null,hqActivity=[],hqInbox=[],hqLoadedAt=0,hqLoading=false,hqRun=0,hqIdentity=null;
@@ -166,7 +166,7 @@ function syncRoles(){
   $("nowayOverviewGreeting").textContent=firstName?"OLÁ, "+firstName.toUpperCase()+".":(greet[account.role]||"NOWAY ID.");
   $("nowayOverviewDesc").textContent=isOwner()?"Controle o elenco, eventos, contatos e as contas cadastradas.":
     isManager()?"Agenda, comunicados e conversas da equipe em um só lugar.":
-    account?.role==="gri"?"Sua central de jogador, comunicados e análise de candidatos, sem permissões administrativas gerais.":
+    account?.role==="gri"?"Acompanhe inscrições e registre pareceres na central de recrutamento.":
     isStaff()?"Confira seus compromissos, comunicados e mensagens da equipe.":
     "Sua identidade e suas conversas com a NOWAY, sem complicação.";
   $("nowayConsoleWelcomeText").textContent=isStaff()?
