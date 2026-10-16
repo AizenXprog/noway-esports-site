@@ -1,0 +1,55 @@
+/* NOWAY: um Tracker automático, cards retos e sem arredondamentos antigos. */
+#nowayConsoleStats.noway-hq-stats{gap:12px!important}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat{
+ border-radius:0!important;overflow:hidden!important;box-shadow:none!important;
+ background:#1a211b!important;border:1px solid #495449!important;
+ padding:24px 21px!important;min-height:151px;
+ transition:background .18s ease,border-color .18s ease;
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat:before{
+ position:absolute;content:"";top:0;left:0;right:0;height:2px;
+ background:#f2ff004f;border-radius:0!important
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat:hover{
+ border-color:#9cad69!important;background:#242b23!important
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat.is-priority{
+ background:#283025!important;border-color:#a2ae65!important
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat.is-priority:before{background:#f2ff00}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat small{
+ color:#b8c9b1!important;font:900 10px/1.4 Inter,sans-serif!important;
+ text-transform:uppercase;letter-spacing:.07em
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat strong{
+ font:900 clamp(34px,3.8vw,52px)/.95 "Barlow Condensed",sans-serif!important;
+ color:#f2ff00!important
+}
+#nowayConsoleStats.noway-hq-stats>.noway-hq-stat>span{color:#a4b4a1!important;font:600 10px/1.6 Inter,sans-serif}
+.nw-profile-live{padding:21px;margin-top:18px;background:#1d251f;border:1px solid #576c50}
+.nw-profile-live[hidden],.nw-profile-live-stats[hidden]{display:none!important}
+.nw-profile-live-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.nw-profile-live-head strong{font:900 10px/1.5 Inter,sans-serif;letter-spacing:.09em;color:#f2ff00}
+.nw-profile-live-head small{font:750 10px Inter,sans-serif;color:#b6c8ad}
+.nw-profile-live-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.nw-profile-live-stats>article{display:flex;flex-direction:column;gap:7px;min-width:0;min-height:112px;padding:15px 11px;border:1px solid #495d48;background:#27332a}
+.nw-profile-live-stats small{font:900 9px Inter,sans-serif;color:#a7bda4}
+.nw-profile-live-stats strong{font:900 28px/1 "Barlow Condensed",sans-serif;color:#f2ff00;overflow-wrap:anywhere}
+.nw-profile-live-stats span{font:600 9px/1.5 Inter,sans-serif;color:#bbc6b8}
+.nw-desk-tracker{margin:16px 0 20px;background:#1b271d;border:1px solid #64815d;padding:19px 17px;border-radius:0!important}
+.nw-desk-tracker>span{font:900 10px/1.5 Inter,sans-serif;color:#f2ff00;letter-spacing:.07em}
+.nw-desk-tracker>p{font:600 11px/1.75 Inter,sans-serif;color:#c8d4c4;white-space:pre-wrap}
+.nw-desk-tracker-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.nw-desk-tracker-metrics[hidden]{display:none!important}
+.nw-desk-tracker-metrics>div{display:flex;flex-direction:column;gap:7px;min-width:0;padding:13px;background:#2a3929;border:1px solid #4c694a}
+.nw-desk-tracker-metrics small{font:900 9px Inter,sans-serif;color:#bdd0ac}
+.nw-desk-tracker-metrics strong{font:900 25px "Barlow Condensed",sans-serif;color:#f2ff00;overflow-wrap:anywhere}
+.nw-team-stat-wait{padding:11px;color:#b6c8ac;font:900 9px Inter,sans-serif}
+.nw-team-card-rank,.nw-detail-ranking{border-radius:0!important}
+@media(max-width:1030px){.nw-profile-live-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){
+ .nw-profile-live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nw-desk-tracker-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #nowayConsoleStats.noway-hq-stats>.noway-hq-stat{padding:18px 15px!important;min-height:129px}
+}
+@media(prefers-reduced-motion:reduce){#nowayConsoleStats.noway-hq-stats>.noway-hq-stat{transition:none}}
