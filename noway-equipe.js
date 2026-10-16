@@ -1,4 +1,5 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {fetchR6,rankTier} from "./noway-r6-model.js";
 const db=createClient("https://vdipsufzlqmnprbjiojb.supabase.co","sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const safe=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -23,6 +24,7 @@ const avatar=p=>{
 let people=[],events=[],current=null,user=null,canManage=false,busy=false,generation=0;
 const active=()=>!$("nowayConsoleEquipe")?.hidden||!$("nowayConsoleAgenda")?.hidden;
 const person=()=>people.find(p=>p.id===current);
+const live=p=>p?.ubisoft&&externalCache.get(p.id)?.state==="ready"?externalCache.get(p.id).data:null;
 
 /* Dados externos são obtidos do backend já usado pelo NOWAY Tracker. A origem
    permanece separada das estatísticas oficiais registradas pela NOWAY. */
@@ -66,16 +68,18 @@ function externalCard(p){
 function refreshSelectedExternal(){
  const p=person(),el=$("nowayTeamPlayerLiveStats");
  if(!p||!el)return;
- const ext=externalCache.get(p.id);
- el.innerHTML=p.ubisoft?
-   '<strong>CONTA VINCULADA PELO JOGADOR</strong><p>'+safe(p.ubisoft)+' / '+safe(p.platform||"uplay")+
-   ' · Vínculo atualizado em '+safe(trackerDisplayTime(p.tracker_updated_at))+'</p>'+
-   (ext?.state==="ready"?'<div class="nw-team-external-values"><span>K/D <b>'+fmt(ext.data.kd,2)+
-   '</b></span><span>RP <b>'+fmt(ext.data.rp)+'</b></span></div>'+
-   '<small>Atualizado em '+safe(trackerDisplayTime(ext.data.fetchedAt))+' · '+safe(ext.data.source)+
-   '. Dados externos, sujeitos à disponibilidade.</small>':
-   '<small>'+(ext?.state==="error"?"Dados externos indisponíveis no momento.": "Buscando dados externos...")+'</small>'):
-   '<strong>VÍNCULO PENDENTE</strong><p>Este jogador ainda precisa registrar o Tracker em Minha Conta.</p>';
+ const entry=externalCache.get(p.id),x=live(p);
+ el.innerHTML=!p.ubisoft?
+  '<strong>TRACKER NÃO VINCULADO</strong><p>Registre sua conta na aba Minha Conta.</p>':
+  x?'<strong>DADOS AUTOMÁTICOS / ARENYZE</strong><p>'+safe(p.ubisoft)+' · '+safe(x.source)+
+    ' · Consultado '+safe(trackerDisplayTime(x.fetchedAt))+'</p>':
+  '<strong>TRACKER VINCULADO</strong><p>'+(entry?.state==="error"?
+    'API indisponível no momento. Nenhum valor será inventado.':'Buscando rank e estatísticas automaticamente...')+'</p>';
+ const root=$("nowayTeamPlayerContent");
+ if(root){
+  const rank=root.querySelector(".nw-detail-ranking");if(rank)rank.outerHTML=renderRank(p);
+  const stats=root.querySelector(".nw-detail-metrics");if(stats)stats.innerHTML=metrics(p);
+ }
 }
 async function refreshExternalLinked(force=false){
  if(externalFetchRunning||!user)return;
@@ -93,9 +97,8 @@ async function refreshExternalLinked(force=false){
      externalCache.set(p.id,{state:"loading",key,checked:Date.now()});
      if(!$("nowayConsoleEquipe").hidden)renderRoster();
      try{
-       const {data,error}=await db.functions.invoke("noway-r6-tracker",{body:{player:p.ubisoft,platform:p.platform||"uplay"}});
-       if(error||!data?.profile)throw Error(error?.message||"Resposta indisponível");
-       externalCache.set(p.id,{state:"ready",key,checked:Date.now(),data:extractExternal(data)});
+       const liveData=await fetchR6(db,p.ubisoft,p.platform||"uplay",{force});
+       externalCache.set(p.id,{state:"ready",key,checked:Date.now(),data:liveData});
      }catch(error){
        externalCache.set(p.id,{state:"error",key,checked:Date.now(),error:String(error?.message||error)});
      }
@@ -149,44 +152,50 @@ function renderRoster(){
  const term=$("nowayTeamHubSearch").value.trim().toLocaleLowerCase("pt-BR");
  const list=people.filter(p=>[p.name,p.ubisoft,roleLabel[p.role]].some(v=>String(v||"").toLocaleLowerCase("pt-BR").includes(term)));
  $("nowayTeamHubRoster").innerHTML=list.length?list.map(p=>{
-  const s=p.stats||{},has=s.matches>0,r=p.rank;
+  const x=live(p),rank=x?.rank?rankTier(x.rank):null;
+  const rankHTML=!p.ubisoft?"":x?.rank?
+   '<span class="nw-team-card-rank">'+(rank?rankIcon(rank):"")+
+   '<span><strong>'+safe(x.rank)+'</strong><small>'+(x.rankPoints===null?"RP indisponível":fmt(x.rankPoints)+" RP")+
+   ' · ARENYZE</small></span></span>':"";
+  const stats=!p.ubisoft?"":x?
+   '<span class="nw-team-card-stats"><span><small>K/D</small><b>'+fmt(x.kd,2)+'</b></span>'+
+   '<span><small>WIN RATE</small><b>'+(x.winRate===null?"—":fmt(x.winRate,1)+"%")+'</b></span>'+
+   '<span><small>PARTIDAS</small><b>'+fmt(x.matches)+'</b></span></span>':
+   '<span class="nw-team-stat-wait">CONSULTANDO API / ESTATÍSTICAS PENDENTES</span>';
   return '<button type="button" class="nw-team-card" data-team-player="'+safe(p.id)+'">'+
-   '<span class="nw-team-card-top"><span class="nw-team-card-photo">'+avatar(p)+'</span><span class="nw-team-card-name"><strong>'+
-   safe(p.name)+'</strong><small>'+safe(roleLabel[p.role]||"EQUIPE")+(p.ubisoft?" · "+safe(p.ubisoft):"")+'</small></span></span>'+
-   '<span class="nw-team-card-rank">'+(rankIcon(r)||'<span class="nw-team-rank-empty">◇</span>')+
-   '<span><strong>'+safe(rankLabel(r))+'</strong><small>'+
-   (r?'TEMPORADA '+safe(r.season)+' · '+(r.rp==null?"RP não registrado":fmt(r.rp)+" RP")+' · GESTÃO':'RANK AINDA NÃO REGISTRADO')+
-   '</small></span></span>'+
-   '<span class="nw-team-card-link">'+externalCard(p)+'</span>'+
-   '<span class="nw-team-card-stats"><span><small>K/D</small><b>'+(has?ratio(s.kills,s.deaths):"—")+'</b></span>'+
-   '<span><small>KOST</small><b>'+(has?pct(s.kost,s.rounds):"—")+'</b></span>'+
-   '<span><small>PARTIDAS</small><b>'+(has?fmt(s.matches):"—")+'</b></span></span>'+
-   '<span class="nw-team-card-foot"><span>'+(has?"DADOS REAIS DA NOWAY":"AGUARDANDO REGISTROS")+'</span><span>↗</span></span></button>';
+   '<span class="nw-team-card-top"><span class="nw-team-card-photo">'+avatar(p)+'</span>'+
+   '<span class="nw-team-card-name"><strong>'+safe(p.name)+'</strong><small>'+
+   safe(roleLabel[p.role]||"EQUIPE")+(p.ubisoft?" · "+safe(p.ubisoft):"")+'</small></span></span>'+
+   rankHTML+'<span class="nw-team-card-link">'+externalCard(p)+'</span>'+stats+
+   '<span class="nw-team-card-foot"><span>'+(p.ubisoft?
+    x?"ESTATÍSTICAS AUTOMÁTICAS / ARENYZE":"AGUARDANDO CONSULTA DA API":
+    "VINCULE O TRACKER PARA EXIBIR DADOS")+'</span><span>↗</span></span></button>';
  }).join(""):'<div class="nw-team-empty">Nenhum integrante corresponde à pesquisa.</div>';
  $("nowayTeamHubRoster").querySelectorAll("[data-team-player]").forEach(b=>b.addEventListener("click",()=>openPlayer(b.dataset.teamPlayer)));
 }
 function renderRank(p){
- const r=p.rank;
- return '<div class="nw-detail-ranking">'+(rankIcon(r)||'<span class="nw-team-rank-empty">◇</span>')+'<span><strong>'+safe(rankLabel(r))+'</strong><small>'+
- (r?"TEMPORADA "+safe(r.season)+" · "+(r.rp==null?"RP não registrado":fmt(r.rp)+" RP"):"Sem rank registrado")+
- '</small><small>'+(r?"REGISTRO DA GESTÃO · "+safe(date(r.recorded_at)):"Não presume a classificação do jogador")+'</small></span></div>';
+ const x=live(p),rank=x?.rank?rankTier(x.rank):null;
+ if(!p.ubisoft)return '<div class="nw-detail-ranking"><span>VÍNCULO DO TRACKER NECESSÁRIO</span></div>';
+ if(!x)return '<div class="nw-detail-ranking"><span>AGUARDANDO A API PARA CONSULTAR O RANK</span></div>';
+ return '<div class="nw-detail-ranking">'+(rank?rankIcon(rank):"")+
+ '<span><strong>'+safe(x.rank||"RANK NÃO INFORMADO PELA API")+'</strong><small>'+
+ (x.rankPoints===null?"RP não disponibilizado":fmt(x.rankPoints)+" RP")+
+ ' · ARENYZE / '+safe(trackerDisplayTime(x.fetchedAt))+'</small></span></div>';
 }
 function metrics(p){
- const s=p.stats||{},has=s.matches>0;
- const list=[
- ["K/D",has?ratio(s.kills,s.deaths):"—","Kills / mortes"],
- ["KOST",has?pct(s.kost,s.rounds):"—","Participação por round"],
- ["WIN RATE",has?pct(s.wins,s.matches):"—","Vitórias da NOWAY"],
- ["KPR",has?ratio(s.kills,s.rounds):"—","Kills por round"],
- ["KILLS",has?fmt(s.kills):"—","Eliminações"],
- ["DEATHS",has?fmt(s.deaths):"—","Mortes"],
- ["ASSISTS",has?fmt(s.assists):"—","Assistências"],
- ["SOBREVIVÊNCIA",has?pct(s.survived,s.rounds):"—","Rounds sobrevividos"],
- ["ENTRY KILLS",has?fmt(s.entry_kills):"—","Entradas vencidas"],
- ["ENTRY DEATHS",has?fmt(s.entry_deaths):"—","Mortes de entrada"],
- ["ENTRY DIFF",has?fmt(s.entry_kills-s.entry_deaths):"—","Saldo de entrada"],
- ["ROUNDS",has?fmt(s.rounds):"—","Rounds registrados"]];
- return list.map(x=>stat(...x)).join("");
+ const x=live(p);
+ if(!p.ubisoft)return '<p class="noway-muted">Sem vínculo: nenhuma estatística disponível.</p>';
+ if(!x)return '<p class="noway-muted">Consultando a API. Indicadores indisponíveis até receber dados.</p>';
+ return [
+  ["K/D",fmt(x.kd,2),"Eliminações por morte / API"],
+  ["WIN RATE",x.winRate===null?"—":fmt(x.winRate,1)+"%","Vitórias / API"],
+  ["PARTIDAS",fmt(x.matches),"Jogos consultados"],
+  ["RP",fmt(x.rankPoints),"Rank points"],
+  ["KILLS",fmt(x.kills),"Eliminações / API"],
+  ["DEATHS",fmt(x.deaths),"Mortes / API"],
+  ["HEADSHOT",x.headshots===null?"—":fmt(x.headshots,1)+"%","Taxa / API"],
+  ["NÍVEL",fmt(x.level),"Conta Ubisoft"]
+ ].map(v=>stat(...v)).join("");
 }
 function chart(matches){
  const rows=matches.slice().reverse();
@@ -204,10 +213,8 @@ function renderHistory(payload){
  safe({vitoria:"VITÓRIA",derrota:"DERROTA",empate:"EMPATE"}[m.result]||"—")+'</td><td><strong>'+fmt(m.kills)+' / '+fmt(m.deaths)+' / '+fmt(m.assists)+'</strong></td><td>'+
  safe(pct(m.kost,m.rounds))+'</td><td>'+fmt(m.entry_kills)+' - '+fmt(m.entry_deaths)+'</td></tr>').join("")+
  '</tbody></table></div>':'<p class="noway-muted">Ainda não foram registradas estatísticas de confrontos finalizados para este jogador.</p>';
- const rankHistory=ranksHist.length?'<div class="nw-detail-block"><h5>HISTÓRICO DE RANKS.</h5><div class="nw-fixture-roster">'+ranksHist.map(r=>
- '<span>'+safe(rankLabel(r))+' · '+safe(r.season)+' · '+(r.rp==null?"—":fmt(r.rp)+" RP")+' · '+safe(date(r.date))+'</span>').join("")+'</div></div>':"";
  $("nowayTeamPlayerHistoryPanel").innerHTML='<div class="nw-detail-block"><h5>EVOLUÇÃO / ELIMINAÇÕES.</h5><div class="nw-detail-chart">'+chart(matches)+'</div></div>'+
- '<div class="nw-detail-block"><h5>HISTÓRICO PARTIDA A PARTIDA.</h5>'+rows+'</div>'+rankHistory;
+ '<div class="nw-detail-block"><h5>HISTÓRICO DE CONFRONTOS NOWAY / REGISTROS INTERNOS.</h5>'+rows+'</div>';
 }
 async function openPlayer(id){
  const p=people.find(x=>x.id===id);if(!p)return;
@@ -218,34 +225,12 @@ async function openPlayer(id){
  (p.ubisoft?" · "+safe(p.ubisoft):"")+'</p><p>NOWAY Tracker / dados da equipe</p></div></div>'+
  renderRank(p)+'<div class="nw-detail-external" id="nowayTeamPlayerLiveStats"></div><div class="nw-detail-metrics">'+metrics(p)+'</div>'+
  '<div id="nowayTeamPlayerHistoryPanel"><p class="noway-muted">Carregando histórico...</p></div>'+
- (canManage?'<div class="nw-detail-block"><h5>REGISTRAR RANK.</h5><form id="nowayTeamRankForm" class="nw-rank-form">'+
- '<label>TEMPORADA<input name="season" minlength="3" maxlength="48" placeholder="Y11S4" required></label>'+
- '<label>RANK<select name="tier">'+Object.entries(ranks).map(([v,l])=>
- '<option value="'+v+'"'+(v==="unranked"?" selected":"")+'>'+safe(l)+'</option>').join("")+'</select></label>'+
- '<label>DIVISÃO<select name="division"><option value="">SEM DIVISÃO</option>'+
- [1,2,3,4,5].map(i=>'<option value="'+i+'">'+roman[i]+'</option>').join("")+'</select></label>'+
- '<label>RP<input name="rp" type="number" min="0" max="100000" placeholder="Opcional"></label>'+
- '<button type="submit">SALVAR</button></form><p class="nw-rank-explain">Rank registrado manualmente pela gestão, não sincronizado com os servidores da Ubisoft.</p></div>':"");
+ '';
  $("nowayTeamPlayerExternal").textContent=p.ubisoft?"CONSULTAR "+p.ubisoft+" NO R6 ↗":"CONSULTAR PERFIL EXTERNO ↗";
  $("nowayTeamPlayerExternal").dataset.playerId=id;
  $("nowayTeamPlayerHistory").hidden=true;
  refreshSelectedExternal();
  $("nowayTeamHubPlayer").scrollIntoView({behavior:"smooth",block:"start"});
- const form=$("nowayTeamRankForm");
- if(form){
-  if(p.rank){
-   form.elements.season.value=p.rank.season;
-   form.elements.tier.value=p.rank.tier;
-   form.elements.division.value=p.rank.division??"";
-   form.elements.rp.value=p.rank.rp??"";
-  }
-  form.addEventListener("submit",saveRank);
-  form.elements.tier.addEventListener("change",()=>{
-   const noDiv=["champion","unranked"].includes(form.elements.tier.value);
-   form.elements.division.value=noDiv?"":form.elements.division.value||"5";
-   form.elements.division.disabled=noDiv;
-  });
- }
  const expected=current;
  try{
   const {data,error}=await db.rpc("noway_team_player_history_v1",{p_player_id:id});
@@ -254,18 +239,6 @@ async function openPlayer(id){
  }catch(e){
   if(current===expected)$("nowayTeamPlayerHistoryPanel").innerHTML='<p class="noway-muted">Erro ao carregar histórico: '+safe(e.message)+'</p>';
  }
-}
-async function saveRank(e){
- e.preventDefault();const p=person();if(!p||!canManage)return;
- const form=e.currentTarget,values=new FormData(form),division=String(values.get("division")||"");
- const args={p_player_id:p.id,p_season:String(values.get("season")||"").trim(),p_tier:String(values.get("tier")||"unranked"),
- p_division:division?Number(division):null,p_rank_points:String(values.get("rp")||"").trim()===""?null:Number(values.get("rp"))};
- const b=form.querySelector('button[type="submit"]');b.disabled=true;
- try{
-  const {error}=await db.rpc("noway_tracker_save_rank",args);if(error)throw error;
-  const id=p.id;await loadHub();await openPlayer(id);
- }catch(error){promptError("Erro ao registrar rank: "+error.message);}
- finally{b.disabled=false;}
 }
 async function checkAuth(){
  const {data,error}=await db.auth.getUser();user=error?null:data?.user||null;
