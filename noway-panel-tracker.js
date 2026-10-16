@@ -124,7 +124,7 @@ async function search(event){
 }
 $("nowayTrackerSearch")?.addEventListener("submit",search);
 // NOWAY ID: vínculo individual (declarado pelo titular), sem expor outros perfis privados.
-let myAccount=null,myUser=null,myLookupGeneration=0,myPreviouslyLoaded=null,myLoadedAt=0;
+let myAccount=null,myUser=null,myLookupGeneration=0,myPreviouslyLoaded=null,myLoadedAt=0,myRosterPlayer=false;
 const platformName=p=>p==="uplay"?"PC / UBISOFT":p==="psn"?"PLAYSTATION":"XBOX";
 function showMyAccount(link,feedback=""){
   const present=Boolean(link?.player_name);
@@ -133,12 +133,13 @@ function showMyAccount(link,feedback=""){
   if(!form||!actions||!button||!hint)return;
   form.hidden=present;
   actions.hidden=!present;
+  const unlink=$("nowayTrackerUnlink");if(unlink)unlink.hidden=myRosterPlayer;
   button.hidden=!present;
   button.disabled=!present;
   hint.textContent=feedback||(present?
-    "Conta vinculada: "+link.player_name+" · "+platformName(link.platform)+
-    ". O perfil será consultado automaticamente ao abrir esta aba.":
-    "Vincule seu nickname do Rainbow Six uma única vez. Depois, suas estatísticas serão carregadas ao entrar aqui.");
+    "Identidade declarada: "+link.player_name+" · "+platformName(link.platform)+
+    ". Os dados externos aparecerão na Equipe e Tracker, com a data da consulta.":
+    (myRosterPlayer?"OBRIGATÓRIO PARA JOGADORES. ":"")+"Cadastre seu nickname e plataforma. A NOWAY associa essa identidade à sua conta; não comprova titularidade perante a Ubisoft.");
   if(present){
     $("nowayTrackerLinkName").value=link.player_name;
     $("nowayTrackerLinkPlatform").value=link.platform;
@@ -170,6 +171,9 @@ async function initializeMyStats(autoSearch=true){
       return;
     }
     myUser=identity.user.id;
+    const {data:roleData}=await db.from("noway_profiles").select("role").eq("id",myUser).maybeSingle();
+    if(generation!==myLookupGeneration)return;
+    myRosterPlayer=roleData?.role==="jogador";
     const {data:link,error}=await db.from("noway_tracker_links")
       .select("player_name,platform,updated_at").eq("user_id",myUser).maybeSingle();
     if(generation!==myLookupGeneration)return;
@@ -193,7 +197,8 @@ $("nowayTrackerLinkForm")?.addEventListener("submit",async event=>{
     const {error}=await db.rpc("noway_tracker_link_account",{p_name:name,p_platform:platform});
     if(error)throw error;
     myPreviouslyLoaded=null;myLoadedAt=0;result=null;
-    await initializeMyStats(true);
+    await initializeMyStats(false);
+    window.dispatchEvent(new Event("noway:tracker-linked"));
   }catch(err){$("nowayTrackerSelfStatus").textContent="Não foi possível vincular o perfil: "+(err?.message||"Tente novamente.");}
   finally{button.disabled=false;}
 });
@@ -211,12 +216,15 @@ $("nowayTrackerUnlink")?.addEventListener("click",async()=>{
     if(error)throw error;
     myAccount=null;myPreviouslyLoaded=null;myLoadedAt=0;
     showMyAccount(null);
+    window.dispatchEvent(new Event("noway:tracker-linked"));
   }catch(err){$("nowayTrackerSelfStatus").textContent="Não foi possível desvincular: "+(err?.message||"Tente novamente.");}
   finally{button.disabled=false;}
 });
 window.addEventListener("noway:tracker-open",()=>initializeMyStats(true));
+window.addEventListener("noway:tracker-profile-open",()=>initializeMyStats(false));
 db.auth.onAuthStateChange((event)=>{
   if(event==="SIGNED_OUT"){++myLookupGeneration;myUser=null;myAccount=null;myPreviouslyLoaded=null;}
 });
 if(location.hash==="#tracker")setTimeout(()=>initializeMyStats(true),450);
+if(location.hash==="#profile")setTimeout(()=>initializeMyStats(false),450);
 
