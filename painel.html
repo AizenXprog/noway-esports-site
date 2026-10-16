@@ -67,11 +67,87 @@
    <header class="nw-team-hero">
      <div><span class="nw-team-eyebrow"><span aria-hidden="true">✳</span> NOWAY ID / OPERAÇÃO COMPETITIVA</span>
        <h3>CENTRAL DA <em>EQUIPE.</em></h3>
-       <p>Chat, elenco e desempenho competitivo em um único espaço. Os próximos confrontos ficam na Agenda.</p></div>
+       <p>Rank, métricas e evolução de todos os jogadores da organização. Founder e Team Manager também fazem parte do elenco.</p></div>
      <div class="nw-team-hero-actions"><span class="nw-team-live"><span></span> ÁREA INTERNA</span>
        <button id="nowayTeamHubRefresh" type="button" class="noway-outline-action">ATUALIZAR PAINEL ↻</button></div>
    </header>
-   <div class="nw-team-section-head nw-team-communication-head"><div><span class="noway-tiny">01 / COMUNICAÇÃO INTERNA</span>
+   <div class="nw-team-summary" id="nowayTeamHubSummary" aria-live="polite">
+     <div><small>JOGADORES</small><strong>—</strong><span>Founder, TM e atletas</span></div>
+     <div><small>PRÓXIMOS JOGOS</small><strong>—</strong><span>Agenda competitiva</span></div>
+     <div><small>CONFIRMADOS</small><strong>—</strong><span>Próximo confronto</span></div>
+     <div><small>PARTIDAS REGISTRADAS</small><strong>—</strong><span>Histórico competitivo</span></div>
+   </div>
+   <div class="nw-team-hub-sections">
+    
+    <section class="nw-team-roster">
+      <div class="nw-team-section-head"><div><span class="noway-tiny">01 / NOWAY PERFORMANCE</span>
+        <h4>ESTATÍSTICAS DO <em>TIME.</em></h4>
+        <p>Founder, Team Manager e jogadores da NOWAY. Rank, K/D, win rate e HS visíveis nos cards; detalhes completos ao abrir.</p></div>
+        <div class="nw-team-roster-actions"><label for="nowayTeamHubSearch">LOCALIZAR JOGADOR</label>
+        <input id="nowayTeamHubSearch" type="search" placeholder="Pesquisar jogador..." maxlength="80"></div></div>
+      <div id="nowayTeamHubRoster" class="nw-team-roster-grid" aria-live="polite"><p class="noway-muted">Carregando elenco e estatísticas...</p></div>
+    </section>
+    <section id="nowayTeamHubPlayer" class="nw-team-player-detail" hidden aria-labelledby="nowayTeamPlayerTitle">
+      <div class="nw-team-player-titlebar"><div><span class="noway-tiny">NOWAY TRACKER / PERFIL COMPLETO</span>
+        <h4 id="nowayTeamPlayerTitle">JOGADOR.</h4></div>
+        <button type="button" id="nowayTeamPlayerClose" class="noway-outline-action">FECHAR PERFIL ×</button></div>
+      <div id="nowayTeamPlayerContent"></div>
+      <div class="nw-team-player-actions"><button id="nowayTeamPlayerExternal" type="button" class="nw-team-link">
+        CONSULTAR DADOS DO R6 ↗</button>
+        <button id="nowayTeamPlayerHistory" type="button" class="nw-team-link" hidden>HISTÓRICO COMPLETO ↗</button></div>
+    </section>
+    <details class="nw-team-tracker-tools" id="nowayTeamTrackerTools">
+       <summary><span>▣</span> PESQUISAR PLAYER / UBISOFT CONNECT <b>↗</b></summary>
+       <p>Consulta complementar de dados externos. O NOWAY Tracker distingue registros da organização de estatísticas fornecidas por terceiros.</p>
+       <section id="nowayConsoleTracker" class="noway-console-view noway-tracker" data-console-view="tracker" hidden>
+      <div class="noway-tracker-hero">
+        <div><span class="noway-tracker-overline">NOWAY / RAINBOW SIX SIEGE / PLAYER INTELLIGENCE</span>
+          <h3>NOWAY <em>TRACKER.</em></h3>
+          <p>Seus dados do Rainbow Six aparecem ao abrir a aba, depois de vincular seu nickname. Também é possível pesquisar qualquer outro jogador.</p>
+        </div>
+        <span class="noway-tracker-mode"><i></i> DATA / EXTERNAL SOURCE</span>
+      </div>
+      
+      <div class="noway-tracker-search-title"><span>02 / PESQUISAR OUTROS JOGADORES</span><p>Consulte outro perfil por nickname, sem perder o seu vínculo.</p></div>
+      <form id="nowayTrackerSearch" class="noway-tracker-search">
+        <div class="noway-tracker-field">
+          <label for="nowayTrackerPlayer">NOME DO JOGADOR</label>
+          <input id="nowayTrackerPlayer" autocomplete="off" spellcheck="false" maxlength="48" minlength="2" required
+            placeholder="Usuário Ubisoft Connect" aria-describedby="nowayTrackerHint">
+        </div>
+        <div class="noway-tracker-platform">
+          <label for="nowayTrackerPlatform">PLATAFORMA</label>
+          <select id="nowayTrackerPlatform"><option value="uplay">PC / UBISOFT</option><option value="psn">PLAYSTATION</option><option value="xbl">XBOX</option></select>
+        </div>
+        <button type="submit" id="nowayTrackerSubmit" class="noway-tracker-submit">ANALISAR PERFIL <span aria-hidden="true">↗</span></button>
+      </form>
+      <p id="nowayTrackerHint" class="noway-tracker-hint">Basta informar o nome usado na plataforma. Nenhuma senha do jogador é solicitada.</p>
+      <div id="nowayTrackerState" class="noway-tracker-state" role="status" aria-live="polite">
+        <span class="noway-tracker-state-mark">✳</span>
+        <div><strong>UMA PESQUISA. TODO O DESEMPENHO.</strong><p>Digite um nome para consultar informações reais de Rainbow Six Siege. Os campos que o provedor não disponibilizar permanecerão vazios.</p></div>
+      </div>
+      <div id="nowayTrackerResults" hidden>
+        <div class="noway-tracker-profile">
+          <div class="noway-tracker-identity"><span id="nowayTrackerAvatar" class="noway-tracker-avatar">NW</span>
+            <div><span class="noway-tracker-overline">PLAYER / PERFORMANCE REPORT</span><h4 id="nowayTrackerName">—</h4><p id="nowayTrackerMeta">—</p><div id="nowayTrackerRankBadge" class="nw-external-rank-badge" hidden></div></div></div>
+          <a id="nowayTrackerExternal" href="https://r6.tracker.network/" target="_blank" rel="noopener noreferrer" class="noway-tracker-external">CONSULTAR NO TRACKER.GG ↗</a>
+        </div>
+        <div id="nowayTrackerMetrics" class="noway-tracker-metrics"></div>
+        <div class="noway-tracker-bottom">
+          <section class="noway-tracker-chart-panel"><div class="noway-tracker-subhead"><span>01 / PROGRESSÃO</span><h5>EVOLUÇÃO DE RP.</h5></div>
+            <div id="nowayTrackerChart" class="noway-tracker-chart"></div></section>
+          <section class="noway-tracker-insight-panel"><div class="noway-tracker-subhead"><span>02 / INTERPRETAÇÃO</span><h5>LEITURA DE JOGO.</h5></div>
+            <div id="nowayTrackerInsights" class="noway-tracker-insights"></div></section>
+        </div>
+        <div id="nowayTrackerSeason" class="noway-tracker-season"></div>
+        <p class="noway-tracker-source" id="nowayTrackerSource">Fonte: R6 Arenyze. Dados externos, sujeitos à atualização e disponibilidade do provedor.</p>
+      </div>
+    </section>
+    </details>
+    
+
+   </div>
+   <div class="nw-team-section-head nw-team-communication-head"><div><span class="noway-tiny">02 / COMUNICAÇÃO INTERNA</span>
        <h4>CHAT E <em>COMUNICADOS.</em></h4><p>O chat permanece privado e com todas as funções anteriores.</p></div>
        <a class="nw-team-link" href="#nowayTeamWorkspace">CONVERSA PRIVADA ↓</a></div>
     <section id="nowayTeamWorkspace" class="noway-team-space" aria-label="Área interna da equipe NOWAY" hidden>
@@ -143,82 +219,6 @@
       </section>
     </section>
    <div id="nowayTeamTrackerRequirement" class="nw-team-tracker-required" hidden role="status"></div>
-   <div class="nw-team-summary" id="nowayTeamHubSummary" aria-live="polite">
-     <div><small>INTEGRANTES</small><strong>—</strong><span>Elenco autorizado</span></div>
-     <div><small>PRÓXIMOS JOGOS</small><strong>—</strong><span>Agenda competitiva</span></div>
-     <div><small>CONFIRMADOS</small><strong>—</strong><span>Próximo confronto</span></div>
-     <div><small>PARTIDAS REGISTRADAS</small><strong>—</strong><span>Histórico competitivo</span></div>
-   </div>
-   <div class="nw-team-hub-sections">
-    
-    <section class="nw-team-roster">
-      <div class="nw-team-section-head"><div><span class="noway-tiny">02 / NOWAY PERFORMANCE</span>
-        <h4>ESTATÍSTICAS DO <em>TIME.</em></h4>
-        <p>Perfis com desempenho registrado, rank da temporada e acesso ao histórico completo.</p></div>
-        <div class="nw-team-roster-actions"><label for="nowayTeamHubSearch">LOCALIZAR JOGADOR</label>
-        <input id="nowayTeamHubSearch" type="search" placeholder="Pesquisar integrante..." maxlength="80"></div></div>
-      <div id="nowayTeamHubRoster" class="nw-team-roster-grid" aria-live="polite"><p class="noway-muted">Carregando elenco e estatísticas...</p></div>
-    </section>
-    <section id="nowayTeamHubPlayer" class="nw-team-player-detail" hidden aria-labelledby="nowayTeamPlayerTitle">
-      <div class="nw-team-player-titlebar"><div><span class="noway-tiny">NOWAY TRACKER / PERFIL COMPLETO</span>
-        <h4 id="nowayTeamPlayerTitle">JOGADOR.</h4></div>
-        <button type="button" id="nowayTeamPlayerClose" class="noway-outline-action">FECHAR PERFIL ×</button></div>
-      <div id="nowayTeamPlayerContent"></div>
-      <div class="nw-team-player-actions"><button id="nowayTeamPlayerExternal" type="button" class="nw-team-link">
-        CONSULTAR DADOS DO R6 ↗</button>
-        <button id="nowayTeamPlayerHistory" type="button" class="nw-team-link" hidden>HISTÓRICO COMPLETO ↗</button></div>
-    </section>
-    <details class="nw-team-tracker-tools" id="nowayTeamTrackerTools">
-       <summary><span>▣</span> PESQUISAR PLAYER / UBISOFT CONNECT <b>↗</b></summary>
-       <p>Consulta complementar de dados externos. O NOWAY Tracker distingue registros da organização de estatísticas fornecidas por terceiros.</p>
-       <section id="nowayConsoleTracker" class="noway-console-view noway-tracker" data-console-view="tracker" hidden>
-      <div class="noway-tracker-hero">
-        <div><span class="noway-tracker-overline">NOWAY / RAINBOW SIX SIEGE / PLAYER INTELLIGENCE</span>
-          <h3>NOWAY <em>TRACKER.</em></h3>
-          <p>Seus dados do Rainbow Six aparecem ao abrir a aba, depois de vincular seu nickname. Também é possível pesquisar qualquer outro jogador.</p>
-        </div>
-        <span class="noway-tracker-mode"><i></i> DATA / EXTERNAL SOURCE</span>
-      </div>
-      
-      <div class="noway-tracker-search-title"><span>02 / PESQUISAR OUTROS JOGADORES</span><p>Consulte outro perfil por nickname, sem perder o seu vínculo.</p></div>
-      <form id="nowayTrackerSearch" class="noway-tracker-search">
-        <div class="noway-tracker-field">
-          <label for="nowayTrackerPlayer">NOME DO JOGADOR</label>
-          <input id="nowayTrackerPlayer" autocomplete="off" spellcheck="false" maxlength="48" minlength="2" required
-            placeholder="Usuário Ubisoft Connect" aria-describedby="nowayTrackerHint">
-        </div>
-        <div class="noway-tracker-platform">
-          <label for="nowayTrackerPlatform">PLATAFORMA</label>
-          <select id="nowayTrackerPlatform"><option value="uplay">PC / UBISOFT</option><option value="psn">PLAYSTATION</option><option value="xbl">XBOX</option></select>
-        </div>
-        <button type="submit" id="nowayTrackerSubmit" class="noway-tracker-submit">ANALISAR PERFIL <span aria-hidden="true">↗</span></button>
-      </form>
-      <p id="nowayTrackerHint" class="noway-tracker-hint">Basta informar o nome usado na plataforma. Nenhuma senha do jogador é solicitada.</p>
-      <div id="nowayTrackerState" class="noway-tracker-state" role="status" aria-live="polite">
-        <span class="noway-tracker-state-mark">✳</span>
-        <div><strong>UMA PESQUISA. TODO O DESEMPENHO.</strong><p>Digite um nome para consultar informações reais de Rainbow Six Siege. Os campos que o provedor não disponibilizar permanecerão vazios.</p></div>
-      </div>
-      <div id="nowayTrackerResults" hidden>
-        <div class="noway-tracker-profile">
-          <div class="noway-tracker-identity"><span id="nowayTrackerAvatar" class="noway-tracker-avatar">NW</span>
-            <div><span class="noway-tracker-overline">PLAYER / PERFORMANCE REPORT</span><h4 id="nowayTrackerName">—</h4><p id="nowayTrackerMeta">—</p><div id="nowayTrackerRankBadge" class="nw-external-rank-badge" hidden></div></div></div>
-          <a id="nowayTrackerExternal" href="https://r6.tracker.network/" target="_blank" rel="noopener noreferrer" class="noway-tracker-external">CONSULTAR NO TRACKER.GG ↗</a>
-        </div>
-        <div id="nowayTrackerMetrics" class="noway-tracker-metrics"></div>
-        <div class="noway-tracker-bottom">
-          <section class="noway-tracker-chart-panel"><div class="noway-tracker-subhead"><span>01 / PROGRESSÃO</span><h5>EVOLUÇÃO DE RP.</h5></div>
-            <div id="nowayTrackerChart" class="noway-tracker-chart"></div></section>
-          <section class="noway-tracker-insight-panel"><div class="noway-tracker-subhead"><span>02 / INTERPRETAÇÃO</span><h5>LEITURA DE JOGO.</h5></div>
-            <div id="nowayTrackerInsights" class="noway-tracker-insights"></div></section>
-        </div>
-        <div id="nowayTrackerSeason" class="noway-tracker-season"></div>
-        <p class="noway-tracker-source" id="nowayTrackerSource">Fonte: R6 Arenyze. Dados externos, sujeitos à atualização e disponibilidade do provedor.</p>
-      </div>
-    </section>
-    </details>
-    
-
-   </div>
    <div class="nw-team-attribution">Os dados de partidas vêm dos registros da NOWAY. Ranks declarados pela gestão são identificados como tal. Emblemas de ranks: pacote comunitário MIT (Oliwer Pawelski); Rainbow Six Siege pertence à Ubisoft.</div>
   </section>
 

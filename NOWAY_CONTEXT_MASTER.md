@@ -284,3 +284,12 @@ Estou continuando o projeto NOWAY Esports. Antes de qualquer alteração, leia N
 **Nenhum documento garante perda zero de contexto em todas as condições:** manter GitHub + cópia local e reler no próximo chat reduz substancialmente o risco.
 
 Este arquivo é APENAS documentação. Não constitui autorização de desenvolvimento adicional.
+
+## Estrutura II — Central de Equipe / 16-10-2026
+
+- Pedido do usuário: "membros registrados" = jogadores da organização; administradores Founder e Team Manager são **sempre jogadores** e entram no elenco competitivo. O cargo GRI continua exclusivo do recrutamento, não concede acesso ao hub da equipe. Contas genéricas membro não são promovidas automaticamente.
+- Exibir primeiro o elenco, seguido do chat existente. Cards com rank e emblema (se a API fornecer), K/D, win rate e taxa de HS, todos com fallback "—" sem números inventados.
+- Expandir jogador: rank e RP, indicadores adicionais, gráfico e tabela de histórico de RP disponibilizado pela Arenyze, mais partidas oficiais finalizadas e confirmadas via noway_team_player_history_v1.
+- Limite do provedor: /r6/api/v2/profile expõe estatísticas e evolução de RP, não um feed completo de todas as partidas individuais R6. Não confundir histórico de RP com histórico de partidas.
+- Arquivos: painel.html, noway-equipe.js, noway-equipe.css e este registro. Nenhuma foto, cargo, regra do banco ou frontend de outra seção alterados.
+- Testes pendentes: contas autenticadas reais, dados reais Arenyze, responsividade no navegador e confirmação de deploy READY.
