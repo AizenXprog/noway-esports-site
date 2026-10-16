@@ -200,12 +200,15 @@ $("nowayTeamPlayerClose").addEventListener("click",()=>{
  $("nowayTeamHubRoster").scrollIntoView({behavior:"smooth",block:"start"});
 });
 const tools=$("nowayTeamTrackerTools");
+let skipOwnTrackerLookup=false;
 tools.addEventListener("toggle",()=>{
  $("nowayConsoleTracker").hidden=!tools.open;
- if(tools.open)window.dispatchEvent(new Event("noway:tracker-open"));
+ if(tools.open&&!skipOwnTrackerLookup)window.dispatchEvent(new Event("noway:tracker-open"));
+ skipOwnTrackerLookup=false;
 });
 $("nowayTeamPlayerExternal").addEventListener("click",()=>{
  const p=person();
+ skipOwnTrackerLookup=Boolean(p?.ubisoft)&&!tools.open;
  tools.open=true;
  if(p?.ubisoft){
   $("nowayTrackerPlayer").value=p.ubisoft;
