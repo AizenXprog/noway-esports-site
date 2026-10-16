@@ -172,13 +172,13 @@ async function loadReviews(id){
  if(!manager||!id||!showing())return;
  const panel=$("nowayDeskReviews");
  const {data,error}=await db.from("noway_recruitment_reviews")
- .select("id,reviewer_id,recommendation,note,created_at").eq("application_id",id)
+ .select("id,reviewer_id,reviewer_name,recommendation,note,created_at").eq("application_id",id)
  .order("created_at",{ascending:false}).limit(60);
  if(id!==selected)return;
  if(error){panel.textContent="Não foi possível carregar os pareceres: "+error.message;return;}
  panel.innerHTML=(data||[]).length?(data||[]).map(r=>
   '<article class="noway-desk-review"><span>'+escape(recommendationLabels[r.recommendation]||r.recommendation)+
-  ' · '+escape(formatDate(r.created_at))+'</span><p>'+escape(r.note)+'</p></article>'
+  ' · '+escape(r.reviewer_name||"Gestão")+' · '+escape(formatDate(r.created_at))+'</span><p>'+escape(r.note)+'</p></article>'
  ).join(""):'<p class="noway-muted">Ainda não há pareceres sobre este candidato.</p>';
 }
 async function saveReview(event){
