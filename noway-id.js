@@ -497,7 +497,7 @@ function goToChatBottom(smooth=true){
 }
 const chatExpandButton=$id("nowayChatExpand");
 function setChatFocus(open){
- const active=Boolean(open)&&$id("nowayDashboard")?.dataset.consoleActive==="chat";
+ const active=Boolean(open)&&$id("nowayDashboard")?.dataset.consoleActive==="equipe";
  document.body.classList.toggle("noway-chat-focus",active);
  if(chatExpandButton){
    chatExpandButton.setAttribute("aria-pressed",String(active));
@@ -706,7 +706,7 @@ function hideTeamToast(){
 function updateTeamUnread(){
   const badge=$id("nowayChatUnread");
   if(badge){badge.hidden=teamUnread===0;badge.textContent=teamUnread>99?"99+":String(teamUnread);}
-  const tab=document.querySelector('[data-console-tab="chat"]');
+  const tab=document.querySelector('[data-console-tab="equipe"]');
   if(tab)tab.classList.toggle("has-unread",teamUnread>0);
   document.title=teamUnread>0?"● ("+teamUnread+") "+originalNowayTitle:originalNowayTitle;
 }
@@ -741,7 +741,7 @@ function playChatChime(){
 function announceTeamMessages(messages){
   if(!messages.length||!canReadTeam())return;
   const msg=messages[messages.length-1];
-  const active=document.querySelector("#nowayDashboard")?.dataset.consoleActive==="chat";
+  const active=document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe";
   const focused=!document.hidden&&document.hasFocus();
   if(!active||!focused)teamUnread=Math.min(99,teamUnread+messages.length);
   updateTeamUnread();
@@ -868,7 +868,7 @@ if(document.body.dataset.nowayConsole==="true"){
   }
   $id("nowayChatToastClose")?.addEventListener("click",hideTeamToast);
   $id("nowayChatToastOpen")?.addEventListener("click",()=>{
-    document.querySelector('[data-console-tab="chat"]')?.click();
+    document.querySelector('[data-console-tab="equipe"]')?.click();
     resetTeamUnread();
   });
   $id("nowayChatReferenceClose")?.addEventListener("click",clearTeamReference);
@@ -898,7 +898,7 @@ if(document.body.dataset.nowayConsole==="true"){
     $id("nowayTeamChatBody").focus();
   });
   document.addEventListener("visibilitychange",()=>{
-    if(!document.hidden&&document.querySelector("#nowayDashboard")?.dataset.consoleActive==="chat")
+    if(!document.hidden&&document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe")
       resetTeamUnread();
   });
 }
