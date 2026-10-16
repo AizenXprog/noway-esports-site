@@ -571,3 +571,30 @@ body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-fixture:hover{
  body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article,
  body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-fixture{transition:none}
 }
+
+
+/* Aviso elegante de onboarding competitivo, apenas para jogadores sem vínculo. */
+body[data-noway-console="true"] .nw-profile-required-alert{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+ border:1px solid #a1af60;border-left:3px solid #f2ff00;border-radius:11px;
+ padding:17px 20px;background:linear-gradient(120deg,#2a2c23,#212123);
+ box-shadow:0 6px 18px #0003
+}
+body[data-noway-console="true"] .nw-profile-required-alert[hidden]{display:none!important}
+body[data-noway-console="true"] .nw-profile-required-alert span{display:flex;flex-direction:column;gap:7px}
+body[data-noway-console="true"] .nw-profile-required-alert strong{
+ color:#f2ff00;font:900 11px/1.4 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-profile-required-alert small{
+ max-width:760px;color:#c8c8c8;font:600 10px/1.65 Inter,sans-serif
+}
+body[data-noway-console="true"] .nw-profile-required-alert button{
+ flex:0 0 auto;border-radius:7px;border:1px solid #f2ff00;
+ background:#f2ff00;color:#171715;padding:12px 15px;
+ font:900 9px/1.4 Inter,sans-serif;cursor:pointer
+}
+body[data-noway-console="true"] .nw-profile-required-alert button:hover{background:#fff}
+@media(max-width:760px){
+ body[data-noway-console="true"] .nw-profile-required-alert{flex-direction:column;align-items:stretch;padding:16px}
+ body[data-noway-console="true"] .nw-profile-required-alert button{width:100%}
+}
