@@ -6,7 +6,7 @@ const fmt=(v,d=0)=>v==null||!Number.isFinite(Number(v))?"—":Number(v).toLocale
 const pct=(n,d)=>d>0?fmt(n*100/d,1)+"%":"—";
 const ratio=(n,d)=>d>0?fmt(n/d,2):n>0?"∞":"—";
 const date=v=>v?new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(v)):"—";
-const roleLabel={owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR"};
+const roleLabel={owner:"FOUNDER",manager:"TEAM MANAGER",jogador:"JOGADOR",gri:"GRI / JOGADOR"};
 const ranks={copper:"COBRE",bronze:"BRONZE",silver:"PRATA",gold:"OURO",platinum:"PLATINA",emerald:"ESMERALDA",diamond:"DIAMANTE",champion:"CAMPEÃO",unranked:"SEM RANK"};
 const roman=["","I","II","III","IV","V"];
 const rankLabel=r=>r&&ranks[r.tier]?ranks[r.tier]+(r.division?" "+roman[r.division]:""):"NÃO REGISTRADO";
@@ -175,7 +175,7 @@ async function checkAuth(){
  if(!user)return false;
  const {data:profile,error:pErr}=await db.from("noway_profiles").select("role").eq("id",user.id).maybeSingle();
  canManage=!pErr&&["owner","manager"].includes(profile?.role);
- return !pErr&&["owner","manager","jogador"].includes(profile?.role);
+ return !pErr&&["owner","manager","jogador","gri"].includes(profile?.role);
 }
 async function loadHub(){
  if(!active()||busy)return;
