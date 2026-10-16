@@ -705,3 +705,16 @@ body[data-noway-console="true"] #nwRecruitToastOpen{background:#f2ff00;border-co
  body[data-noway-console="true"] .nw-recruit-toast,
  body[data-noway-console="true"] .nw-recruit-unread{animation:none}
 }
+
+
+/* Controles da central disponíveis mesmo quando não há pendências. */
+body[data-noway-console="true"] .nw-recruit-header-actions{
+ display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center
+}
+body[data-noway-console="true"] .nw-recruit-header-actions>.noway-outline-action{
+ min-height:37px;font-size:9px;white-space:nowrap
+}
+@media(max-width:680px){
+ body[data-noway-console="true"] .nw-recruit-header-actions{justify-content:stretch;width:100%}
+ body[data-noway-console="true"] .nw-recruit-header-actions>.noway-outline-action{flex:1}
+}
