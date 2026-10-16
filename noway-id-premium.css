@@ -376,3 +376,198 @@ body[data-noway-console="true"] .noway-auth-points>span{color:#f2ff00}
 @media(prefers-reduced-motion:reduce){
  body[data-noway-console="true"] .noway-console-tab-group button{transition:none!important}
 }
+
+
+/* NOWAY / Premium compact UX 2026-10-16 */
+/* Navegação lateral enxuta: uma linha por função, apenas ícone e nome. */
+body[data-noway-console="true"] .noway-console-main .noway-dashboard{
+ grid-template-columns:194px minmax(0,1fr);gap:15px 20px;width:min(1580px,calc(100% - 34px))
+}
+body[data-noway-console="true"] #nowayDashboard > .nw-id-sidebar{
+ top:84px;height:calc(100dvh - 100px);min-height:470px;
+ padding:11px 9px 12px!important;border-radius:14px!important;
+ background:linear-gradient(156deg,#19191b,#101012 80%)!important;
+ border-color:#3b3b40!important
+}
+body[data-noway-console="true"] .nw-sidebar-brand{padding:9px 8px 12px;gap:8px}
+body[data-noway-console="true"] .nw-sidebar-brand img{width:31px;height:31px}
+body[data-noway-console="true"] .nw-sidebar-brand b{font-size:22px}
+body[data-noway-console="true"] .nw-sidebar-brand small,
+body[data-noway-console="true"] #nowayConsoleTabs .noway-console-nav-label,
+body[data-noway-console="true"] #nowayConsoleTabs .nw-nav-copy small,
+body[data-noway-console="true"] #nowayConsoleTabs .nw-nav-arrow,
+body[data-noway-console="true"] .nw-sidebar-bottom>small{display:none!important}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group{
+ padding:4px 1px 7px!important;gap:3px!important;
+ border-bottom:1px solid #2d2d32!important
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group:last-of-type{border-bottom:0!important}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button{
+ min-height:44px;padding:8px 10px!important;gap:10px!important;
+ border-radius:9px!important;white-space:nowrap!important;transition:background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease!important
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button .nw-nav-icon{
+ width:19px;height:19px;flex:0 0 19px
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button .nw-nav-copy{
+ display:block;min-width:0;flex:1
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button .nw-nav-copy strong{
+ font:800 10px/1.35 Inter,sans-serif;white-space:normal;letter-spacing:-.01em
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button:hover{
+ border-color:#5a5a60!important;background:#303034!important
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button.is-active{
+ background:#f2ff00!important;border-color:#f2ff00!important;color:#0c0c0d!important;
+ box-shadow:0 7px 17px #f2ff0017!important
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group .noway-chat-unread{
+ min-width:17px;height:17px;font-size:9px;margin-left:0
+}
+body[data-noway-console="true"] .nw-sidebar-bottom{
+ padding:10px 7px 4px;gap:5px
+}
+body[data-noway-console="true"] .nw-sidebar-bottom>a{padding:6px 3px;font-size:10px}
+/* Os cards da visão geral usam o mesmo grafite neutro da NOWAY, sem verde residual. */
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article,
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article.is-priority{
+ background:linear-gradient(148deg,#262628 0%,#1b1b1d 95%)!important;
+ border:1px solid #454549!important;border-radius:12px!important;
+ box-shadow:0 9px 22px #0003!important;
+ min-height:112px;padding:18px 19px!important;gap:7px;
+ transition:transform .26s cubic-bezier(.2,.8,.2,1),border-color .26s,box-shadow .26s;
+}
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article::before{
+ height:2px;background:linear-gradient(90deg,#f2ff00a8,#f2ff0000)
+}
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article:hover{
+ transform:translateY(-3px);border-color:#8a8c55!important;box-shadow:0 15px 30px #0006!important
+}
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats small{color:#bcbcc3}
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats strong{font-size:clamp(29px,2.9vw,41px);color:#f2ff00}
+body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats article>span{color:#9999a0;font-size:10px}
+/* Chat primeiro: proporções confortáveis com informações secundárias compactas. */
+body[data-noway-console="true"] .nw-team-hub-sections{gap:32px}
+body[data-noway-console="true"] .nw-team-communication-head{margin:25px 0 12px}
+body[data-noway-console="true"] .nw-team-communication-head h4{
+ font-size:clamp(28px,3vw,40px);margin:5px 0
+}
+body[data-noway-console="true"] .nw-team-hero{
+ padding:22px 27px;min-height:0;border-color:#444448
+}
+body[data-noway-console="true"] .nw-team-hero h3{font-size:clamp(43px,4.5vw,70px);margin:10px 0}
+body[data-noway-console="true"] .nw-team-summary{margin:20px 0 30px;gap:10px}
+body[data-noway-console="true"] .nw-team-summary>div{padding:15px 17px!important;border-color:#414145!important;background:#222225!important}
+body[data-noway-console="true"] .nw-team-summary strong{font-size:clamp(31px,3.1vw,43px)}
+body[data-noway-console="true"] .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
+ height:clamp(565px,73dvh,790px)!important;min-height:520px!important;
+ border-radius:12px!important
+}
+/* Tracker pessoal em Minha Conta */
+body[data-noway-console="true"] .nw-profile-tracker-link{
+ margin:26px 0 20px;padding:23px;
+ background:linear-gradient(145deg,#242427,#18181a);
+ border:1px solid #46464b;border-top:2px solid #f2ff00;border-radius:13px;
+ box-shadow:0 10px 24px #0003
+}
+body[data-noway-console="true"] .nw-profile-tracker-head span{
+ color:#f2ff00;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.12em
+}
+body[data-noway-console="true"] .nw-profile-tracker-head h4{
+ font:900 clamp(33px,3.5vw,49px)/1 "Barlow Condensed",sans-serif;
+ color:#fff;margin:9px 0 8px
+}
+body[data-noway-console="true"] .nw-profile-tracker-head h4 em{color:#f2ff00;font-style:normal}
+body[data-noway-console="true"] .nw-profile-tracker-head p{
+ color:#b6b6be;font:500 11px/1.7 Inter,sans-serif;margin:0 0 16px;max-width:730px
+}
+body[data-noway-console="true"] .nw-profile-tracker-link .noway-tracker-self{
+ margin:0;padding:16px 18px;background:#1b1b1e;border-radius:9px;border-color:#39393e
+}
+body[data-noway-console="true"] .nw-profile-tracker-link .noway-tracker-self h4{
+ font-size:24px
+}
+body[data-noway-console="true"] .nw-team-tracker-required{
+ display:flex;align-items:center;justify-content:space-between;gap:16px;
+ border:1px solid #a8b75d;background:#282b22;border-left:3px solid #f2ff00;
+ border-radius:10px;padding:16px 20px;margin:18px 0
+}
+body[data-noway-console="true"] .nw-team-tracker-required[hidden]{display:none!important}
+body[data-noway-console="true"] .nw-team-tracker-required span{
+ display:flex;flex-direction:column;gap:5px
+}
+body[data-noway-console="true"] .nw-team-tracker-required strong{font:900 11px Inter,sans-serif;color:#f2ff00}
+body[data-noway-console="true"] .nw-team-tracker-required small{font:600 10px/1.6 Inter,sans-serif;color:#dededb}
+body[data-noway-console="true"] .nw-team-tracker-required button{
+ flex:0 0 auto;border:1px solid #f2ff00;background:#f2ff00;color:#111;
+ padding:12px 14px;border-radius:6px;font:900 9px Inter,sans-serif;cursor:pointer
+}
+/* O Tracker vinculado tem identidade visual própria, distinta das partidas oficiais. */
+body[data-noway-console="true"] .nw-team-card-link{display:flex;flex-direction:column;gap:6px;border-top:1px solid #424249;padding-top:9px}
+body[data-noway-console="true"] .nw-team-link-status{font:800 9px/1.45 Inter,sans-serif;letter-spacing:.02em;color:#f2ff00}
+body[data-noway-console="true"] .nw-team-link-status.is-missing{color:#d6bdb0}
+body[data-noway-console="true"] .nw-team-external-mini{display:flex;flex-wrap:wrap;gap:8px 14px}
+body[data-noway-console="true"] .nw-team-external-mini small{font:700 9px/1.5 Inter,sans-serif;color:#c4c4c7}
+body[data-noway-console="true"] .nw-team-external-mini b{color:#f2ff00}
+body[data-noway-console="true"] .nw-team-link-date{font:650 9px/1.55 Inter,sans-serif;color:#9c9ca5}
+body[data-noway-console="true"] .nw-detail-external{
+ padding:14px 16px;border:1px solid #56565d;background:#252529;
+ border-radius:9px;margin:12px 0;color:#f1f1f1
+}
+body[data-noway-console="true"] .nw-detail-external strong{font:900 10px Inter,sans-serif;color:#f2ff00}
+body[data-noway-console="true"] .nw-detail-external p,body[data-noway-console="true"] .nw-detail-external small{
+ font:650 10px/1.75 Inter,sans-serif;color:#babac0
+}
+body[data-noway-console="true"] .nw-team-external-values{display:flex;gap:22px;flex-wrap:wrap;padding:10px 0}
+body[data-noway-console="true"] .nw-team-external-values b{color:#f2ff00}
+/* Confrontos no lugar certo: dentro da Agenda e acima do calendário. */
+body[data-noway-console="true"] .nw-agenda-next-fixtures{margin:18px 0 23px}
+body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-team-section-head{
+ align-items:center;margin-bottom:12px
+}
+body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-team-section-head h4{
+ font-size:clamp(32px,3.7vw,46px);margin:7px 0
+}
+body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-fixture{
+ border:1px solid #44444c;border-top:2px solid #f2ff00;
+ background:linear-gradient(145deg,#262629,#19191b);border-radius:10px;
+ box-shadow:0 7px 20px #0004;
+ transition:transform .23s cubic-bezier(.2,.8,.2,1),border-color .23s
+}
+body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-fixture:hover{
+ transform:translateY(-3px);border-color:#f2ff00
+}
+@media(max-width:1200px){
+ body[data-noway-console="true"] .noway-console-main .noway-dashboard{grid-template-columns:176px minmax(0,1fr)}
+}
+@media(max-width:850px){
+ body[data-noway-console="true"] .noway-console-main .noway-dashboard{
+  display:flex!important;flex-direction:column;gap:12px;width:calc(100% - 22px)
+ }
+ body[data-noway-console="true"] #nowayDashboard > .nw-id-sidebar{
+  height:auto;max-height:none;min-height:0;top:auto;padding:10px!important
+ }
+ body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group{
+  flex-direction:row;flex-wrap:wrap;gap:6px!important;padding:3px 0!important
+ }
+ body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button{
+  flex:1 1 138px;min-height:43px;padding:8px!important;
+ }
+ body[data-noway-console="true"] .nw-team-tracker-required{flex-direction:column;align-items:flex-start}
+ body[data-noway-console="true"] .nw-team-tracker-required button{width:100%}
+}
+@media(max-width:560px){
+ body[data-noway-console="true"] .noway-console-main .noway-dashboard{width:calc(100% - 16px)}
+ body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button{flex:1 1 46%;min-width:0}
+ body[data-noway-console="true"] .nw-profile-tracker-link{padding:14px}
+ body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article{min-height:105px;padding:14px!important}
+ body[data-noway-console="true"] .noway-dashboard[data-console-active="equipe"] .noway-team-chat{height:600px!important}
+ body[data-noway-console="true"] .nw-team-summary{margin-bottom:18px}
+ body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-team-section-head{align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button,
+ body[data-noway-console="true"] #nowayConsoleStats.noway-hq-stats > article,
+ body[data-noway-console="true"] .nw-agenda-next-fixtures .nw-fixture{transition:none}
+}
