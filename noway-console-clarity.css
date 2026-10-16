@@ -85,32 +85,32 @@
 }
 
 /* NOWAY Chat / foco na conversa, sem rolagem da página toda */
-.noway-dashboard[data-console-active="chat"] #nowayTeamWorkspace{min-width:0}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat{
+.noway-dashboard[data-console-active="equipe"] #nowayTeamWorkspace{min-width:0}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat{
  display:flex;flex-direction:column;min-width:0;height:clamp(500px,calc(100dvh - 118px),900px);
  padding:18px!important;border-color:#4c5d45;background:#131a16
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-head{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-head{
  flex:0 0 auto;gap:10px;margin:0 0 12px;padding:0 0 13px;border-bottom:1px solid #314032
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-head h4{font-size:clamp(29px,3.2vw,42px);margin-bottom:4px}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-head .noway-muted{font-size:10px;margin:2px 0}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-head h4{font-size:clamp(29px,3.2vw,42px);margin-bottom:4px}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-head .noway-muted{font-size:10px;margin:2px 0}
 .noway-chat-scroll-shell{position:relative;flex:1;min-height:0;min-width:0;display:flex;flex-direction:column}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-list{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-list{
  flex:1;min-height:0;height:auto!important;max-height:none;overflow-y:auto;overscroll-behavior-y:contain;
  scroll-behavior:auto;padding:17px 20px 40px;gap:13px;
  background:radial-gradient(ellipse at 50% 0%,rgba(242,255,0,.035),transparent 55%),#101612;
  border:1px solid #2e4232;border-radius:8px
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-msg{
+.noway-dashboard[data-console-active="equipe"] .noway-team-msg{
  background:#252c26;border-color:#4a584d;border-left-color:#727f72;
  box-shadow:0 5px 14px #0002
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-msg.is-own{
+.noway-dashboard[data-console-active="equipe"] .noway-team-msg.is-own{
  background:#303a29;border-color:#5f704f;border-right-color:#f2ff00
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-msg-meta strong{font-size:11px}
-.noway-dashboard[data-console-active="chat"] .noway-team-msg p{font-size:13px;line-height:1.7}
+.noway-dashboard[data-console-active="equipe"] .noway-team-msg-meta strong{font-size:11px}
+.noway-dashboard[data-console-active="equipe"] .noway-team-msg p{font-size:13px;line-height:1.7}
 .noway-chat-jump{position:absolute;z-index:10;bottom:17px;right:23px;display:flex;align-items:center;
  justify-content:center;width:46px;height:46px;border-radius:50%;
  border:1px solid #f2ff00;background:#f2ff00;color:#11180c;cursor:pointer;
@@ -122,34 +122,34 @@
 .noway-chat-jump span{position:absolute;top:-9px;right:-5px;min-width:24px;height:24px;display:grid;
  place-items:center;padding:0 5px;background:#171e16;color:#f2ff00;border:1px solid #f2ff00;
  border-radius:12px;font:900 10px Inter,sans-serif}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-form{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-form{
  flex:0 0 auto;border:1px solid #3a513d;background:#19211b;padding:12px 14px;margin-top:10px;border-radius:7px
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose{align-items:center;gap:8px}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose{align-items:center;gap:8px}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose textarea{
  min-height:48px;height:48px;max-height:114px;resize:none;border:1px solid #576a54;
  border-radius:6px;background:#242f25;padding:11px 14px;font-size:12px}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose .btn{
  min-height:48px;align-self:stretch;border-radius:6px;padding:9px 19px}
-.noway-dashboard[data-console-active="chat"] .noway-chat-tools{margin-top:8px}
-.noway-dashboard[data-console-active="chat"] .noway-chat-tool{padding:7px 10px;border-radius:5px}
+.noway-dashboard[data-console-active="equipe"] .noway-chat-tools{margin-top:8px}
+.noway-dashboard[data-console-active="equipe"] .noway-chat-tool{padding:7px 10px;border-radius:5px}
 @media(max-width:760px){
- .noway-dashboard[data-console-active="chat"] .noway-team-chat{height:calc(100dvh - 85px);min-height:480px;padding:11px!important}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-head{align-items:flex-start}
- .noway-dashboard[data-console-active="chat"] .noway-chat-header-actions{gap:5px}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-head .noway-muted{display:none}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-list{padding:11px 9px 50px}
- .noway-dashboard[data-console-active="chat"] .noway-team-msg{max-width:96%}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-form{padding:8px 9px}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose{flex-direction:row}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{height:50px;min-height:50px}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{align-self:stretch;min-height:50px;padding:8px 13px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat{height:calc(100dvh - 85px);min-height:480px;padding:11px!important}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head{align-items:flex-start}
+ .noway-dashboard[data-console-active="equipe"] .noway-chat-header-actions{gap:5px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head .noway-muted{display:none}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-list{padding:11px 9px 50px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-msg{max-width:96%}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-form{padding:8px 9px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose{flex-direction:row}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose textarea{height:50px;min-height:50px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose .btn{align-self:stretch;min-height:50px;padding:8px 13px}
  .noway-chat-jump{right:15px;bottom:15px;width:43px;height:43px}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-tip{display:none}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-tip{display:none}
 }
 @media(max-width:390px){
- .noway-dashboard[data-console-active="chat"] .noway-chat-tool-buttons{gap:3px}
- .noway-dashboard[data-console-active="chat"] .noway-chat-tool{font-size:8px;padding:6px 7px}
+ .noway-dashboard[data-console-active="equipe"] .noway-chat-tool-buttons{gap:3px}
+ .noway-dashboard[data-console-active="equipe"] .noway-chat-tool{font-size:8px;padding:6px 7px}
 }
 @media(prefers-reduced-motion:reduce){.noway-chat-jump{transition:none}}
 
@@ -241,28 +241,28 @@
 
 
 /* Correção de proporções do chat — preserva a área de leitura e permite modo amplo. */
-.noway-dashboard[data-console-active="chat"] .noway-team-chat{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat{
   height:clamp(790px,calc(100dvh - 55px),1080px)!important;
   min-height:790px;
   display:flex;
   flex-direction:column;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-head{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-head{
   flex-shrink:0;
   padding-bottom:9px;
   margin-bottom:9px;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-head .noway-muted{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-head .noway-muted{
   margin-bottom:0;
   line-height:1.35;
 }
-.noway-dashboard[data-console-active="chat"] .noway-chat-scroll-shell{
+.noway-dashboard[data-console-active="equipe"] .noway-chat-scroll-shell{
   display:flex;
   flex:1 1 auto;
   min-height:390px;
   overflow:hidden;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-list{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-list{
   flex:1 1 auto;
   height:100%!important;
   min-height:0!important;
@@ -270,20 +270,20 @@
   overflow-y:auto;
   scrollbar-gutter:stable;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-form{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-form{
   flex-shrink:0;
   padding:10px 12px;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-form>.noway-tiny{font-size:9px}
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-form>.noway-tiny{font-size:9px}
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose textarea{
   min-height:43px;height:43px;padding:10px 12px;
 }
-.noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{min-height:43px}
-.noway-dashboard[data-console-active="chat"] .noway-chat-tools{margin-top:5px}
-.noway-dashboard[data-console-active="chat"] .noway-chat-event-quote{
+.noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose .btn{min-height:43px}
+.noway-dashboard[data-console-active="equipe"] .noway-chat-tools{margin-top:5px}
+.noway-dashboard[data-console-active="equipe"] .noway-chat-event-quote{
   gap:4px;padding:8px 11px;margin-bottom:7px;max-width:570px;
 }
-.noway-dashboard[data-console-active="chat"] .noway-chat-event-quote strong{
+.noway-dashboard[data-console-active="equipe"] .noway-chat-event-quote strong{
   font-size:19px;line-height:1.1;
 }
 .noway-chat-expand{border-color:#7b905b!important;color:#f2ff00!important}
@@ -293,39 +293,39 @@ body.noway-chat-focus::before{
   content:"";position:fixed;inset:0;background:rgba(3,6,4,.87);
   backdrop-filter:blur(8px);z-index:1198;
 }
-body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-team-chat{
+body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
   position:fixed!important;inset:14px 22px!important;z-index:1200!important;
   width:auto!important;height:auto!important;min-height:0!important;
   max-height:none!important;margin:0!important;padding:14px!important;
   border:1px solid #8b9e68!important;box-shadow:0 30px 110px #000e;
 }
-body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-chat-scroll-shell{
+body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-chat-scroll-shell{
   min-height:0;
 }
-body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-team-chat-head{
+body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head{
   padding-bottom:8px;margin-bottom:7px;
 }
-body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-team-chat-head h4{
+body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head h4{
   font-size:33px;
 }
 @media(max-width:760px){
- .noway-dashboard[data-console-active="chat"] .noway-team-chat{
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
    height:max(670px,calc(100dvh - 100px))!important;
    min-height:670px;
  }
- .noway-dashboard[data-console-active="chat"] .noway-chat-scroll-shell{
+ .noway-dashboard[data-console-active="equipe"] .noway-chat-scroll-shell{
    min-height:330px;
  }
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-form{padding:7px}
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose textarea{
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-form{padding:7px}
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose textarea{
    min-height:42px;height:42px;
  }
- .noway-dashboard[data-console-active="chat"] .noway-team-chat-compose .btn{min-height:42px}
- body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-team-chat{
+ .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose .btn{min-height:42px}
+ body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
    inset:6px!important;
    padding:10px!important;
  }
- body.noway-chat-focus .noway-dashboard[data-console-active="chat"] .noway-team-chat-head h4{font-size:28px}
+ body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head h4{font-size:28px}
 }
 @media(prefers-reduced-motion:reduce){
  body.noway-chat-focus::before{backdrop-filter:none}
