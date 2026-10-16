@@ -1,4 +1,5 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {fetchR6} from "./noway-r6-model.js";
 const db=createClient("https://vdipsufzlqmnprbjiojb.supabase.co",
  "sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e",
  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -155,7 +156,7 @@ async function loadApplications(force=false){
     await openApplication(target);
   }
   if(selected){
-   if(active()){renderActive();if(force){await readMessages();await loadReviews(selected);}}
+   if(active()){renderActive();if(force){await readMessages();await loadCandidateTracker(selected);await loadReviews(selected);}}
    else hideActive();
   }
  }catch(err){note("Não foi possível carregar candidaturas: "+err.message,true);}
@@ -204,8 +205,45 @@ async function openApplication(id){
  renderActive();
  $("nowayDeskMessages").innerHTML='<p class="noway-muted">Carregando mensagens...</p>';
  await readMessages(true);
+ await loadCandidateTracker(id);
  await loadReviews(id);
 }
+let trackerRequest=0;
+const percent=v=>v===null||v===undefined?"—":Number(v).toLocaleString("pt-BR",{maximumFractionDigits:1})+"%";
+const metricValue=v=>v===null||v===undefined?"—":Number(v).toLocaleString("pt-BR",{maximumFractionDigits:2});
+async function loadCandidateTracker(id){
+ const run=++trackerRequest;
+ const box=$("nowayDeskTrackerMetrics"),status=$("nowayDeskTrackerStatus");
+ if(!box||!status)return;
+ box.hidden=true;box.innerHTML="";
+ status.textContent="Conferindo vínculo do candidato...";
+ try{
+  const {data,error}=await db.rpc("noway_recruitment_tracker_link",{p_application_id:id});
+  if(id!==selected||run!==trackerRequest)return;
+  if(error)throw error;
+  const link=Array.isArray(data)?data[0]:null;
+  if(!link?.player_name){
+   status.textContent="O candidato ainda não vinculou um Tracker ao NOWAY ID. Rank e estatísticas não são exibidos.";
+   return;
+  }
+  status.textContent="Conta vinculada: "+link.player_name+" · Consultando a API...";
+  const x=await fetchR6(db,link.player_name,link.platform||"uplay");
+  if(id!==selected||run!==trackerRequest)return;
+  status.textContent="Dados automáticos de "+link.player_name+" · "+x.source+
+    " · "+new Date(x.fetchedAt).toLocaleString("pt-BR")+
+    (x.partial?" · Informações parciais do provedor":"");
+  const values=[["RANK",x.rank||"—"],["RP",metricValue(x.rankPoints)],
+   ["K/D",metricValue(x.kd)],["WIN RATE",percent(x.winRate)],
+   ["PARTIDAS",metricValue(x.matches)],["KILLS",metricValue(x.kills)],
+   ["DEATHS",metricValue(x.deaths)],["HEADSHOT",percent(x.headshots)]];
+  box.innerHTML=values.map(([k,v])=>'<div><small>'+escape(k)+'</small><strong>'+escape(v)+'</strong></div>').join("");
+  box.hidden=false;
+ }catch(err){
+  if(id===selected&&run===trackerRequest)status.textContent=
+   "Dados externos indisponíveis: "+(err?.message||"Tente novamente mais tarde.")+". Nenhuma estatística foi estimada.";
+ }
+}
+
 async function readMessages(force=false){
  if(!manager||!selected||!showing())return;
  const id=selected,version=++threadVersion;
