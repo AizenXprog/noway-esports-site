@@ -131,6 +131,8 @@ function showMyAccount(link,feedback=""){
   const form=$("nowayTrackerLinkForm"),actions=$("nowayTrackerLinkActions"),
         button=$("nowayTrackerMyProfile"),hint=$("nowayTrackerSelfStatus");
   if(!form||!actions||!button||!hint)return;
+  const overviewAlert=$("nowayTrackerOverviewPrompt");
+  if(overviewAlert)overviewAlert.hidden=!(myRosterPlayer&&!present);
   form.hidden=present;
   actions.hidden=!present;
   const unlink=$("nowayTrackerUnlink");if(unlink)unlink.hidden=myRosterPlayer;
@@ -203,6 +205,7 @@ $("nowayTrackerLinkForm")?.addEventListener("submit",async event=>{
   finally{button.disabled=false;}
 });
 $("nowayTrackerMyProfile")?.addEventListener("click",()=>searchMyStats(true));
+$("nowayTrackerOverviewLink")?.addEventListener("click",()=>document.querySelector('[data-console-tab="profile"]')?.click());
 $("nowayTrackerChangeLink")?.addEventListener("click",()=>{
   $("nowayTrackerLinkForm").hidden=false;
   $("nowayTrackerLinkName").focus();
@@ -227,4 +230,5 @@ db.auth.onAuthStateChange((event)=>{
 });
 if(location.hash==="#tracker")setTimeout(()=>initializeMyStats(true),450);
 if(location.hash==="#profile")setTimeout(()=>initializeMyStats(false),450);
+if(!["#profile","#tracker"].includes(location.hash))setTimeout(()=>initializeMyStats(false),500);
 
