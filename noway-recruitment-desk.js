@@ -26,7 +26,7 @@ const active=()=>applications.find(a=>a.id===selected);
 
 /* Recrutamento / alertas privados por revisor.
    Uma conversa só é marcada como lida para a conta que realmente a abriu. */
-let unreadItems=new Map(),unreadTotal=0,unreadInitialized=false,notificationBusy=false,notifyGeneration=0;
+let unreadItems=new Map(),unreadTotal=0,unreadInitialized=false,notificationBusy=false,notifyGeneration=0,queuedRecruitOpen=null;
 const notificationEl=()=>document.querySelector('[data-console-tab="recruitment"]');
 const formatUnread=n=>n>99?"99+":String(n);
 function applyUnreadUI(){
@@ -55,13 +55,13 @@ function applyUnreadUI(){
  if(showing())renderList();
 }
 function showRecruitToast(item,increment){
- if(!item||document.hidden)return;
+ if(!item)return;
  const el=$("nwRecruitToast");
  if(!el)return;
  $("nwRecruitToastTitle").textContent=increment>1?"NOVIDADES NO RECRUTAMENTO":"NOVA ATIVIDADE NO RECRUTAMENTO";
  $("nwRecruitToastBody").textContent=String(item.name||"Candidato")+" · "+increment+
    " nova"+(increment===1?" mensagem ou candidatura":"s atividades")+" para analisar.";
- el.hidden=false;
+ if(!document.hidden)el.hidden=false;
  if("Notification" in window&&Notification.permission==="granted"){
    try{const n=new Notification("NOWAY • Recrutamento",{body:"Nova atividade de "+String(item.name||"um candidato"),tag:"noway-recruitment",silent:true});
      n.onclick=()=>{window.focus();notificationEl()?.click();n.close();};}catch{}
@@ -103,8 +103,9 @@ async function markRecruitmentRead(id){
 function openFirstRecruitUnread(){
  const first=[...unreadItems.values()].sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
  if(!first)return;
- if(!showing()){notificationEl()?.click();setTimeout(()=>openApplication(first.id),100);}
- else openApplication(first.id);
+ if(!showing()){queuedRecruitOpen=first.id;notificationEl()?.click();}
+ else if(applications.some(a=>a.id===first.id))openApplication(first.id);
+ else{queuedRecruitOpen=first.id;void loadApplications(true);}
 }
 $("nwRecruitToastOpen")?.addEventListener("click",()=>{
  $("nwRecruitToast").hidden=true;openFirstRecruitUnread();
@@ -149,6 +150,10 @@ async function loadApplications(force=false){
   if(version!==appVersion)return;
   applications=data||[];
   renderList();
+  if(queuedRecruitOpen&&applications.some(a=>a.id===queuedRecruitOpen)){
+    const target=queuedRecruitOpen;queuedRecruitOpen=null;
+    await openApplication(target);
+  }
   if(selected){
    if(active()){renderActive();if(force){await readMessages();await loadReviews(selected);}}
    else hideActive();
@@ -274,6 +279,7 @@ async function loadReviews(id){
  .order("created_at",{ascending:false}).limit(60);
  if(id!==selected)return;
  if(error){panel.textContent="Não foi possível carregar os pareceres: "+error.message;return;}
+ if(manager&&showing()&&id===selected)void markRecruitmentRead(id);
  panel.innerHTML=(data||[]).length?(data||[]).map(r=>
   '<article class="noway-desk-review"><span>'+escape(recommendationLabels[r.recommendation]||r.recommendation)+
   ' · '+escape(r.reviewer_name||"Gestão")+' · '+escape(formatDate(r.created_at))+'</span><p>'+escape(r.note)+'</p></article>'
@@ -321,7 +327,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollRecrui
 db.auth.onAuthStateChange((event)=>{
  if(event==="SIGNED_OUT"){
    unreadInitialized=false;unreadItems=new Map();unreadTotal=0;manager=false;
-   ++notifyGeneration;applyUnreadUI();$("nwRecruitToast").hidden=true;
+   queuedRecruitOpen=null;++notifyGeneration;applyUnreadUI();$("nwRecruitToast").hidden=true;
  }
  if(event==="SIGNED_IN")setTimeout(pollRecruitNotifications,350);
 });
