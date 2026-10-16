@@ -103,7 +103,7 @@ async function refreshExternalLinked(force=false){
        externalCache.set(p.id,{state:"error",key,checked:Date.now(),error:String(error?.message||error)});
      }
      if(token!==generation)break;
-     if(!$("nowayConsoleEquipe").hidden)renderRoster();
+     if(!$("nowayConsoleEquipe").hidden){renderRoster();renderSummary();}
      if(current===p.id)refreshSelectedExternal();
    }
  }finally{externalFetchRunning=false;}
@@ -129,7 +129,7 @@ function renderSummary(){
  ["INTEGRANTES",people.length,"Membros autorizados"],
  ["TRACKERS VINCULADOS",people.filter(p=>Boolean(p.ubisoft)).length,"Perfis cadastrados pelo titular"],
  ["JOGADORES PENDENTES",people.filter(p=>p.role==="jogador"&&!p.ubisoft).length,"Ainda não vincularam o R6 Tracker"],
- ["ATUAÇÕES REGISTRADAS",people.reduce((a,p)=>a+(p.stats?.matches||0),0),"Registros de desempenho"]
+ ["DADOS DA API",people.filter(p=>Boolean(live(p))).length,"Jogadores com estatísticas sincronizadas"]
  ];
  $("nowayTeamHubSummary").innerHTML=vals.map(v=>'<div><small>'+v[0]+'</small><strong>'+safe(v[1])+'</strong><span>'+v[2]+'</span></div>').join("");
 }
