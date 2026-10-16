@@ -58,7 +58,7 @@ function externalCard(p){
  let stats='<small>Estatísticas externas ainda não consultadas.</small>';
  if(entry?.state==="ready"){
    const x=entry.data;
-   stats='<small>K/D EXTERNO <b>'+fmt(x.kd,2)+'</b></small><small>RP <b>'+fmt(x.rp)+'</b></small>';
+   stats='<small>K/D DA API <b>'+fmt(x.kd,2)+'</b></small><small>RP DA API <b>'+fmt(x.rankPoints)+'</b></small>';
  }
  return '<span class="nw-team-link-status is-linked">● '+status+' · '+safe(p.ubisoft)+' / '+safe(p.platform||"uplay")+'</span>'+
  '<span class="nw-team-external-mini">'+stats+'</span>'+
