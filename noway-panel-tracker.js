@@ -1,4 +1,5 @@
 import {createClient} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {fetchR6} from "./noway-r6-model.js";
 const db=createClient("https://vdipsufzlqmnprbjiojb.supabase.co","sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -111,14 +112,9 @@ async function search(event){
  try{
    const {data:sessionData,error:authError}=await db.auth.getUser();
    if(authError||!sessionData?.user)throw Error("Faça login com NOWAY ID para pesquisar.");
-   const {data,error}=await db.functions.invoke("noway-r6-tracker",{body:{player,platform}});
+   const data=await fetchR6(db,player,platform);
    if(id!==request)return;
-   if(error){
-     let details=null;try{details=await error.context?.json?.()}catch{}
-     throw Error(details?.message||details?.error||error.message||"Falha ao consultar o provedor.");
-   }
-   if(!data?.profile)throw Error("O provedor não enviou informações válidas.");
-   paint(unpack(data),player,platform);
+   paint({...data,ratio:data.kd,time:data.fetchedAt},player,platform);
  }catch(err){if(id===request)status("CONSULTA INDISPONÍVEL",err.message||"Não foi possível buscar as estatísticas.",true);}
  finally{if(id===request){loading=false;button.disabled=false;button.innerHTML='ANALISAR PERFIL <span aria-hidden="true">↗</span>';}}
 }
@@ -147,6 +143,22 @@ function showMyAccount(link,feedback=""){
     $("nowayTrackerLinkPlatform").value=link.platform;
   }
 }
+function renderMyProfileStats(data){
+ const box=$("nowayTrackerPersonalSummary");if(!box)return;
+ if(!myAccount){box.hidden=true;box.innerHTML="";return;}
+ box.hidden=false;
+ if(!data){box.innerHTML='<p>Estatísticas da API indisponíveis. O vínculo foi mantido e uma nova consulta será feita ao abrir o perfil.</p>';return;}
+ box.innerHTML='<div class="nw-profile-live-head"><strong>DESEMPENHO / ARENYZE</strong><small>'+
+  esc(data.fetchedAt?new Date(data.fetchedAt).toLocaleString("pt-BR"):"Dados externos")+'</small></div>'+
+  '<div class="nw-profile-live-stats">'+[
+   metric("RANK",data.rank||"—","Classificação disponibilizada"),
+   metric("RP",fmt(data.rankPoints),"Rank points"),
+   metric("K/D",fmt(data.kd,2),"Eliminações por morte"),
+   metric("WIN RATE",data.winRate===null?"—":fmt(data.winRate,1)+"%","Vitórias / partidas"),
+   metric("PARTIDAS",fmt(data.matches),"Registradas pela API")
+  ].join("")+'</div>';
+}
+
 async function searchMyStats(force=false){
   if(!myAccount)return;
   const key=myAccount.platform+":"+myAccount.player_name.toLowerCase();
@@ -154,8 +166,10 @@ async function searchMyStats(force=false){
   $("nowayTrackerPlayer").value=myAccount.player_name;
   $("nowayTrackerPlatform").value=myAccount.platform;
   if(hasSame&&!force&&!$("nowayTrackerResults").hidden)return;
+  renderMyProfileStats(null);
   await search();
   if(result && !$("nowayTrackerResults").hidden){
+    renderMyProfileStats({...result,kd:result.ratio,fetchedAt:result.time});
     myPreviouslyLoaded=key;
     myLoadedAt=Date.now();
   }
@@ -182,6 +196,7 @@ async function initializeMyStats(autoSearch=true){
     if(error)throw error;
     myAccount=link||null;
     showMyAccount(myAccount);
+    if(!myAccount)renderMyProfileStats(null);
     if(myAccount&&autoSearch)await searchMyStats();
   }catch(err){
     if(generation!==myLookupGeneration)return;
@@ -199,7 +214,7 @@ $("nowayTrackerLinkForm")?.addEventListener("submit",async event=>{
     const {error}=await db.rpc("noway_tracker_link_account",{p_name:name,p_platform:platform});
     if(error)throw error;
     myPreviouslyLoaded=null;myLoadedAt=0;result=null;
-    await initializeMyStats(false);
+    await initializeMyStats(true);
     window.dispatchEvent(new Event("noway:tracker-linked"));
   }catch(err){$("nowayTrackerSelfStatus").textContent="Não foi possível vincular o perfil: "+(err?.message||"Tente novamente.");}
   finally{button.disabled=false;}
@@ -219,16 +234,17 @@ $("nowayTrackerUnlink")?.addEventListener("click",async()=>{
     if(error)throw error;
     myAccount=null;myPreviouslyLoaded=null;myLoadedAt=0;
     showMyAccount(null);
+    renderMyProfileStats(null);
     window.dispatchEvent(new Event("noway:tracker-linked"));
   }catch(err){$("nowayTrackerSelfStatus").textContent="Não foi possível desvincular: "+(err?.message||"Tente novamente.");}
   finally{button.disabled=false;}
 });
 window.addEventListener("noway:tracker-open",()=>initializeMyStats(true));
-window.addEventListener("noway:tracker-profile-open",()=>initializeMyStats(false));
+window.addEventListener("noway:tracker-profile-open",()=>initializeMyStats(true));
 db.auth.onAuthStateChange((event)=>{
   if(event==="SIGNED_OUT"){++myLookupGeneration;myUser=null;myAccount=null;myPreviouslyLoaded=null;}
 });
 if(location.hash==="#tracker")setTimeout(()=>initializeMyStats(true),450);
-if(location.hash==="#profile")setTimeout(()=>initializeMyStats(false),450);
+if(location.hash==="#profile")setTimeout(()=>initializeMyStats(true),450);
 if(!["#profile","#tracker"].includes(location.hash))setTimeout(()=>initializeMyStats(false),500);
 
