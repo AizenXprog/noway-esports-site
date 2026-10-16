@@ -1,9 +1,32 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0;url=painel.html#tracker">
-<title>NOWAY Tracker — NOWAY ID</title>
-<link rel="canonical" href="https://noway-esports-site.vercel.app/painel.html#tracker">
-</head><body style="background:#101510;color:#f2ff00;font:700 16px Arial,sans-serif;padding:45px">
-<p>O NOWAY Tracker agora está integrado em uma única aba do painel.</p>
-<p><a style="color:#f2ff00" href="painel.html#tracker">Abrir NOWAY Tracker ↗</a></p>
-<script>location.replace("painel.html#tracker");</script></body></html>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#0b0f0c">
+<meta name="description" content="NOWAY Tracker — estatísticas competitivas verificadas dos jogadores da NOWAY Esports.">
+<title>NOWAY TRACKER — Desempenho competitivo</title>
+<link rel="icon" href="assets/logo-white.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="noway-tracker.css"></head>
+<body><header class="tracker-header"><a href="/" class="tracker-brand"><img src="assets/logo-white.webp" alt=""><span>NOWAY <b>ESPORTS.</b></span></a>
+<nav aria-label="Navegação"><a href="/">← SITE OFICIAL</a><a href="/#team">ELENCO</a><a href="painel.html">NOWAY ID ↗</a></nav></header>
+<main><section class="tracker-hero"><div class="tracker-wrap">
+<span class="tracker-eyebrow"><span class="tracker-led"></span> BASE OFICIAL / NOWAY ESPORTS</span>
+<div class="tracker-hero-row"><div><h1>NOWAY<br><em>TRACKER.</em></h1><p>Histórico competitivo e desempenho real da NOWAY, calculados a partir de partidas finalizadas e confirmadas pela organização.</p></div><div class="tracker-mark" aria-hidden="true">NW<small>PERFORMANCE / INTELLIGENCE</small></div></div>
+<div class="tracker-tags"><span>PARTIDAS VERIFICADAS</span><span>DADOS DA ORGANIZAÇÃO</span><span>HISTÓRICO POR JOGADOR</span></div>
+</div></section>
+<section class="tracker-main tracker-wrap" aria-labelledby="trackerTitle">
+<div class="tracker-heading"><div><span class="tracker-eyebrow">01 / NOWAY PLAYER STATS</span><h2 id="trackerTitle">DADOS <em>VERIFICADOS.</em></h2></div><p>Selecione um jogador para consultar as estatísticas registradas pela equipe.</p></div>
+<div class="tracker-filters"><label for="trackerPlayer">JOGADOR</label><select id="trackerPlayer" disabled><option>Carregando...</option></select>
+<label for="trackerPeriod">PERÍODO</label><select id="trackerPeriod" disabled><option value="all">TODOS</option><option value="5">ÚLTIMOS 5</option><option value="10">ÚLTIMOS 10</option></select>
+<button id="trackerRefresh" type="button">ATUALIZAR ↻</button></div>
+<div id="trackerStatus" class="tracker-status" role="status" aria-live="polite">Consultando dados confirmados...</div>
+<div id="trackerContent" hidden>
+<div class="tracker-player-title"><div><span>PLAYER / NOWAY ESPORTS</span><h3 id="trackerPlayerName">—</h3></div><span id="trackerMatchCount">— CONFRONTOS</span></div>
+<div id="trackerMetrics" class="tracker-metrics"></div>
+<div class="tracker-bottom"><div class="tracker-card"><span>02 / DESEMPENHO</span><h3>INDICADORES <em>POR ROUND.</em></h3><div id="trackerBars"></div></div>
+<div class="tracker-card tracker-source"><span>FONTE OFICIAL</span><strong>SEM DADOS<br><em>INVENTADOS.</em></strong>
+<p>As métricas são calculadas apenas sobre confrontos registrados e finalizados. Resultados pendentes não entram no Tracker. Nenhuma estatística é copiada automaticamente do R6 Tracker.</p></div></div>
+<div class="tracker-history-heading"><div><span class="tracker-eyebrow">03 / HISTÓRICO</span><h3>ÚLTIMOS <em>CONFRONTOS.</em></h3></div><span>ORDENADOS POR DATA</span></div>
+<div class="tracker-table-scroll"><table><thead><tr><th>DATA / ADVERSÁRIO</th><th>RESULTADO</th><th>K</th><th>D</th><th>A</th><th>ROUNDS</th><th>K/D</th><th>KOST</th></tr></thead><tbody id="trackerHistory"></tbody></table></div></div>
+</section></main><footer class="tracker-footer"><div class="tracker-wrap"><strong>NOWAY ESPORTS.</strong><span>COMPETIÇÃO / DISCIPLINA / EVOLUÇÃO</span><a href="/">VOLTAR AO SITE ↑</a></div></footer>
+<script type="module" src="noway-tracker.js"></script></body></html>
