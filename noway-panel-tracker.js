@@ -45,12 +45,33 @@ function drawChart(points){
  '<div class="noway-tracker-timeline"><span>'+esc(new Date(points[0].time).toLocaleDateString("pt-BR"))+'</span><strong>'+
  points.length+' REGISTROS DE RP</strong><span>'+esc(new Date(points.at(-1).time).toLocaleDateString("pt-BR"))+'</span></div>';
 }
+function getRankEmblem(name){
+  const str=String(name||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"");
+  const names={copper:"COBRE",bronze:"BRONZE",silver:"PRATA",gold:"OURO",
+   platinum:"PLATINA",emerald:"ESMERALDA",diamond:"DIAMANTE",champion:"CAMPEÃO",unranked:"SEM RANK"};
+  const tier=Object.keys(names).find(x=>new RegExp("\\b"+x+"\\b").test(str));
+  if(!tier)return null;
+  const after=str.split(tier)[1]||"";
+  const numeral=after.match(/\b(iii|iv|ii|i|v|[1-5])\b/);
+  const mapped={1:"i",2:"ii",3:"iii",4:"iv",5:"v"};
+  const division=numeral?(mapped[numeral[1]]||numeral[1]):null;
+  if(!division&&!["champion","unranked"].includes(tier))return null;
+  const filename=["champion","unranked"].includes(tier)?tier+"-small.webp":tier+"-"+division+"-small.webp";
+  return {title:String(name),url:"https://raw.githubusercontent.com/Guliveer/r6-stats-extension/main/public/icons/ranks/"+filename};
+}
+
 function paint(data,player,platform){
  result=data;$("nowayTrackerState").hidden=true;$("nowayTrackerResults").hidden=false;
  const name=data.name||player;
  $("nowayTrackerName").textContent=name;
  $("nowayTrackerMeta").textContent=(platform==="uplay"?"PC / UBISOFT":platform==="psn"?"PLAYSTATION":"XBOX")+
  (data.rank?" · "+data.rank:"")+(data.level!==null?" · NÍVEL "+fmt(data.level):"");
+ const rankVisual=$("nowayTrackerRankBadge"),emblem=getRankEmblem(data.rank);
+ if(rankVisual){
+  rankVisual.hidden=!emblem;
+  rankVisual.innerHTML=emblem?'<img src="'+esc(emblem.url)+'" alt="'+esc(emblem.title)+'" loading="lazy">'+
+   '<span><strong>'+esc(emblem.title.toUpperCase())+'</strong><small>RANK INFORMADO PELO PROVEDOR · DADOS EXTERNOS</small></span>':"";
+ }
  $("nowayTrackerAvatar").innerHTML=data.avatar?'<img src="'+esc(data.avatar)+'" loading="lazy" alt="">':esc(name.slice(0,1).toUpperCase());
  $("nowayTrackerExternal").href="https://r6.tracker.network/r6siege/profile/ubi/"+encodeURIComponent(name);
  const winpct=data.winRate!==null&&data.winRate<=1?100*data.winRate:data.winRate;
