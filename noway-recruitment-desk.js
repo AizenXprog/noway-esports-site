@@ -23,6 +23,102 @@ const badge=(role,name)=>{
 };
 let authUser=null,manager=false,accountRole="membro",applications=[],selected=null,messages=[],appVersion=0,threadVersion=0,busy=false;
 const active=()=>applications.find(a=>a.id===selected);
+
+/* Recrutamento / alertas privados por revisor.
+   Uma conversa só é marcada como lida para a conta que realmente a abriu. */
+let unreadItems=new Map(),unreadTotal=0,unreadInitialized=false,notificationBusy=false,notifyGeneration=0;
+const notificationEl=()=>document.querySelector('[data-console-tab="recruitment"]');
+const formatUnread=n=>n>99?"99+":String(n);
+function applyUnreadUI(){
+ const nav=$("nowayRecruitUnreadCount"),btn=notificationEl();
+ const permitted=manager&&Boolean(authUser);
+ if(nav){nav.hidden=!permitted||unreadTotal===0;nav.textContent=formatUnread(unreadTotal);}
+ if(btn){btn.classList.toggle("has-recruit-unread",permitted&&unreadTotal>0);
+   btn.setAttribute("aria-label",permitted&&unreadTotal?
+    "Recrutamento — "+unreadTotal+" novas atividades não lidas":"Recrutamento");}
+ const summary=$("nwRecruitOverviewPrompt");
+ if(summary){
+   summary.hidden=!permitted||unreadTotal===0;
+   if(permitted&&unreadTotal){
+     $("nwRecruitOverviewTitle").textContent="RECRUTAMENTO / "+unreadTotal+" NOVA"+(unreadTotal===1?" ATIVIDADE":"S ATIVIDADES");
+     $("nwRecruitOverviewText").textContent=unreadItems.size+" candidatura"+(unreadItems.size===1?"":"s")+" aguardando sua leitura.";
+   }
+ }
+ const banner=$("nwRecruitDeskBanner");
+ if(banner){
+   banner.hidden=!permitted||unreadTotal===0;
+   if(permitted&&unreadTotal){
+     $("nwRecruitDeskBannerTitle").textContent="VOCÊ TEM "+unreadTotal+" ATIVIDADE"+(unreadTotal===1?"":"S")+" NÃO LIDA"+(unreadTotal===1?"":"S");
+     $("nwRecruitDeskBannerText").textContent=unreadItems.size+" conversa"+(unreadItems.size===1?"":"s")+" com novidades. As indicações são individuais para cada gestor.";
+   }
+ }
+ if(showing())renderList();
+}
+function showRecruitToast(item,increment){
+ if(!item||document.hidden)return;
+ const el=$("nwRecruitToast");
+ if(!el)return;
+ $("nwRecruitToastTitle").textContent=increment>1?"NOVIDADES NO RECRUTAMENTO":"NOVA ATIVIDADE NO RECRUTAMENTO";
+ $("nwRecruitToastBody").textContent=String(item.name||"Candidato")+" · "+increment+
+   " nova"+(increment===1?" mensagem ou candidatura":"s atividades")+" para analisar.";
+ el.hidden=false;
+ if("Notification" in window&&Notification.permission==="granted"){
+   try{const n=new Notification("NOWAY • Recrutamento",{body:"Nova atividade de "+String(item.name||"um candidato"),tag:"noway-recruitment",silent:true});
+     n.onclick=()=>{window.focus();notificationEl()?.click();n.close();};}catch{}
+ }
+}
+async function pollRecruitNotifications(){
+ if(notificationBusy||document.documentElement.dataset.nowayRecruitRole==="membro")return;
+ notificationBusy=true;
+ const version=++notifyGeneration;
+ try{
+   if(!await verifyManagement()){
+     unreadItems=new Map();unreadTotal=0;unreadInitialized=false;applyUnreadUI();return;
+   }
+   const {data,error}=await db.rpc("noway_recruitment_notification_summary");
+   if(error)throw error;
+   if(version!==notifyGeneration)return;
+   const items=Array.isArray(data?.threads)?data.threads:[];
+   const latest=new Map(items.map(item=>[item.id,item]));
+   const previous=unreadItems,totalBefore=unreadTotal;
+   unreadItems=latest;
+   unreadTotal=Math.max(0,Number(data?.total)||0);
+   applyUnreadUI();
+   if(unreadInitialized&&unreadTotal>totalBefore){
+     const found=items.find(item=>Number(item.count)>Number(previous.get(item.id)?.count||0));
+     if(found)showRecruitToast(found,unreadTotal-totalBefore);
+   }
+   unreadInitialized=true;
+ }catch(err){
+   // Falha de rede não zera alertas previamente conhecidos e não expõe dados.
+   console.warn("NOWAY recruitment alerts:",err?.message||err);
+ }finally{notificationBusy=false;}
+}
+async function markRecruitmentRead(id){
+ if(!manager||!id||!showing())return;
+ const {error}=await db.rpc("noway_recruitment_mark_read",{p_application_id:id});
+ if(error){console.warn("NOWAY mark read:",error.message);return;}
+ await pollRecruitNotifications();
+}
+function openFirstRecruitUnread(){
+ const first=[...unreadItems.values()].sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0];
+ if(!first)return;
+ if(!showing()){notificationEl()?.click();setTimeout(()=>openApplication(first.id),100);}
+ else openApplication(first.id);
+}
+$("nwRecruitToastOpen")?.addEventListener("click",()=>{
+ $("nwRecruitToast").hidden=true;openFirstRecruitUnread();
+});
+$("nwRecruitToastClose")?.addEventListener("click",()=>{$("nwRecruitToast").hidden=true;});
+$("nwRecruitOverviewPrompt")?.addEventListener("click",openFirstRecruitUnread);
+$("nwRecruitReadFirst")?.addEventListener("click",openFirstRecruitUnread);
+$("nwRecruitDesktopOptIn")?.addEventListener("click",async()=>{
+ if(!("Notification" in window))return note("Este navegador não oferece avisos do sistema.",true);
+ const permission=await Notification.requestPermission();
+ note(permission==="granted"?"Avisos do navegador ativados para novas atividades no recrutamento.":
+  "Os avisos do navegador não foram autorizados. Alertas no painel continuam funcionando.",permission!=="granted");
+});
+
 const showing=()=>!document.hidden&&$("nowayConsoleRecruitment")&&!$("nowayConsoleRecruitment").hidden;
 function note(msg,bad=false){
  const notice=$("nowaySystemNotice");if(!notice)return;
@@ -62,12 +158,13 @@ async function loadApplications(force=false){
 }
 function renderList(){
  const filter=$("nowayDeskFilter").value;
- const entries=applications.filter(a=>filter==="all"||a.status===filter);
+ const entries=applications.filter(a=>filter==="all"||a.status===filter)
+ .sort((a,b)=>Number(Boolean(unreadItems.get(b.id)))-Number(Boolean(unreadItems.get(a.id)))||new Date(b.updated_at)-new Date(a.updated_at));
  $("nowayDeskList").innerHTML=entries.length?entries.map(a=>
- '<button type="button" class="noway-desk-entry'+(a.id===selected?' is-selected':'')+
+ '<button type="button" class="noway-desk-entry'+(a.id===selected?' is-selected':'')+(unreadItems.has(a.id)?' has-unread':'')+
  '" data-id="'+escape(a.id)+'"><span class="noway-desk-entry-top">'+escape(positions[a.desired_role]||"CANDIDATURA")+
  '<small>'+escape(formatDate(a.updated_at))+'</small></span><strong>'+escape(a.display_name)+
- '</strong><span class="noway-desk-entry-state">'+escape(stages[a.status]||a.status)+'</span></button>'
+ '</strong><span class="noway-desk-entry-state">'+escape(stages[a.status]||a.status)+(unreadItems.has(a.id)?' <b class="nw-recruit-item-unread">● '+formatUnread(unreadItems.get(a.id).count)+' NÃO LIDAS</b>':'')+'</span></button>'
  ).join(""):'<p class="noway-muted noway-desk-emptylist">Nenhuma candidatura nesta etapa.</p>';
  $("nowayDeskList").querySelectorAll("[data-id]").forEach(b=>
   b.addEventListener("click",()=>openApplication(b.dataset.id)));
@@ -123,6 +220,7 @@ async function readMessages(force=false){
    '<time>'+escape(formatDate(m.created_at))+'</time></div><p>'+escape(m.body)+'</p></div></article>';
  }).join(""):'<p class="noway-muted">Sem mensagens nesta conversa.</p>';
  if(force||wasNearEnd)box.scrollTop=box.scrollHeight;
+ await markRecruitmentRead(id);
 }
 async function sendReply(event){
  event.preventDefault();
@@ -208,7 +306,7 @@ $("nowayDeskReply").addEventListener("keydown",e=>{
 });
 $("nowayDeskSaveStatus").addEventListener("click",saveStatus);
 $("nowayDeskCloseForm").addEventListener("submit",closeApplication);
-window.addEventListener("noway:recruitment-open",()=>loadApplications(true));
+window.addEventListener("noway:recruitment-open",()=>{loadApplications(true);pollRecruitNotifications();});
 document.addEventListener("visibilitychange",()=>{if(showing())loadApplications(true);});
 setInterval(async()=>{
  if(!showing()||!manager)return;
@@ -216,3 +314,20 @@ setInterval(async()=>{
  if(selected)await readMessages();
 },25000);
 if(location.hash==="#recruitment")setTimeout(()=>loadApplications(true),1200);
+setTimeout(pollRecruitNotifications,850);
+setInterval(pollRecruitNotifications,18000);
+window.addEventListener("focus",pollRecruitNotifications);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)pollRecruitNotifications();});
+db.auth.onAuthStateChange((event)=>{
+ if(event==="SIGNED_OUT"){
+   unreadInitialized=false;unreadItems=new Map();unreadTotal=0;manager=false;
+   ++notifyGeneration;applyUnreadUI();$("nwRecruitToast").hidden=true;
+ }
+ if(event==="SIGNED_IN")setTimeout(pollRecruitNotifications,350);
+});
+const realtime=db.channel("noway-recruitment-alerts")
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"noway_recruitment_applications"},pollRecruitNotifications)
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"noway_recruitment_messages"},pollRecruitNotifications)
+ .subscribe();
+window.addEventListener("pagehide",()=>{db.removeChannel(realtime);});
+
