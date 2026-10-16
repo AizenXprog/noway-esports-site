@@ -65,10 +65,10 @@ body[data-noway-console="true"]{background:#0c0d0e;min-height:100vh}
 .noway-console-main .noway-team-space{order:5;margin:0}
 .noway-console-main .noway-dash-grid,.noway-console-main .noway-thread-panel{order:6}
 .noway-console-main .noway-team-admin{order:8}
-.noway-dashboard[data-console-active]:not([data-console-active="team"]):not([data-console-active="chat"]) #nowayTeamWorkspace{display:none!important}
+.noway-dashboard[data-console-active]:not([data-console-active="team"]):not([data-console-active="equipe"]) #nowayTeamWorkspace{display:none!important}
 .noway-dashboard[data-console-active="team"] #nowayTeamWorkspace>.noway-team-chat{display:none!important}
-.noway-dashboard[data-console-active="chat"] #nowayTeamWorkspace>.noway-team-head,
-.noway-dashboard[data-console-active="chat"] #nowayTeamWorkspace>.noway-team-grid{display:none!important}
+.noway-dashboard[data-console-active="equipe"] #nowayTeamWorkspace>.noway-team-head,
+.noway-dashboard[data-console-active="equipe"] #nowayTeamWorkspace>.noway-team-grid{display:none!important}
 .noway-dashboard[data-console-active]:not([data-console-active="contacts"]) .noway-dash-grid,
 .noway-dashboard[data-console-active]:not([data-console-active="contacts"]) #nowayThreadSection{display:none!important}
 .noway-console-main #nowayOwnerMembers{display:none!important}
