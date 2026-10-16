@@ -961,3 +961,17 @@ gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid #343738}
 @media(prefers-reduced-motion:reduce){
   .ace-celebration-effects{display:none!important}
 }
+
+
+/* NOWAY / Vaga aberta no elenco — o restante do lobby mantém o visual original. */
+.player-card.player-vacancy .player-art{background:radial-gradient(circle at 53% 42%,#41432e 0%,#191b17 45%,#0a0b0c 90%);border-color:#626a31}
+.player-vacancy-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:13px;overflow:hidden}
+.player-vacancy-art:before{content:"";position:absolute;width:210px;height:210px;border:1px solid #b1bf46;border-radius:50%;opacity:.38}
+.player-vacancy-art>span{font:300 145px/1 Inter,sans-serif;color:#f2ff00;filter:drop-shadow(0 0 22px #f2ff0055);transform:translateY(-8px)}
+.player-vacancy-art>small{font:900 10px/1.4 Inter,sans-serif;letter-spacing:.15em;color:#f2ff00}
+.player-card.player-vacancy:hover .player-art{border-color:#f2ff00}
+.player-card.player-vacancy .player-name{color:#f2ff00}
+.player-vacancy-modal-art{background:radial-gradient(circle,#30351f,#0b0c0e)!important;position:relative;min-height:380px}
+.player-vacancy-modal-art .player-vacancy-art{position:absolute}
+.player-vacancy-modal-art .player-vacancy-art>span{font-size:185px}
+@media(max-width:650px){.player-vacancy-modal-art{min-height:240px}.player-vacancy-art>span{font-size:105px}}
