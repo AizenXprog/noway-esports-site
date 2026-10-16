@@ -237,3 +237,14 @@ body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team
  .nw-team-communication-head{margin-top:27px}
 }
 @media(prefers-reduced-motion:reduce){.nw-team-card{transition:none}}
+
+/* Indicadores de melhora/queda entre consultas reais do R6. */
+.nw-delta{display:inline-flex!important;align-items:center;gap:6px;min-height:17px;
+ color:#a0b39a;font:750 10px/1.4 Inter,sans-serif;white-space:nowrap;letter-spacing:0}
+.nw-delta.up,.nw-rank-delta.up{color:#71e7a4!important}
+.nw-delta.down,.nw-rank-delta.down{color:#ff8585!important}
+.nw-delta>span{font:900 15px/1 Inter,sans-serif}
+.nw-delta>small{font:700 10px/1.3 Inter,sans-serif!important;color:inherit!important;opacity:.9}
+.nw-rank-delta{display:inline-flex!important;align-items:center;gap:7px;margin-top:5px;font:900 16px/1 Inter,sans-serif}
+.nw-rank-delta>small{font:750 9px/1.4 Inter,sans-serif!important;color:inherit!important}
+@media(max-width:700px){.nw-delta>small{font-size:9px!important}}

@@ -307,3 +307,9 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Pedido explícito do usuário: **Founder, Team Manager e GRI são sempre jogadores da NOWAY**. O filtro visual da Central de Equipe deve incluir `owner`, `manager`, `gri` e `jogador`, sem confundir cargo de administração com exclusão do elenco.
 - O backend `noway_team_hub_v1` já retorna o GRI; a ausência dele era um filtro incorreto em `noway-equipe.js`. Corrigidos `rosterRoles`, `roleLabel` e descrição do contador. O GRI aparece no elenco, mesmo sem vincular R6; indicadores sem fonte continuam `—`.
 - A correção **não altera permissões**: GRI continua podendo usar o recrutamento e não ganha acesso à Central, ao chat ou aos módulos competitivos pelo simples fato de aparecer no elenco. Essa distinção só poderá mudar com instrução separada.
+
+## Tendência de estatísticas por atualização (16/10/2026)
+- Cartões e perfil expandido exibem pequenas setas verdes para métricas que aumentaram e vermelhas para as que caíram, com "antes" e o valor antigo em tamanho menor. No rank, exibir RANK ANTERIOR quando mudou de classificação, e RP ANTERIOR se mudou o RP sem mudança do rank.
+- O comparativo armazena última leitura real e última diferença no `localStorage` da conta NOWAY ID e jogador/plataforma/nick. Primeira consulta cria referência sem seta; valores repetidos por cache não geram variação inventada. A última variação persiste entre recargas até nova mudança.
+- Não é um histórico sincronizado entre navegadores ou dispositivos e não modifica os resultados oficiais no Supabase. Falha da API mantém visualmente a última leitura, sem registrá-la como novidade. Atualização manual simultânea é colocada em fila.
+- Arquivos: noway-equipe.js e noway-equipe.css; este documento. Nenhuma alteração em cargos, permissões, fotos ou banco.

@@ -26,15 +26,94 @@ const avatar=p=>{
  return safe((p.name||"N").trim()[0]?.toUpperCase()||"N");
 };
 let people=[],events=[],current=null,user=null,canManage=false,busy=false,generation=0;
+let trends={},trendViewer=null;
 const active=()=>!$("nowayConsoleEquipe")?.hidden||!$("nowayConsoleAgenda")?.hidden;
 const person=()=>people.find(p=>p.id===current);
-const live=p=>p?.ubisoft&&externalCache.get(p.id)?.state==="ready"?externalCache.get(p.id).data:null;
+const live=p=>p?.ubisoft?externalCache.get(p.id)?.data||null:null;
 
 /* Dados externos são obtidos do backend já usado pelo NOWAY Tracker. A origem
    permanece separada das estatísticas oficiais registradas pela NOWAY. */
 const externalCache=new Map();
-let externalFetchRunning=false;
+let externalFetchRunning=false,queueReload=false,queueForce=false;
 const trackerDisplayTime=value=>value?date(value):"Ainda sem atualização";
+
+/* Comparacoes R6: somente leituras reais e persistencia local por NOWAY ID. */
+const metricsToCompare=["kd","winRate","headshots","rankPoints","kills","deaths","wins","losses","matches","level"];
+const realNumber=v=>typeof v==="number"&&Number.isFinite(v)?v:null;
+const rankNameOnly=v=>typeof v==="string"&&v.trim()?v.trim():null;
+const rankOrder=["copper","bronze","silver","gold","platinum","emerald","diamond","champion"];
+function rankIndex(name){
+ const val=rankNameOnly(name)?.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"");
+ if(!val)return null;
+ const tier=rankOrder.findIndex(t=>new RegExp("\\b"+t+"\\b").test(val));if(tier<0)return null;
+ const m=val.slice(val.indexOf(rankOrder[tier])+rankOrder[tier].length).match(/\b(iii|iv|ii|i|v|[1-5])\b/);
+ const roman={i:1,ii:2,iii:3,iv:4,v:5};
+ const division=m?(roman[m[1]]||Number(m[1])):1;
+ return tier*10+6-division;
+}
+const trendStorageKey=()=> "noway:team:trend:v1:"+user?.id;
+function initTrends(){
+ trends={};trendViewer=user?.id||null;
+ try{
+  const data=window.localStorage.getItem(trendStorageKey());
+  if(data&&data.length<200000){
+   const parsed=JSON.parse(data);
+   if(parsed&&typeof parsed==="object"&&!Array.isArray(parsed))trends=parsed;
+  }
+ }catch{}
+}
+function saveTrends(){
+ try{
+  const ids=Object.keys(trends);if(ids.length>100)ids.slice(0,ids.length-100).forEach(id=>delete trends[id]);
+  window.localStorage.setItem(trendStorageKey(),JSON.stringify(trends));
+ }catch{}
+}
+function captureMovement(p,current){
+ if(!p?.id||!p.ubisoft||!current)return;
+ const identity=(p.platform||"uplay")+":"+p.ubisoft.trim().toLowerCase();
+ const values={rank:rankNameOnly(current.rank)};
+ metricsToCompare.forEach(k=>values[k]=realNumber(current[k]));
+ if(Object.values(values).every(x=>x===null))return;
+ const row=trends[p.id];
+ if(!row||row.identity!==identity||!row.values){
+  trends[p.id]={identity,values,changes:{}};saveTrends();return;
+ }
+ const snapshot={...row.values},changes={...row.changes};let dirty=false;
+ for(const k of metricsToCompare){
+  const now=values[k],old=realNumber(snapshot[k]);
+  if(now===null)continue; // API parcial nao apaga ultimo valor
+  if(old!==null&&now!==old){changes[k]={before:old,after:now,direction:now>old?"up":"down"};dirty=true;}
+  else if(old===null)dirty=true;
+  snapshot[k]=now;
+ }
+ if(values.rank&&values.rank!==snapshot.rank){
+  const old=rankNameOnly(snapshot.rank),a=rankIndex(values.rank),b=rankIndex(old);
+  if(old&&a!==null&&b!==null&&a!==b)
+   changes.rank={before:old,after:values.rank,direction:a>b?"up":"down"};
+  else delete changes.rank;
+  snapshot.rank=values.rank;dirty=true;
+ }
+ if(dirty){trends[p.id]={identity,values:snapshot,changes};saveTrends();}
+}
+function deltaBadge(p,key,decimals=0,unit=""){
+ const data=live(p),delta=trends[p.id]?.changes?.[key];
+ if(!data||!delta||delta.after!==data[key])return "";
+ const old=fmt(delta.before,decimals)+unit,now=fmt(data[key],decimals)+unit;
+ return '<span class="nw-delta '+delta.direction+'" title="'+safe(old+" → "+now)+'" aria-label="'+
+ safe((delta.direction==="up"?"Aumentou":"Diminuiu")+" de "+old+" para "+now)+'">'+
+ '<span aria-hidden="true">'+(delta.direction==="up"?"↑":"↓")+'</span><small>antes '+safe(old)+'</small></span>';
+}
+function rankBadgeMovement(p){
+ const data=live(p),changes=trends[p.id]?.changes;
+ if(!data||!changes)return "";
+ const change=changes.rank&&changes.rank.after===data.rank?changes.rank:
+  changes.rankPoints&&changes.rankPoints.after===data.rankPoints?changes.rankPoints:null;
+ if(!change)return "";
+ const previous=change===changes.rank?"RANK ANTERIOR · "+change.before:"RP ANTERIOR · "+fmt(change.before);
+ return '<span class="nw-rank-delta '+change.direction+'"><span aria-hidden="true">'+
+ (change.direction==="up"?"↑":"↓")+'</span><small>'+safe(previous)+'</small></span>';
+}
+
 function extractExternal(payload){
  const p=payload?.profile||{};
  const segment=(p.seasons?.data?.segments||[]).find(x=>/ranked/i.test(String(x.type||x.metadata?.name||"")));
@@ -85,7 +164,8 @@ function refreshSelectedExternal(){
  }
 }
 async function refreshExternalLinked(force=false){
- if(externalFetchRunning||!user)return;
+ if(!user)return;
+ if(externalFetchRunning){queueReload=true;queueForce=queueForce||force;return;}
  const players=people.filter(p=>p.ubisoft);
  if(!players.length)return;
  externalFetchRunning=true;
@@ -94,22 +174,31 @@ async function refreshExternalLinked(force=false){
    // Consultas sequenciais com limite de atualização por jogador: não sobrecarrega o provedor.
    for(const p of players){
      if(token!==generation||document.hidden)break;
-     const key=p.platform+":"+p.ubisoft.toLowerCase();
+     const key=(p.platform||"uplay")+":"+p.ubisoft.toLowerCase();
      const old=externalCache.get(p.id);
+     const previousData=old?.key===key?old?.data||null:null;
      if(!force&&old?.key===key&&Date.now()-old.checked<300000)continue;
-     externalCache.set(p.id,{state:"loading",key,checked:Date.now()});
+     externalCache.set(p.id,{state:"loading",key,checked:Date.now(),data:previousData});
      if(!$("nowayConsoleEquipe").hidden)renderRoster();
      try{
        const liveData=await fetchR6(db,p.ubisoft,p.platform||"uplay",{force});
+       if(token!==generation)break;
+       captureMovement(p,liveData);
        externalCache.set(p.id,{state:"ready",key,checked:Date.now(),data:liveData});
      }catch(error){
-       externalCache.set(p.id,{state:"error",key,checked:Date.now(),error:String(error?.message||error)});
+       externalCache.set(p.id,{state:"error",key,checked:Date.now(),data:previousData,error:String(error?.message||error)});
      }
      if(token!==generation)break;
      if(!$("nowayConsoleEquipe").hidden){renderRoster();renderSummary();}
      if(current===p.id)refreshSelectedExternal();
    }
- }finally{externalFetchRunning=false;}
+ }finally{
+  externalFetchRunning=false;
+  if(queueReload&&user&&active()&&!document.hidden){
+   const again=queueForce;queueReload=false;queueForce=false;
+   void refreshExternalLinked(again);
+  }
+ }
 }
 function showTrackerRequirement(){
  const box=$("nowayTeamTrackerRequirement");
@@ -125,7 +214,7 @@ function showTrackerRequirement(){
 }
 
 const promptError=e=>{const t=$("nowaySystemNotice");if(t){t.hidden=false;t.textContent=String(e);t.classList.add("is-error");}};
-const stat=(label,value,desc)=>'<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong><em>'+safe(desc)+'</em></div>';
+const stat=(label,value,desc,movement='')=>'<div><small>'+safe(label)+'</small><strong>'+safe(value)+'</strong>'+movement+'<em>'+safe(desc)+'</em></div>';
 function renderSummary(){
  const next=events.find(e=>e.kind==="partida")||events[0],roster=next?.roster||[];
  const vals=[
@@ -161,15 +250,19 @@ function renderRoster(){
   const rp=x?.rankPoints==null?"RP NÃO INFORMADO":fmt(x.rankPoints)+" RP";
   const stats=[["K/D",x?fmt(x.kd,2):"—"],["WIN RATE",x&&x.winRate!==null?fmt(x.winRate,1)+"%":"—"],
    ["TAXA HS",x&&x.headshots!==null?fmt(x.headshots,1)+"%":"—"]];
-  const state=!p.ubisoft?"CONTA R6 NÃO VINCULADA":x?(x.partial?"DADOS PARCIAIS / ARENYZE":"DADOS REAIS / ARENYZE"):
-   entry?.state==="error"?"API INDISPONÍVEL":"SINCRONIZANDO TRACKER";
+  const state=!p.ubisoft?"CONTA R6 NÃO VINCULADA":
+   entry?.state==="error"?"ÚLTIMA LEITURA / API INDISPONÍVEL":
+   entry?.state==="loading"?"ATUALIZANDO DADOS":
+   x?(x.partial?"DADOS PARCIAIS / ARENYZE":"DADOS REAIS / ARENYZE"):"SINCRONIZANDO TRACKER";
+
   return '<button type="button" class="nw-team-card" data-team-player="'+safe(p.id)+'" aria-label="Abrir perfil de '+safe(p.name)+'">'+
    '<span class="nw-team-card-top"><span class="nw-team-card-photo">'+avatar(p)+'</span>'+
    '<span class="nw-team-card-name"><strong>'+safe(p.name)+'</strong><small>'+safe(roleLabel[p.role]||"JOGADOR")+
    '</small><small class="nw-team-card-handle">'+safe(p.ubisoft||"UBISOFT NÃO VINCULADO")+'</small></span></span>'+
    '<span class="nw-team-card-rank">'+emblem+'<span><small class="nw-team-rank-kicker">RANK DA TEMPORADA</small>'+
-   '<strong>'+safe(rankName)+'</strong><small>'+safe(p.ubisoft?rp:"AGUARDANDO VÍNCULO")+'</small></span></span>'+
-   '<span class="nw-team-card-stats">'+stats.map(v=>'<span><small>'+safe(v[0])+'</small><b>'+safe(v[1])+'</b></span>').join("")+'</span>'+
+   '<strong>'+safe(rankName)+'</strong><small>'+safe(p.ubisoft?rp:"AGUARDANDO VÍNCULO")+'</small>'+rankBadgeMovement(p)+'</span></span>'+
+   '<span class="nw-team-card-stats">'+stats.map((v,i)=>'<span><small>'+safe(v[0])+'</small><b>'+safe(v[1])+'</b>'+
+   deltaBadge(p,["kd","winRate","headshots"][i],i===0?2:1,i===0?"":"%")+'</span>').join("")+'</span>'+
    '<span class="nw-team-card-foot"><span>'+safe(state)+'</span><span>ABRIR PERFIL ↗</span></span></button>';
  }).join(""):'<div class="nw-team-empty">Nenhum jogador corresponde à pesquisa.</div>';
  $("nowayTeamHubRoster").querySelectorAll("[data-team-player]").forEach(b=>b.addEventListener("click",()=>openPlayer(b.dataset.teamPlayer)));
@@ -182,7 +275,7 @@ function renderRank(p){
  (x.rankPoints===null?"RP não informado":fmt(x.rankPoints)+" RP")+" · ARENYZE · "+trackerDisplayTime(x.fetchedAt):
  "Consultando classificação na API";
  return '<div class="nw-detail-ranking">'+emblem+'<span><small>RAINBOW SIX / CLASSIFICAÇÃO ATUAL</small>'+
-  '<strong>'+safe(name)+'</strong><small>'+safe(detail)+'</small></span></div>';
+  '<strong>'+safe(name)+'</strong><small>'+safe(detail)+'</small>'+rankBadgeMovement(p)+'</span></div>';
 }
 function metrics(p){
  const x=live(p);
@@ -197,7 +290,11 @@ function metrics(p){
   ["DEATHS",x?fmt(x.deaths):"—","Mortes"],
   ["RP",x?fmt(x.rankPoints):"—","Classificação"],
   ["NÍVEL",x?fmt(x.level):"—","Conta Ubisoft"]
- ].map(v=>stat(...v)).join("");
+ ].map((v,i)=>{
+  const keys=["kd","winRate","headshots","matches","wins","losses","kills","deaths","rankPoints","level"];
+  const digits=[2,1,1,0,0,0,0,0,0,0];
+  return stat(...v,deltaBadge(p,keys[i],digits[i],i===1||i===2?"%":""));
+ }).join("");
 }
 function renderExternalHistory(p){
  const x=live(p),points=(Array.isArray(x?.history)?x.history:[]).filter(q=>q&&Number.isFinite(q.time)&&Number.isFinite(q.rp));
@@ -285,6 +382,7 @@ async function loadHub(force=false){
  busy=true;const run=++generation;$("nowayTeamHubRefresh").disabled=true;
  try{
   if(!await checkAuth())throw Error("Acesso exclusivo de jogadores e gestão NOWAY.");
+  if(trendViewer!==user.id)initTrends();
   const {data,error}=await db.rpc("noway_team_hub_v1");if(error)throw error;
   if(run!==generation||!active())return;
   people=(Array.isArray(data?.team)?data.team:[]).filter(p=>rosterRoles.has(p.role));
@@ -327,6 +425,6 @@ window.addEventListener("noway:tracker-linked",()=>{externalCache.clear();loadHu
 document.addEventListener("visibilitychange",()=>{if(active()&&!document.hidden)loadHub();});
 setInterval(()=>{if(active()&&!document.hidden)loadHub();},60000);
 db.auth.onAuthStateChange(event=>{
- if(event==="SIGNED_OUT"){people=[];events=[];current=null;canManage=false;generation++;$("nowayTeamHubPlayer").hidden=true;}
+ if(event==="SIGNED_OUT"){people=[];events=[];current=null;canManage=false;generation++;trends={};trendViewer=null;externalCache.clear();$("nowayTeamHubPlayer").hidden=true;}
 });
 if(["#equipe","#chat","#tracker"].includes(location.hash))setTimeout(loadHub,800);
