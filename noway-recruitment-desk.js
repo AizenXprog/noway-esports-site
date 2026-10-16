@@ -334,6 +334,8 @@ db.auth.onAuthStateChange((event)=>{
 const realtime=db.channel("noway-recruitment-alerts")
  .on("postgres_changes",{event:"INSERT",schema:"public",table:"noway_recruitment_applications"},pollRecruitNotifications)
  .on("postgres_changes",{event:"INSERT",schema:"public",table:"noway_recruitment_messages"},pollRecruitNotifications)
+ .on("postgres_changes",{event:"UPDATE",schema:"public",table:"noway_recruitment_applications"},pollRecruitNotifications)
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"noway_recruitment_reviews"},pollRecruitNotifications)
  .subscribe();
 window.addEventListener("pagehide",()=>{db.removeChannel(realtime);});
 
