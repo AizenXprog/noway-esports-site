@@ -358,6 +358,10 @@ setInterval(async()=>{
  if(selected)await readMessages();
 },25000);
 if(location.hash==="#recruitment")setTimeout(()=>loadApplications(true),1200);
+/* Atualiza análise da API de forma discreta durante atendimento ativo. */
+setInterval(()=>{
+ if(!document.hidden&&showing()&&manager&&selected)void loadCandidateTracker(selected);
+},300000);
 setTimeout(pollRecruitNotifications,850);
 setInterval(pollRecruitNotifications,18000);
 window.addEventListener("focus",pollRecruitNotifications);
