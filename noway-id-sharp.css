@@ -131,3 +131,21 @@ body[data-noway-console="true"] #nowayDashboard > .noway-account-strip{
     .noway-tracker-search button
   ){transition:none!important}
 }
+
+
+/* Os indicadores novos continuam redondos apesar do acabamento reto dos botões. */
+body[data-noway-console="true"] #nowayDashboard
+ .noway-console-tab-group button.has-new::before,
+body[data-noway-console="true"] #nowayDashboard
+ .noway-console-tab-group button.has-unread::before,
+body[data-noway-console="true"] #nowayDashboard
+ .noway-hq-hero::after{
+  border-radius:50%!important;
+}
+/* Fotografia circular permanece circular mesmo quando a imagem recebe borda própria. */
+body[data-noway-console="true"] #nowayDashboard
+ :is(.noway-avatar-trigger,.noway-profile-avatar-preview,.noway-desk-avatar,.noway-tracker-avatar) img,
+body[data-noway-console="true"] #nowayDashboard
+ :is(#nowayAvatarPhoto,#nowayProfileAvatar,.noway-chat-avatar,.noway-chat-toast-avatar){
+  border-radius:50%!important;
+}
