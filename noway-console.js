@@ -138,13 +138,13 @@ function setTab(name){
   $("nowayConsoleOverview").hidden=name!=="overview";
   syncConsoleNavigationGroups();
   // A lista e o chat existentes são segmentados em CSS, sem copiar estado.
-  if(name==="agenda"){renderCalendar();renderEvents();}
+  if(name==="agenda"){renderCalendar();renderEvents();window.dispatchEvent(new Event("noway:agenda-open"));}
   if(name==="users")refreshAccounts();
   if(name==="overview"){
     renderOverview();
     if(Date.now()-hqLoadedAt>60000)refreshHQ();
   }
-  if(name==="profile")renderProfile();
+  if(name==="profile"){renderProfile();window.dispatchEvent(new Event("noway:tracker-profile-open"));}
   if(name==="equipe"){
     window.dispatchEvent(new Event("noway:chat-open"));
     window.dispatchEvent(new Event("noway:equipe-open"));
