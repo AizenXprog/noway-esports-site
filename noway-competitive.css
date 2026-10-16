@@ -1,82 +1,82 @@
 /* NOWAY COMPETITIVE / sistema competitivo da NOWAY, integrado ao painel */
-.noway-competitive{--cy:#f2ff00;--cs:#303a31;color:#f3f5ee;min-width:0}
+.noway-competitive{--cy:#f2ff00;--cs:#373737;color:#f4f4f4;min-width:0}
 .noway-comp-head{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:15px 0 23px;padding:34px 33px;
- border:1px solid #526043;background:radial-gradient(ellipse at 92% 6%,#f2ff0011,transparent 50%),linear-gradient(115deg,#242b21,#141817 68%)}
+ border:1px solid #5b5b5b;background:radial-gradient(ellipse at 92% 6%,#f2ff0011,transparent 50%),linear-gradient(115deg,#292929,#141817 68%)}
 .noway-comp-head h3{font:900 clamp(50px,6vw,80px)/.89 "Barlow Condensed",sans-serif;margin:12px 0;color:#fff;letter-spacing:-.015em}
 .noway-comp-head h3 em{color:#f2ff00;font-style:normal}
-.noway-comp-head p{font:500 12px/1.75 Inter,sans-serif;color:#b1bcb0;margin:0;max-width:560px}
+.noway-comp-head p{font:500 12px/1.75 Inter,sans-serif;color:#b9b9b9;margin:0;max-width:560px}
 .noway-comp-head-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .noway-comp-head-actions button{white-space:nowrap;font-size:10px}
 .noway-comp-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.noway-comp-stats article{display:flex;flex-direction:column;gap:10px;background:#1c221d;border:1px solid #3b493a;min-width:0;padding:24px;min-height:140px;position:relative}
+.noway-comp-stats article{display:flex;flex-direction:column;gap:10px;background:#202020;border:1px solid #454545;min-width:0;padding:24px;min-height:140px;position:relative}
 .noway-comp-stats article:before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:#f2ff003d}
-.noway-comp-stats article small{color:#afb9a9;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.09em}
+.noway-comp-stats article small{color:#b6b6b6;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.09em}
 .noway-comp-stats article strong{color:#f2ff00;font:900 clamp(36px,4vw,55px)/.9 "Barlow Condensed",sans-serif}
-.noway-comp-stats article span{color:#89958b;font:600 10px/1.5 Inter,sans-serif}
+.noway-comp-stats article span{color:#929292;font:600 10px/1.5 Inter,sans-serif}
 .noway-comp-layout{display:grid;grid-template-columns:minmax(285px,.9fr) minmax(0,1.15fr);gap:14px;align-items:start}
-.noway-comp-layout>.noway-panel{min-width:0;background:#181d19;border:1px solid #3b463d;padding:clamp(19px,2.5vw,30px)}
+.noway-comp-layout>.noway-panel{min-width:0;background:#181d19;border:1px solid #434343;padding:clamp(19px,2.5vw,30px)}
 .noway-comp-panel-title h4,.noway-comp-editor-title h4{font:900 37px/1 "Barlow Condensed",sans-serif;margin:10px 0 20px}
-.noway-comp-filters{display:flex;flex-wrap:wrap;gap:5px;border-bottom:1px solid #465046;margin:0 0 13px;padding:0 0 14px}
-.noway-comp-filters button{color:#c1cabe;background:#222920;border:1px solid #405044;font:900 9px/1.3 Inter,sans-serif;letter-spacing:.035em;padding:10px 11px;cursor:pointer}
+.noway-comp-filters{display:flex;flex-wrap:wrap;gap:5px;border-bottom:1px solid #4d4d4d;margin:0 0 13px;padding:0 0 14px}
+.noway-comp-filters button{color:#c7c7c7;background:#272727;border:1px solid #4c4c4c;font:900 9px/1.3 Inter,sans-serif;letter-spacing:.035em;padding:10px 11px;cursor:pointer}
 .noway-comp-filters button.is-active,.noway-comp-filters button:hover{color:#10130f;background:#f2ff00;border-color:#f2ff00}
 .noway-comp-list{max-height:min(70vh,900px);overflow-y:auto;display:flex;flex-direction:column;gap:9px}
-.noway-comp-match{display:flex;flex-direction:column;text-align:left;width:100%;gap:13px;background:#212820;border:1px solid #3f4a40;color:#edf2e9;padding:20px;cursor:pointer;transition:background .17s,border-color .17s}
-.noway-comp-match:hover{background:#303b29;border-color:#788e57}
-.noway-comp-match.is-selected{border-color:#f2ff00;background:linear-gradient(135deg,#303822,#20281e);box-shadow:inset 3px 0 #f2ff00}
+.noway-comp-match{display:flex;flex-direction:column;text-align:left;width:100%;gap:13px;background:#262626;border:1px solid #474747;color:#f0f0f0;padding:20px;cursor:pointer;transition:background .17s,border-color .17s}
+.noway-comp-match:hover{background:#373737;border-color:#858585}
+.noway-comp-match.is-selected{border-color:#f2ff00;background:linear-gradient(135deg,#353535,#262626);box-shadow:inset 3px 0 #f2ff00}
 .noway-comp-match-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.noway-comp-match-top small,.noway-comp-match-bottom,.noway-comp-roster-count{font:800 9px/1.5 Inter,sans-serif;letter-spacing:.045em;color:#9eafa0}
-.noway-comp-tag{font:900 9px/1.3 Inter,sans-serif;border:1px solid #657b56;padding:5px 7px;color:#d6e2b0;background:#273224}
+.noway-comp-match-top small,.noway-comp-match-bottom,.noway-comp-roster-count{font:800 9px/1.5 Inter,sans-serif;letter-spacing:.045em;color:#aaaaaa}
+.noway-comp-tag{font:900 9px/1.3 Inter,sans-serif;border:1px solid #747474;padding:5px 7px;color:#dcdcdc;background:#2f2f2f}
 .noway-comp-tag.is-win{border-color:#f2ff00;color:#f2ff00}
-.noway-comp-tag.is-loss,.noway-comp-tag.is-canceled{color:#ffb6a0;border-color:#82574a}
+.noway-comp-tag.is-loss,.noway-comp-tag.is-canceled{color:#ffb6a0;border-color:#5f5f5f}
 .noway-comp-vs{display:flex;gap:10px;align-items:center;justify-content:space-between;width:100%}
 .noway-comp-vs b{font:900 clamp(19px,2vw,27px)/1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere;min-width:0}
 .noway-comp-vs i{font:900 11px/1 Inter,sans-serif;color:#f2ff00;font-style:normal}
 .noway-comp-match-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px}
-.noway-comp-match-bottom strong{color:#c4d4b4}
-.noway-comp-roster-count{color:#d5e78a}
+.noway-comp-match-bottom strong{color:#cecece}
+.noway-comp-roster-count{color:#dcdcdc}
 .noway-comp-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;min-height:250px;gap:17px;padding:30px 18px}
 .noway-comp-empty>span{font:900 35px/.8 "Barlow Condensed",sans-serif;color:#f2ff00}
 .noway-comp-empty h4{font:900 34px/.95 "Barlow Condensed",sans-serif;margin:0}
-.noway-comp-empty p{font:500 12px/1.75 Inter,sans-serif;color:#aeb8ad;margin:0;max-width:330px}
+.noway-comp-empty p{font:500 12px/1.75 Inter,sans-serif;color:#b5b5b5;margin:0;max-width:330px}
 .noway-comp-detail-kicker{color:#f2ff00;font:900 10px/1.5 Inter,sans-serif;letter-spacing:.13em}
 .noway-comp-detail-panel #nowayCompDetail>h4{font:900 clamp(36px,4vw,56px)/1 "Barlow Condensed",sans-serif;margin:13px 0;overflow-wrap:anywhere}
-.noway-comp-details-date{font:700 11px/1.5 Inter,sans-serif;color:#b5c4b6;margin:0 0 19px}
-.noway-comp-scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;border:1px solid #637e4d;
- background:radial-gradient(ellipse at 50% 0%,#f2ff0010,transparent 65%),#252f22;padding:25px 13px;margin:0 0 12px;text-align:center}
+.noway-comp-details-date{font:700 11px/1.5 Inter,sans-serif;color:#c0c0c0;margin:0 0 19px}
+.noway-comp-scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;border:1px solid #757575;
+ background:radial-gradient(ellipse at 50% 0%,#f2ff0010,transparent 65%),#2c2c2c;padding:25px 13px;margin:0 0 12px;text-align:center}
 .noway-comp-scoreboard>div{min-width:0;display:flex;flex-direction:column;gap:7px}
-.noway-comp-scoreboard small{font:900 9px/1.5 Inter,sans-serif;color:#abbda8;letter-spacing:.09em}
+.noway-comp-scoreboard small{font:900 9px/1.5 Inter,sans-serif;color:#b8b8b8;letter-spacing:.09em}
 .noway-comp-scoreboard strong{font:900 clamp(20px,3vw,37px)/.95 "Barlow Condensed",sans-serif;color:#fff;overflow-wrap:anywhere}
 .noway-comp-scoreboard>b{color:#f2ff00;font:900 clamp(26px,3.2vw,42px)/1 "Barlow Condensed",sans-serif;white-space:nowrap}
-.noway-comp-detail-status{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #3c483d;padding:8px 2px 20px}
-.noway-comp-detail-status span{font:900 10px/1.5 Inter,sans-serif;color:#b9cbb1}
+.noway-comp-detail-status{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #454545;padding:8px 2px 20px}
+.noway-comp-detail-status span{font:900 10px/1.5 Inter,sans-serif;color:#c5c5c5}
 .noway-comp-detail-status span:first-child{color:#f2ff00}
-.noway-comp-description{font:500 12px/1.85 Inter,sans-serif;color:#c7d1c6;white-space:pre-wrap;overflow-wrap:anywhere}
+.noway-comp-description{font:500 12px/1.85 Inter,sans-serif;color:#cecece;white-space:pre-wrap;overflow-wrap:anywhere}
 .noway-comp-subsection{margin-top:25px}
 .noway-comp-subheading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .noway-comp-subheading h5,.noway-comp-editor-heading h5{font:900 29px/.94 "Barlow Condensed",sans-serif;margin:0}
-.noway-comp-subheading small,.noway-comp-editor-heading small{font:800 9px/1.4 Inter,sans-serif;color:#a7b4a2}
+.noway-comp-subheading small,.noway-comp-editor-heading small{font:800 9px/1.4 Inter,sans-serif;color:#b0b0b0}
 .noway-comp-player-list,.noway-comp-map-list{display:flex;flex-direction:column;gap:7px}
-.noway-comp-player{display:flex;align-items:center;gap:12px;border:1px solid #38473a;background:#232c23;padding:10px}
-.noway-comp-player-avatar{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:#354130;border:1px solid #7a9159;color:#f2ff00;font:900 19px "Barlow Condensed",sans-serif;overflow:hidden}
+.noway-comp-player{display:flex;align-items:center;gap:12px;border:1px solid #434343;background:#292929;padding:10px}
+.noway-comp-player-avatar{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:#3d3d3d;border:1px solid #888888;color:#f2ff00;font:900 19px "Barlow Condensed",sans-serif;overflow:hidden}
 .noway-comp-player-avatar img{width:100%;height:100%;object-fit:cover}
 .noway-comp-player-name{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .noway-comp-player-name strong{font:800 12px/1.4 Inter,sans-serif;overflow-wrap:anywhere}
-.noway-comp-player-name small{font:900 9px/1.3 Inter,sans-serif;color:#a1afa1}
-.noway-comp-presence{font:900 9px/1.4 Inter,sans-serif;color:#bcc7ae;padding:6px 8px;border:1px solid #55644e;white-space:nowrap}
-.noway-comp-presence.is-confirmado{color:#f2ff00;border-color:#a1a952}
-.noway-comp-presence.is-ausente{color:#ffc0b4;border-color:#896257}
-.noway-comp-presence.is-talvez{color:#e9dbac;border-color:#837856}
-.noway-comp-map{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:13px;border:1px solid #3f4a3b;background:#242b21}
+.noway-comp-player-name small{font:900 9px/1.3 Inter,sans-serif;color:#ababab}
+.noway-comp-presence{font:900 9px/1.4 Inter,sans-serif;color:#c3c3c3;padding:6px 8px;border:1px solid #5f5f5f;white-space:nowrap}
+.noway-comp-presence.is-confirmado{color:#f2ff00;border-color:#a1a1a1}
+.noway-comp-presence.is-ausente{color:#ffc0b4;border-color:#696969}
+.noway-comp-presence.is-talvez{color:#dbdbdb;border-color:#787878}
+.noway-comp-map{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:13px;border:1px solid #474747;background:#292929}
 .noway-comp-map>div{display:flex;flex-direction:column;gap:5px;min-width:0}
 .noway-comp-map strong{font:900 17px/1.1 "Barlow Condensed",sans-serif}
-.noway-comp-map small{font:800 9px/1.4 Inter,sans-serif;color:#b4c39e}
+.noway-comp-map small{font:800 9px/1.4 Inter,sans-serif;color:#bdbdbd}
 .noway-comp-map>span{font:900 21px/1 "Barlow Condensed",sans-serif;color:#f2ff00;white-space:nowrap}
-.noway-comp-rsvp{border:1px solid #8a9d50;background:#2a341f;padding:17px;margin-top:18px}
+.noway-comp-rsvp{border:1px solid #939393;background:#303030;padding:17px;margin-top:18px}
 .noway-comp-rsvp>strong{font:900 11px/1.4 Inter,sans-serif;color:#f2ff00}
-.noway-comp-rsvp p{font:800 10px/1.5 Inter,sans-serif;color:#c6d4bb;margin:8px 0 14px}
+.noway-comp-rsvp p{font:800 10px/1.5 Inter,sans-serif;color:#cfcfcf;margin:8px 0 14px}
 .noway-comp-rsvp>div{display:flex;flex-wrap:wrap;gap:6px}
-.noway-comp-rsvp button{border:1px solid #68765d;background:#182018;color:#edf4e8;font:900 9px/1.4 Inter,sans-serif;padding:10px 13px;cursor:pointer}
-.noway-comp-rsvp button:hover,.noway-comp-rsvp button.is-current{background:#f2ff00;border-color:#f2ff00;color:#111709}
+.noway-comp-rsvp button{border:1px solid #717171;background:#1e1e1e;color:#f2f2f2;font:900 9px/1.4 Inter,sans-serif;padding:10px 13px;cursor:pointer}
+.noway-comp-rsvp button:hover,.noway-comp-rsvp button.is-current{background:#f2ff00;border-color:#f2ff00;color:#151515}
 .noway-comp-rsvp button:disabled{opacity:.35;cursor:wait}
 .noway-comp-detail-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
 .noway-comp-detail-actions .btn,.noway-comp-detail-actions .noway-outline-action{padding:14px 17px;font-size:10px;white-space:nowrap}
@@ -85,24 +85,24 @@
 .noway-comp-editor-title{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .noway-comp-editor-title h4{font-size:35px;margin:10px 0 0}
 .noway-comp-editor-title button{white-space:nowrap}
-.noway-comp-form label{display:block;font:900 9px/1.5 Inter,sans-serif;color:#bbc9b4;letter-spacing:.045em;margin:0 0 8px}
-.noway-comp-form select,.noway-comp-form input,.noway-comp-form textarea{width:100%;max-width:100%;min-width:0;border:1px solid #586657;background:#232a24;color:#f0f5ed;padding:12px;font:600 12px/1.5 Inter,sans-serif;border-radius:0}
+.noway-comp-form label{display:block;font:900 9px/1.5 Inter,sans-serif;color:#c5c5c5;letter-spacing:.045em;margin:0 0 8px}
+.noway-comp-form select,.noway-comp-form input,.noway-comp-form textarea{width:100%;max-width:100%;min-width:0;border:1px solid #626262;background:#282828;color:#f3f3f3;padding:12px;font:600 12px/1.5 Inter,sans-serif;border-radius:0}
 .noway-comp-form textarea{resize:vertical;min-height:100px}
 .noway-comp-form select:focus-visible,.noway-comp-form input:focus-visible,.noway-comp-form textarea:focus-visible{outline:1px solid #f2ff00;outline-offset:1px}
 .noway-comp-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.noway-comp-editor-section{border-top:1px solid #526151;padding-top:20px}
+.noway-comp-editor-section{border-top:1px solid #5d5d5d;padding-top:20px}
 .noway-comp-editor-heading{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:0 0 15px}
 .noway-comp-roster-editor{display:flex;flex-direction:column;gap:7px}
-.noway-comp-pick-row{display:flex;gap:8px;align-items:center;background:#232c23;padding:10px;border:1px solid #41513d}
-.noway-comp-pick-row label{white-space:nowrap;margin:0;font-size:9px;color:#e6ede4;display:flex;gap:5px;align-items:center;cursor:pointer}
+.noway-comp-pick-row{display:flex;gap:8px;align-items:center;background:#292929;padding:10px;border:1px solid #4c4c4c}
+.noway-comp-pick-row label{white-space:nowrap;margin:0;font-size:9px;color:#ebebeb;display:flex;gap:5px;align-items:center;cursor:pointer}
 .noway-comp-pick-row input[type="checkbox"]{width:16px;height:16px;min-width:16px;accent-color:#f2ff00;cursor:pointer;padding:0}
 .noway-comp-pick-row input:disabled{opacity:.38;cursor:not-allowed}
 .noway-comp-maps-editor{display:flex;flex-direction:column;gap:9px}
-.noway-comp-map-edit{border:1px solid #455745;background:#1c251f;padding:12px;display:flex;flex-direction:column;gap:11px}
+.noway-comp-map-edit{border:1px solid #525252;background:#232323;padding:12px;display:flex;flex-direction:column;gap:11px}
 .noway-comp-map-row,.noway-comp-map-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .noway-comp-map-row>div,.noway-comp-map-result>div{min-width:0}
 .noway-comp-map-result{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end}
-.noway-comp-map-remove{height:41px;border:1px solid #855c58;background:#3a2928;color:#ffd1cd;cursor:pointer;padding:8px;font:900 9px Inter,sans-serif}
+.noway-comp-map-remove{height:41px;border:1px solid #646464;background:#2d2d2d;color:#ffd1cd;cursor:pointer;padding:8px;font:900 9px Inter,sans-serif}
 .noway-comp-form-actions{display:flex;flex-wrap:wrap;gap:9px}
 .noway-comp-form-actions button{padding:14px 16px;font-size:10px}
 .noway-competitive [hidden]{display:none!important}
