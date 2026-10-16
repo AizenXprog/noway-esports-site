@@ -448,6 +448,9 @@
  <details class="noway-desk-candidate"><summary>DADOS DA CANDIDATURA ⌄</summary><div id="nowayDeskCandidateData"></div></details>
  <div id="nowayDeskClosed" class="noway-desk-closed" hidden></div>
  <div id="nowayDeskMessages" class="noway-desk-messages" role="log" aria-label="Mensagens do recrutamento" tabindex="0"></div>
+ <form id="nowayDeskReplyForm" class="noway-desk-reply"><label for="nowayDeskReply">MENSAGEM AO CANDIDATO</label>
+ <div><textarea id="nowayDeskReply" rows="2" maxlength="3500" required placeholder="Escreva sua resposta..."></textarea>
+ <button type="submit" id="nowayDeskSend" class="btn btn-yellow">ENVIAR ↗</button></div></form>
  <section id="nowayDeskTrackerPanel" class="nw-desk-tracker" aria-label="Análise automática do Tracker" role="status">
   <span>TRACKER DO CANDIDATO / CONSULTA AUTOMÁTICA</span>
   <p id="nowayDeskTrackerStatus">Verificando se o candidato vinculou seu Tracker ao NOWAY ID...</p>
@@ -465,9 +468,6 @@
  <button id="nowayDeskReviewSave" class="noway-outline-action" type="submit">REGISTRAR PARECER ↗</button>
  </form>
  </section>
- <form id="nowayDeskReplyForm" class="noway-desk-reply"><label for="nowayDeskReply">MENSAGEM AO CANDIDATO</label>
- <div><textarea id="nowayDeskReply" rows="2" maxlength="3500" required placeholder="Escreva sua resposta..."></textarea>
- <button type="submit" id="nowayDeskSend" class="btn btn-yellow">ENVIAR ↗</button></div></form>
  <div id="nowayDeskActions" class="noway-desk-actions"><label for="nowayDeskStatus">ETAPA DA SELEÇÃO</label>
  <select id="nowayDeskStatus"><option value="recebida">Recebida</option><option value="em_analise">Em análise</option>
  <option value="teste">Convocado para testes</option><option value="aprovada">Aprovada</option>
