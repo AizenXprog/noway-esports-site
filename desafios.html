@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#0b0d0b">
+<meta name="description" content="Central de Desafios NOWAY Esports. Cadastre sua organização e solicite scrims ou confrontos de Rainbow Six Siege.">
+<title>CENTRAL DE DESAFIOS — NOWAY ESPORTS</title>
+<link rel="icon" type="image/webp" href="assets/logo-white.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="noway-desafios.css"></head>
+<body class="nw-challenges-page">
+<header class="nw-challenges-header"><a class="nw-brand" href="/" aria-label="NOWAY — início"><img src="assets/logo-white.webp" alt=""><strong>NOWAY <em>ESPORTS.</em></strong></a><nav><a href="/">← SITE OFICIAL</a><a href="painel.html">NOWAY ID ↗</a></nav></header>
+<main>
+<section class="nw-challenges-hero"><div class="nw-challenges-container nw-challenges-hero-grid"><div><span class="nw-eyebrow"><span class="nw-pulse"></span> NOWAY ESPORTS / RAINBOW SIX SIEGE</span>
+<h1>A PRÓXIMA<br><em>PARTIDA.</em><br>COMEÇA AQUI.</h1>
+<p>Um espaço direto entre organizações competitivas. Apresente seu time, proponha uma scrim ou disputa e acompanhe cada resposta da NOWAY.</p>
+<a class="nw-btn nw-primary" href="#central">ENTRAR NA CENTRAL <span>↗</span></a></div>
+<aside class="nw-challenges-manifest"><span>NW / MATCHMAKING DESK</span><div class="nw-manifest-mark">VS<span>.</span></div>
+<div class="nw-manifest-bottom"><strong>UM ADVERSÁRIO.<br>UMA DATA.<br>UM COMPROMISSO.</strong><small>R6 SIEGE / ORGANIZAÇÕES</small></div></aside></div></section>
+<div class="nw-challenges-container">
+<section class="nw-process" aria-label="Como funciona"><div><b>01</b><strong>CADASTRE O TIME</strong><span>Identidade e representante por NOWAY ID.</span></div><div><b>02</b><strong>ENVIE O DESAFIO</strong><span>Scrim ou disputa, formato e horário desejado.</span></div><div><b>03</b><strong>CONFIRME COM A NOWAY</strong><span>A proposta só vira partida quando for aceita.</span></div></section>
+<section id="central" class="nw-desk" aria-labelledby="nwDeskTitle">
+ <div class="nw-section-header"><div><span class="nw-eyebrow">NOWAY / DESAFIOS PRIVADOS</span><h2 id="nwDeskTitle">CENTRAL <em>DE DESAFIOS.</em></h2></div><p>Somente o representante cadastrado vê os dados e os pedidos da sua equipe.</p></div>
+ <div id="nwChallengeNotice" class="nw-notice" role="status" aria-live="polite" hidden></div>
+ <div id="nwChallengeLoading" class="nw-loading">VERIFICANDO SUA CONTA NOWAY ID…</div>
+ <section id="nwChallengeAuth" class="nw-auth" hidden><div class="nw-panel-intro"><span>ACESSO / REPRESENTANTE</span><h3>REPRESENTE<br>SEU TIME.</h3><p>Entre com Google ou e-mail usando o NOWAY ID. Você não precisa ser jogador da NOWAY para representar outra organização.</p></div>
+ <div class="nw-auth-actions"><button id="nwChallengeGoogle" type="button" class="nw-btn nw-primary">CONTINUAR COM GOOGLE ↗</button><div class="nw-or">OU ACESSE COM E-MAIL</div>
+ <form id="nwChallengeEmailForm"><label for="nwChallengeEmail">SEU E-MAIL</label><input id="nwChallengeEmail" type="email" placeholder="contato@suaequipe.com" required autocomplete="email" maxlength="254"><button class="nw-btn nw-outline" type="submit">RECEBER LINK DE ACESSO ↗</button></form>
+ <small>Usamos autenticação NOWAY ID para proteger o cadastro e impedir acesso aos pedidos de outros times.</small></div></section>
+ <div id="nwChallengeSigned" hidden>
+  <div class="nw-identity-bar"><span><small>REPRESENTANTE CONECTADO</small><strong id="nwChallengeAccount">CONTA NOWAY ID</strong></span><button type="button" id="nwChallengeSignOut">SAIR ↗</button></div>
+  <section id="nwNoTeam" class="nw-panel" hidden><div class="nw-panel-title"><div><span>01 / SUA ORGANIZAÇÃO</span><h3>CADASTRAR <em>EQUIPE.</em></h3><p>O cadastro será avaliado pela gestão da NOWAY antes de liberar solicitações de partidas.</p></div><span class="nw-outline-number">01</span></div>
+   <form id="nwTeamRegisterForm" class="nw-form"><div class="nw-fields">
+    <label>NOME DA ORGANIZAÇÃO *<input name="name" required minlength="3" maxlength="70" placeholder="Ex.: Exemplo Esports"></label>
+    <label>TAG *<input name="tag" required minlength="2" maxlength="12" pattern="[A-Za-z0-9_-]+" placeholder="EXM"></label>
+    <label>REGIÃO *<select name="region"><option value="BR">BRASIL</option><option value="SA">AMÉRICA DO SUL</option><option value="LATAM">LATAM</option><option value="NA">AMÉRICA DO NORTE</option><option value="EU">EUROPA</option><option value="OUTRO">OUTRA</option></select></label>
+    <label>PLATAFORMA *<select name="platform"><option value="pc">PC / UBISOFT</option><option value="console">CONSOLES</option><option value="crossplay">CROSSPLAY</option></select></label>
+    <label>DISCORD DE CONTATO<input name="discord" maxlength="80" placeholder="@capitao ou servidor"></label>
+    <label class="nw-span-two">APRESENTAÇÃO DO TIME<textarea name="description" maxlength="500" rows="3" placeholder="Seu nível competitivo, horários habituais e o que a NOWAY precisa saber."></textarea></label>
+   </div><button type="submit" class="nw-btn nw-primary">SOLICITAR CADASTRO ↗</button></form>
+  </section>
+  <div id="nwTeamWorkspace" hidden>
+   <section class="nw-team-identity"><div><small>ORGANIZAÇÃO REGISTRADA</small><div class="nw-team-headline"><span id="nwTeamTag" class="nw-tag">NW</span><h3 id="nwTeamName">SUA EQUIPE</h3></div><p id="nwTeamInfo"></p></div><span id="nwTeamStatus" class="nw-status">EM ANÁLISE</span></section>
+   <section id="nwAwaitApproval" class="nw-panel nw-pending" hidden><span>CADASTRO EM ANÁLISE</span><h3>SUA ORGANIZAÇÃO JÁ ESTÁ NA FILA.</h3><p>A equipe NOWAY vai verificar o cadastro. Depois da aprovação, você poderá enviar pedidos de scrim e disputa neste mesmo espaço.</p></section>
+   <section id="nwSuspended" class="nw-panel nw-pending" hidden><span>CADASTRO SUSPENSO</span><h3>FALE COM A GESTÃO DA NOWAY.</h3><p>O envio de novos desafios está indisponível para este cadastro. Consulte a organização para regularizar.</p></section>
+   <section id="nwRequestFormPanel" class="nw-panel" hidden><div class="nw-panel-title"><div><span>02 / PROPOR CONFRONTO</span><h3>ENVIAR <em>DESAFIO.</em></h3><p>Escolha a modalidade, sugira um horário e informe as condições da partida. A aprovação não é automática.</p></div><span class="nw-outline-number">02</span></div>
+    <form id="nwScrimRequestForm" class="nw-form"><div class="nw-kind-picker" role="group" aria-label="Tipo do desafio"><label><input type="radio" name="kind" value="scrim" checked><span><b>SCRIM</b><small>Treino competitivo, ajustes táticos e evolução.</small></span></label><label><input type="radio" name="kind" value="disputa"><span><b>DISPUTA</b><small>Confronto competitivo entre as organizações.</small></span></label></div>
+    <div class="nw-fields"><label>FORMATO *<select name="best_of"><option value="1">MELHOR DE 1 (BO1)</option><option value="3">MELHOR DE 3 (BO3)</option><option value="5">MELHOR DE 5 (BO5)</option></select></label>
+    <label>HORÁRIO SUGERIDO *<input type="datetime-local" name="requested_at" required><small>No seu fuso horário local, convertido automaticamente para a Agenda.</small></label>
+    <label>DURAÇÃO ESTIMADA *<select name="duration"><option value="60">1 HORA</option><option value="90">1H30</option><option value="120" selected>2 HORAS</option><option value="150">2H30</option><option value="180">3 HORAS</option><option value="240">4 HORAS</option><option value="300">5 HORAS</option></select></label>
+    <label class="nw-span-two">OBSERVAÇÕES / SERVIDOR / REGRAS<textarea name="notes" maxlength="900" rows="3" placeholder="Ex.: servidor Brasil, regras de lobby, disponibilidade alternativa, Discord para organizar."></textarea></label>
+    </div><button type="submit" class="nw-btn nw-primary">ENVIAR PROPOSTA ↗</button></form>
+   </section>
+   <section class="nw-history"><div class="nw-section-header"><div><span class="nw-eyebrow">03 / MINHAS SOLICITAÇÕES</span><h2>HISTÓRICO <em>DE DESAFIOS.</em></h2></div><button type="button" id="nwChallengeRefresh" class="nw-btn nw-outline">ATUALIZAR ↻</button></div><div id="nwChallengeRequestList" class="nw-request-grid"><div class="nw-loading">CONSULTANDO DESAFIOS…</div></div></section>
+  </div>
+ </div>
+</section></div>
+</main>
+<footer class="nw-footer"><span>© NOWAY ESPORTS / CENTRAL DE DESAFIOS</span><div><a href="/">SITE OFICIAL</a><a href="recrutamento.html">RECRUTAMENTO</a><a href="painel.html">NOWAY ID</a></div></footer>
+<script type="module" src="noway-desafios.js"></script></body></html>
