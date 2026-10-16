@@ -55,6 +55,7 @@ const safeLink=url=>{
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
   if(name==="recruitment")return canRecruit();
+   if(name==="desafios")return isManager();
   if(["equipe","agenda","competitive"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
@@ -132,6 +133,7 @@ function setTab(name){
   $("nowayConsoleUsers").hidden=name!=="users";
   $("nowayConsoleAgenda").hidden=name!=="agenda";
   $("nowayConsoleCompetitive").hidden=name!=="competitive";
+   $("nowayConsoleDesafios").hidden=name!=="desafios";
   $("nowayConsoleEquipe").hidden=name!=="equipe";
   $("nowayConsoleProfile").hidden=name!=="profile";
   $("nowayConsoleRecruitment").hidden=name!=="recruitment";
@@ -150,6 +152,7 @@ function setTab(name){
     window.dispatchEvent(new Event("noway:equipe-open"));
   }
   if(name==="competitive")refreshCompetitive();
+   if(name==="desafios")window.dispatchEvent(new Event("noway:desafios-open"));
 
   if(name==="recruitment")window.dispatchEvent(new Event("noway:recruitment-open"));
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
@@ -177,7 +180,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab((requested==="chat"||requested==="tracker"||viewPermitted(requested))&&["overview","agenda","competitive","equipe","contacts","recruitment","users","profile","tracker","chat"].includes(requested)?requested:"overview");
+  setTab((requested==="chat"||requested==="tracker"||viewPermitted(requested))&&["overview","agenda","competitive","desafios","equipe","contacts","recruitment","users","profile","tracker","chat"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
