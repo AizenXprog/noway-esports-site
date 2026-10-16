@@ -341,7 +341,7 @@ if(document.body.dataset.nowayConsole==="true"){
 
 // NOWAY Team Hub v1 — espaços de Jogador, Gerência e Owner.
 // O servidor valida todos os papéis em RPC e RLS. Esconder painéis não dá permissão.
-const teamRoles=new Set(["jogador","manager","owner","gri"]);
+const teamRoles=new Set(["jogador","manager","owner"]);
 let teamChannel=null,teamPollCounter=0;
 let teamDirectory=[],teamMessageSignature=null,teamNewsSignature=null;
 let teamChatList=[], teamKnownIds=new Set(),teamChatReady=false,chatRequestId=0;
