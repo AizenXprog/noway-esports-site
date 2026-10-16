@@ -9,6 +9,19 @@ const supabase = createClient(
 );
 const $id = id => document.getElementById(id);
 const clean = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* Citação enviada como parte da mensagem de texto já validada pelo servidor. */
+function renderR6Citation(body){
+ const text=String(body||"");
+ const m=/^▣ NOWAY TRACKER · ([^\r\n]{1,75}?) · (TAXA DE HS|WIN RATE|K\/D|RANK|RP|VITÓRIAS|KILLS|PARTIDAS): ([^\r\n]{1,80})(?:\r?\n|$)/.exec(text);
+ if(!m)return text?'<p>'+clean(text)+'</p>':"";
+ const header='<div class="nw-chat-stat-quote" aria-label="Estatística de Rainbow Six citada">'+
+ '<span>▣ NOWAY TRACKER / ESTATÍSTICA CITADA</span><strong>'+clean(m[1])+'</strong>'+
+ '<small>'+clean(m[2])+'</small><b>'+clean(m[3])+'</b></div>';
+ const remaining=text.slice(m[0].length);
+ return header+(remaining?'<p>'+clean(remaining)+'</p>':"");
+}
+
 const labels={membro:"MEMBRO",jogador:"JOGADOR NOWAY",manager:"GESTÃO NOWAY",gri:"GRI / RECRUTAMENTO",owner:"FOUNDER / OWNER"};
 const statusText={aberta:"ABERTA",aguardando:"AGUARDANDO",respondida:"RESPONDIDA",resolvida:"RESOLVIDA"};
 let signedUser=null, profile=null, tickets=[], members=[], activeId=null, running=0;
@@ -583,7 +596,7 @@ async function refreshTeamChat(){
     const replyHtml=m.reply_to?
       '<button type="button" class="noway-chat-reply-quote" data-chat-reply-view="'+clean(m.reply_to)+'">'+
         '<b>↳ '+clean(replied?.sender_name||"Mensagem anterior")+'</b>'+
-        '<span>'+clean((replied?.body||"Mensagem anterior ou removida").slice(0,150))+'</span></button>':"";
+        '<span>'+clean((replied?.body||"Mensagem anterior ou removida").replace(/^▣ NOWAY TRACKER · /,"Tracker R6: ").slice(0,150))+'</span></button>':"";
     const media=chatImages.get(m.image_path);
     const imageHtml=m.image_path&&media?.url?
       '<a href="'+clean(media.url)+'" class="noway-chat-image-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem enviada por '+clean(m.sender_name)+'">'+
@@ -596,7 +609,7 @@ async function refreshTeamChat(){
           nowayRoleBadge(teamDirectory.find(p=>p.id===m.sender_id)?.role||(m.sender_id===signedUser.id?profile?.role:null),m.sender_name)+
           '<time datetime="'+clean(m.created_at)+'">'+clean(teamTime(m.created_at))+'</time></div>'+
         replyHtml+eventHtml+
-        (m.body?'<p>'+clean(m.body)+'</p>':"")+imageHtml+
+        renderR6Citation(m.body)+imageHtml+
         '<div class="noway-chat-message-actions"><button type="button" data-chat-reply="'+clean(m.id)+'">↩ RESPONDER</button>'+
         (profile?.role==="owner"?'<button type="button" data-noway-chat-delete="'+clean(m.id)+'">EXCLUIR ×</button>':"")+
         '</div></div></article>';
@@ -606,7 +619,7 @@ async function refreshTeamChat(){
   target.querySelectorAll("[data-chat-reply]").forEach(button=>button.addEventListener("click",()=>{
     const msg=teamChatList.find(m=>m.id===button.dataset.chatReply);
     if(!msg)return;
-    setTeamReference("reply",msg.id,msg.sender_name+" · "+(msg.body||"Imagem / evento").slice(0,110));
+    setTeamReference("reply",msg.id,msg.sender_name+" · "+(msg.body||"Imagem / evento").replace(/^▣ NOWAY TRACKER · /,"Tracker R6: ").slice(0,110));
     $id("nowayTeamChatBody").focus();
   }));
   target.querySelectorAll("[data-chat-reply-view]").forEach(button=>button.addEventListener("click",()=>{

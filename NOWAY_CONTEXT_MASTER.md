@@ -313,3 +313,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - O comparativo armazena última leitura real e última diferença no `localStorage` da conta NOWAY ID e jogador/plataforma/nick. Primeira consulta cria referência sem seta; valores repetidos por cache não geram variação inventada. A última variação persiste entre recargas até nova mudança.
 - Não é um histórico sincronizado entre navegadores ou dispositivos e não modifica os resultados oficiais no Supabase. Falha da API mantém visualmente a última leitura, sem registrá-la como novidade. Atualização manual simultânea é colocada em fila.
 - Arquivos: noway-equipe.js e noway-equipe.css; este documento. Nenhuma alteração em cargos, permissões, fotos ou banco.
+
+## Marcação de estatística do R6 no chat — 16/10/2026
+
+- Usuário pode clicar MARCAR ESTATÍSTICA dentro do chat privado, escolher jogador e indicador R6 disponível; ou abrir perfil individual e clicar MARCAR NO CHAT junto de uma métrica.
+- O seletor usa a última resposta real da Arenyze armazenada na Central. Insere no campo de comentário a citação textual `▣ NOWAY TRACKER · JOGADOR · INDICADOR: VALOR` com linha separada para escrever normalmente. Após envio pelo RPC já existente `noway_send_team_message_v2`, o chat reconhece a citação e a renderiza em card, preservando o comentário, replies, imagens e eventos. Citado = snapshot compartilhado pelo usuário, não dado atualizado automaticamente; qualquer mensagem escrita manualmente pode conter texto semelhante.
+- Frontend só apresenta botão quando existe valor real para o indicador. Não altera backend/RLS/permissões. GRI continua listado no elenco, sem mudar acesso ao chat.
+- Na visão coletiva das estatísticas, *somente* o tamanho da fonte dos números foi reduzido para impedir quebra de porcentagens; outros elementos dos cards permaneceram intactos.
+- Arquivos modificados: `painel.html`, `noway-equipe.js`, `noway-equipe.css`, `noway-id.js`, e este contexto. Testes de sintaxe/seleção e deploy de produção precisam de confirmação real.
