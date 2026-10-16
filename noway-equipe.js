@@ -125,7 +125,7 @@ async function openPlayer(id){
  (canManage?'<div class="nw-detail-block"><h5>REGISTRAR RANK.</h5><form id="nowayTeamRankForm" class="nw-rank-form">'+
  '<label>TEMPORADA<input name="season" minlength="3" maxlength="48" placeholder="Y11S4" required></label>'+
  '<label>RANK<select name="tier">'+Object.entries(ranks).map(([v,l])=>
- '<option value="'+v+'">'+safe(l)+'</option>').join("")+'</select></label>'+
+ '<option value="'+v+'"'+(v==="unranked"?" selected":"")+'>'+safe(l)+'</option>').join("")+'</select></label>'+
  '<label>DIVISÃO<select name="division"><option value="">SEM DIVISÃO</option>'+
  [1,2,3,4,5].map(i=>'<option value="'+i+'">'+roman[i]+'</option>').join("")+'</select></label>'+
  '<label>RP<input name="rp" type="number" min="0" max="100000" placeholder="Opcional"></label>'+
