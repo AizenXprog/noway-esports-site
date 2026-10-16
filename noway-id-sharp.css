@@ -1,0 +1,133 @@
+/* NOWAY ID / SHARP EDITION — apenas painel.html
+   Preserve o desenho do painel, substituindo cantos arredondados por linhas precisas.
+   Carregado DEPOIS do sistema premium, para não alterar a página pública. */
+body[data-noway-console="true"]{
+  --nw-sharp-ease:cubic-bezier(.22,1,.36,1);
+  --nw-sharp-stroke:#46464c;
+}
+
+/* 1. Geometria: cards, caixas, menus, botões, inputs e mensagens sem arredondamento.
+   O seletor inclui os módulos do painel mas NÃO as páginas públicas. */
+body[data-noway-console="true"] :is(
+  #nowayDashboard,#nowayLoginSurface,.noway-console-main,
+  .noway-console-header,.noway-console-footer
+),
+body[data-noway-console="true"] :is(
+  #nowayDashboard,#nowayLoginSurface,.noway-console-main,
+  .noway-console-header,.noway-console-footer
+) *{
+  border-radius:0!important;
+}
+/* Mantém retos inclusive os cantos decorativos de cards e janelas. */
+body[data-noway-console="true"] :is(
+  #nowayDashboard,#nowayLoginSurface,.noway-console-main
+) *::before,
+body[data-noway-console="true"] :is(
+  #nowayDashboard,#nowayLoginSurface,.noway-console-main
+) *::after{
+  border-radius:0!important;
+}
+
+/* 2. Exceções propositais: fotografias de perfil e indicadores de status
+   devem continuar circulares, e NÃO contam como borda de card. */
+body[data-noway-console="true"] :is(
+  #nowayDashboard,#nowayLoginSurface,.noway-console-main
+) :is(
+  .noway-avatar-trigger,.noway-avatar-status,
+  .noway-profile-avatar-preview,.noway-chat-avatar,
+  .noway-chat-toast-avatar,.noway-desk-avatar,
+  .noway-tracker-avatar,.noway-team-msg-avatar,
+  .noway-chat-unread,.noway-hq-led,
+  .noway-hq-live-pill>span,.noway-cal-day small i,
+  .nw-team-live span,.noway-tracker-mode i,
+  .noway-team-private-dot,.nw-recruit-overview-dot,
+  .noway-chat-jump span,.noway-role-notification-dot
+){
+  border-radius:50%!important;
+}
+
+/* 3. Arquitetura premium: superfícies planas, acentos finos, profundidade controlada. */
+body[data-noway-console="true"] #nowayDashboard > .nw-id-sidebar{
+  border-color:#38383e!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.37),inset 1px 0 rgba(255,255,255,.025)!important;
+}
+body[data-noway-console="true"] #nowayDashboard > .noway-account-strip{
+  border-color:#44444a!important;
+  box-shadow:0 9px 25px rgba(0,0,0,.27),inset 0 1px rgba(255,255,255,.04)!important;
+}
+body[data-noway-console="true"] :is(
+  .noway-hq-hero,.noway-panel,.noway-console-stats>.noway-stat,
+  .noway-tracker-chart-panel,.noway-tracker-insight-panel,
+  .noway-desk-sidebar,.noway-desk-conversation,
+  .nw-team-hero,.nw-team-card,.nw-team-roster-grid button
+){
+  border-color:#3d3d43!important;
+}
+body[data-noway-console="true"] :is(
+  .noway-console-tab-group button,.noway-hq-shortcut,
+  .noway-outline-action,.nw-team-link,.noway-desk-entry,
+  .noway-tracker-search button
+){
+  transition:background-color .25s var(--nw-sharp-ease),
+    color .22s ease,border-color .25s ease,
+    box-shadow .25s var(--nw-sharp-ease),
+    transform .25s var(--nw-sharp-ease)!important;
+}
+
+/* 4. Navegação: sensação de controle preciso, não de botões arredondados. */
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button:hover:not(:disabled){
+  border-color:#53534e!important;
+  background:linear-gradient(90deg,#29292b,#1e1e21)!important;
+  transform:translateX(2px)!important;
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button.is-active{
+  border-left:2px solid #f2ff00!important;
+  box-shadow:inset 3px 0 11px rgba(242,255,0,.075)!important;
+  transform:none!important;
+}
+body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button:focus-visible,
+body[data-noway-console="true"] :is(
+  button,a,input,textarea,select,summary
+):focus-visible{
+  outline:2px solid #f2ff00!important;
+  outline-offset:3px;
+}
+body[data-noway-console="true"] :is(
+  .noway-hq-shortcut-group .noway-hq-shortcut,
+  .noway-desk-entry,.nw-team-roster-grid button
+):hover{
+  border-color:#9ba678!important;
+  box-shadow:inset 0 1px rgba(242,255,0,.10),0 11px 24px #0004!important;
+  transform:translateY(-2px)!important;
+}
+
+/* 5. Entrada dos módulos: sutil, não desloca o layout e respeita acessibilidade. */
+@keyframes nw-sharp-reveal{
+  from{opacity:.65;filter:brightness(.90);transform:translateY(7px)}
+  to{opacity:1;filter:brightness(1);transform:translateY(0)}
+}
+body[data-noway-console="true"] #nowayDashboard > .noway-console-view:not([hidden]){
+  animation:nw-sharp-reveal .38s var(--nw-sharp-ease) both;
+}
+body[data-noway-console="true"] #nowayDashboard > .noway-account-strip{
+  animation:nw-sharp-reveal .45s var(--nw-sharp-ease) both;
+}
+
+/* Interação responsiva sem cortes ou deslocamento em touch. */
+@media(hover:none){
+  body[data-noway-console="true"] #nowayDashboard .noway-console-tab-group button:hover:not(:disabled),
+  body[data-noway-console="true"] :is(.noway-hq-shortcut-group .noway-hq-shortcut,.noway-desk-entry,.nw-team-roster-grid button):hover{
+    transform:none!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-noway-console="true"] #nowayDashboard > .noway-console-view:not([hidden]),
+  body[data-noway-console="true"] #nowayDashboard > .noway-account-strip{
+    animation:none!important;
+  }
+  body[data-noway-console="true"] :is(
+    .noway-console-tab-group button,.noway-hq-shortcut,
+    .noway-outline-action,.nw-team-link,.noway-desk-entry,
+    .noway-tracker-search button
+  ){transition:none!important}
+}
