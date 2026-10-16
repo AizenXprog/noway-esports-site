@@ -7,8 +7,8 @@ const fmt=(v,d=0)=>v==null||!Number.isFinite(Number(v))?"—":Number(v).toLocale
 const pct=(n,d)=>d>0?fmt(n*100/d,1)+"%":"—";
 const ratio=(n,d)=>d>0?fmt(n/d,2):n>0?"∞":"—";
 const date=v=>v?new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(v)):"—";
-const roleLabel={owner:"FOUNDER / JOGADOR",manager:"TEAM MANAGER / JOGADOR",jogador:"JOGADOR"};
-const rosterRoles=new Set(["owner","manager","jogador"]);
+const roleLabel={owner:"FOUNDER / JOGADOR",manager:"TEAM MANAGER / JOGADOR",gri:"GRI / JOGADOR",jogador:"JOGADOR"};
+const rosterRoles=new Set(["owner","manager","gri","jogador"]);
 const ranks={copper:"COBRE",bronze:"BRONZE",silver:"PRATA",gold:"OURO",platinum:"PLATINA",emerald:"ESMERALDA",diamond:"DIAMANTE",champion:"CAMPEÃO",unranked:"SEM RANK"};
 const roman=["","I","II","III","IV","V"];
 const rankLabel=r=>r&&ranks[r.tier]?ranks[r.tier]+(r.division?" "+roman[r.division]:""):"NÃO REGISTRADO";
@@ -129,7 +129,7 @@ const stat=(label,value,desc)=>'<div><small>'+safe(label)+'</small><strong>'+saf
 function renderSummary(){
  const next=events.find(e=>e.kind==="partida")||events[0],roster=next?.roster||[];
  const vals=[
- ["JOGADORES",people.length,"Founder, TM e atletas"],
+ ["JOGADORES",people.length,"Founder, TM, GRI e atletas"],
  ["CONTAS R6 VINCULADAS",people.filter(p=>Boolean(p.ubisoft)).length,"Perfis associados ao elenco"],
  ["VÍNCULOS PENDENTES",people.filter(p=>!p.ubisoft).length,"Jogadores sem Ubisoft vinculada"],
  ["DADOS SINCRONIZADOS",people.filter(p=>Boolean(live(p))).length,"Jogadores com métricas disponíveis"]

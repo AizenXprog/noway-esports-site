@@ -301,3 +301,9 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `api/noway-r6.js`: consulta adicional paralela `GET /r6/api/v2/operators?modes=ranked`, preservando o perfil mesmo se a consulta de operadores falhar; cache existente e credencial segura mantidos.
 - `noway-equipe.js`: renderiza imagem de rank fornecida pela Arenyze (domínio e caminho validados), fallback para pacote comunitário. Sem mudanças no banco, cargos, recrutamento ou fotos.
 - Ainda deve ser validado com sessão autenticada e conta real; status READY do deploy, isoladamente, não prova disponibilidade de estatísticas.
+
+## Correção Estrutura II — Cargo GRI também é jogador (16/10/2026)
+
+- Pedido explícito do usuário: **Founder, Team Manager e GRI são sempre jogadores da NOWAY**. O filtro visual da Central de Equipe deve incluir `owner`, `manager`, `gri` e `jogador`, sem confundir cargo de administração com exclusão do elenco.
+- O backend `noway_team_hub_v1` já retorna o GRI; a ausência dele era um filtro incorreto em `noway-equipe.js`. Corrigidos `rosterRoles`, `roleLabel` e descrição do contador. O GRI aparece no elenco, mesmo sem vincular R6; indicadores sem fonte continuam `—`.
+- A correção **não altera permissões**: GRI continua podendo usar o recrutamento e não ganha acesso à Central, ao chat ou aos módulos competitivos pelo simples fato de aparecer no elenco. Essa distinção só poderá mudar com instrução separada.
