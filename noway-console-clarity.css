@@ -3,52 +3,52 @@
 .noway-console-intro h1{font-size:clamp(57px,6.2vw,87px)}
 .noway-console-intro p{max-width:590px}
 .noway-console-tabs{display:flex;align-items:stretch;gap:8px;min-width:0;overflow-x:auto;
- border:1px solid #3d493e;background:linear-gradient(130deg,#1e241f,#151a17);padding:9px}
+ border:1px solid #464646;background:linear-gradient(130deg,#222222,#151a17);padding:9px}
 .noway-console-tab-group{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
- border-right:1px solid #3b453c;padding:4px 11px 6px 3px;flex:0 0 auto;min-width:0}
+ border-right:1px solid #424242;padding:4px 11px 6px 3px;flex:0 0 auto;min-width:0}
 .noway-console-tab-group:last-child{border-right:none}
 .noway-console-tab-group[hidden]{display:none!important}
-.noway-console-nav-label{font:900 9px/1.5 Inter,sans-serif;letter-spacing:.12em;color:#8c9b8d;padding:0 10px 2px}
+.noway-console-nav-label{font:900 9px/1.5 Inter,sans-serif;letter-spacing:.12em;color:#979797;padding:0 10px 2px}
 .noway-console-tab-group button{align-self:stretch;text-align:left;white-space:nowrap;min-height:34px;
  padding:8px 11px;font:900 9px/1.35 Inter,sans-serif;letter-spacing:.035em;
  border-radius:0;transition:background .16s,color .16s}
-.noway-console-tab-group button.is-active{background:#f2ff00;color:#0a100a}
+.noway-console-tab-group button.is-active{background:#f2ff00;color:#0e0e0e}
 .noway-console-tab-group button[hidden]{display:none!important}
 .noway-account-menu{position:relative;flex:0 0 auto}
 .noway-account-menu>summary{list-style:none;display:flex;align-items:center;gap:16px;
- border:1px solid #586858;background:#202920;color:#dce7d9;
+ border:1px solid #636363;background:#262626;color:#e4e4e4;
  padding:13px 15px;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.065em;cursor:pointer;white-space:nowrap}
 .noway-account-menu>summary::-webkit-details-marker{display:none}
 .noway-account-menu>summary>span{color:#f2ff00;font-size:14px;transition:transform .16s}
 .noway-account-menu[open]>summary>span{transform:rotate(180deg)}
 .noway-account-menu>summary:hover,.noway-account-menu[open]>summary{border-color:#f2ff00}
 .noway-account-menu .noway-account-actions{position:absolute;z-index:24;top:calc(100% + 6px);right:0;width:235px;
- background:#182019;border:1px solid #6a7a54;padding:8px;display:flex;flex-direction:column;align-items:stretch;gap:5px;
+ background:#1e1e1e;border:1px solid #747474;padding:8px;display:flex;flex-direction:column;align-items:stretch;gap:5px;
  box-shadow:0 18px 50px #0009}
 .noway-account-menu .noway-account-actions button{width:100%;text-align:left;white-space:normal}
 .noway-hq-shortcut-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.noway-hq-shortcut-group{min-width:0;border-top:1px solid #56664c;padding-top:13px}
+.noway-hq-shortcut-group{min-width:0;border-top:1px solid #616161;padding-top:13px}
 .noway-hq-shortcut-group[hidden]{display:none!important}
-.noway-hq-shortcut-group h5{font:900 9px/1.4 Inter,sans-serif;letter-spacing:.11em;color:#b8cda7;margin:0 0 9px}
+.noway-hq-shortcut-group h5{font:900 9px/1.4 Inter,sans-serif;letter-spacing:.11em;color:#c6c6c6;margin:0 0 9px}
 .noway-hq-shortcut-group .noway-hq-shortcut{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;
  align-items:center;gap:3px 11px;min-height:0;width:100%;padding:13px 12px;margin:0 0 6px;
- background:#242c24;border:1px solid #3b493c;color:#fff;text-align:left;text-decoration:none;transition:background .17s,border-color .17s;transform:none}
-.noway-hq-shortcut-group .noway-hq-shortcut:hover{background:#313f2d;border-color:#9cb56c;transform:none}
+ background:#2a2a2a;border:1px solid #454545;color:#fff;text-align:left;text-decoration:none;transition:background .17s,border-color .17s;transform:none}
+.noway-hq-shortcut-group .noway-hq-shortcut:hover{background:#3b3b3b;border-color:#aaaaaa;transform:none}
 .noway-hq-shortcut-group .noway-hq-shortcut strong{grid-column:1;grid-row:1;min-width:0;padding:0;
- font:900 20px/1.03 'Barlow Condensed',sans-serif;color:#f5f7ef;overflow-wrap:anywhere}
+ font:900 20px/1.03 'Barlow Condensed',sans-serif;color:#f6f6f6;overflow-wrap:anywhere}
 .noway-hq-shortcut-group .noway-hq-shortcut>span{grid-column:1;grid-row:2;
- font:600 10px/1.5 Inter,sans-serif;color:#9dad9a;letter-spacing:0}
+ font:600 10px/1.5 Inter,sans-serif;color:#a8a8a8;letter-spacing:0}
 .noway-hq-shortcut-group .noway-hq-shortcut>b{position:static;grid-column:2;grid-row:1/3;align-self:center;
  color:#f2ff00;font:900 18px/1 Inter,sans-serif}
 .noway-hq-shortcuts .noway-hq-panel-title{margin-bottom:12px}
 .noway-hq-shortcuts .noway-muted{margin-bottom:17px}
 .noway-profile-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:9px;
- padding:20px 0 0;margin-top:25px;border-top:1px solid #445444}
+ padding:20px 0 0;margin-top:25px;border-top:1px solid #4f4f4f}
 .noway-profile-destinations>div{display:flex;flex:1;flex-direction:column;gap:6px;min-width:170px}
-.noway-profile-destinations>div>span{font:900 9px/1.4 Inter,sans-serif;color:#a3b59d}
-.noway-profile-destinations>div>strong{font:900 26px/1 'Barlow Condensed',sans-serif;color:#f6f9f3}
+.noway-profile-destinations>div>span{font:900 9px/1.4 Inter,sans-serif;color:#afafaf}
+.noway-profile-destinations>div>strong{font:900 26px/1 'Barlow Condensed',sans-serif;color:#f8f8f8}
 .noway-profile-destinations>a,.noway-profile-destinations>button{display:inline-flex;align-items:center;justify-content:center;
- border:1px solid #657656;background:#232d22;color:#f2ff00;padding:12px 13px;text-decoration:none;
+ border:1px solid #707070;background:#2a2a2a;color:#f2ff00;padding:12px 13px;text-decoration:none;
  font:900 9px/1.5 Inter,sans-serif;cursor:pointer;white-space:nowrap}
 .noway-profile-destinations>a:hover,.noway-profile-destinations>button:hover{border-color:#f2ff00}
 @media(max-width:1050px){.noway-console-tabs{gap:5px}.noway-console-tab-group{padding-right:8px}}
@@ -88,10 +88,10 @@
 .noway-dashboard[data-console-active="equipe"] #nowayTeamWorkspace{min-width:0}
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat{
  display:flex;flex-direction:column;min-width:0;height:clamp(500px,calc(100dvh - 118px),900px);
- padding:18px!important;border-color:#4c5d45;background:#131a16
+ padding:18px!important;border-color:#585858;background:#181818
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head{
- flex:0 0 auto;gap:10px;margin:0 0 12px;padding:0 0 13px;border-bottom:1px solid #314032
+ flex:0 0 auto;gap:10px;margin:0 0 12px;padding:0 0 13px;border-bottom:1px solid #3c3c3c
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head h4{font-size:clamp(29px,3.2vw,42px);margin-bottom:4px}
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-head .noway-muted{font-size:10px;margin:2px 0}
@@ -99,36 +99,36 @@
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-list{
  flex:1;min-height:0;height:auto!important;max-height:none;overflow-y:auto;overscroll-behavior-y:contain;
  scroll-behavior:auto;padding:17px 20px 40px;gap:13px;
- background:radial-gradient(ellipse at 50% 0%,rgba(242,255,0,.035),transparent 55%),#101612;
- border:1px solid #2e4232;border-radius:8px
+ background:radial-gradient(ellipse at 50% 0%,rgba(242,255,0,.035),transparent 55%),#141414;
+ border:1px solid #3d3d3d;border-radius:8px
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-msg{
- background:#252c26;border-color:#4a584d;border-left-color:#727f72;
+ background:#2a2a2a;border-color:#545454;border-left-color:#7b7b7b;
  box-shadow:0 5px 14px #0002
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-msg.is-own{
- background:#303a29;border-color:#5f704f;border-right-color:#f2ff00
+ background:#373737;border-color:#6a6a6a;border-right-color:#f2ff00
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-msg-meta strong{font-size:11px}
 .noway-dashboard[data-console-active="equipe"] .noway-team-msg p{font-size:13px;line-height:1.7}
 .noway-chat-jump{position:absolute;z-index:10;bottom:17px;right:23px;display:flex;align-items:center;
  justify-content:center;width:46px;height:46px;border-radius:50%;
- border:1px solid #f2ff00;background:#f2ff00;color:#11180c;cursor:pointer;
- box-shadow:0 7px 23px #000b,0 0 0 3px #121c15bb;
+ border:1px solid #f2ff00;background:#f2ff00;color:#161616;cursor:pointer;
+ box-shadow:0 7px 23px #000b,0 0 0 3px #191919bb;
  transition:transform .18s ease,box-shadow .18s ease}
 .noway-chat-jump svg{width:23px;height:23px}
 .noway-chat-jump:hover{transform:translateY(-3px);box-shadow:0 10px 28px #000c}
 .noway-chat-jump[hidden],.noway-chat-jump span[hidden]{display:none!important}
 .noway-chat-jump span{position:absolute;top:-9px;right:-5px;min-width:24px;height:24px;display:grid;
- place-items:center;padding:0 5px;background:#171e16;color:#f2ff00;border:1px solid #f2ff00;
+ place-items:center;padding:0 5px;background:#1c1c1c;color:#f2ff00;border:1px solid #f2ff00;
  border-radius:12px;font:900 10px Inter,sans-serif}
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-form{
- flex:0 0 auto;border:1px solid #3a513d;background:#19211b;padding:12px 14px;margin-top:10px;border-radius:7px
+ flex:0 0 auto;border:1px solid #4b4b4b;background:#1f1f1f;padding:12px 14px;margin-top:10px;border-radius:7px
 }
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose{align-items:center;gap:8px}
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose textarea{
- min-height:48px;height:48px;max-height:114px;resize:none;border:1px solid #576a54;
- border-radius:6px;background:#242f25;padding:11px 14px;font-size:12px}
+ min-height:48px;height:48px;max-height:114px;resize:none;border:1px solid #646464;
+ border-radius:6px;background:#2c2c2c;padding:11px 14px;font-size:12px}
 .noway-dashboard[data-console-active="equipe"] .noway-team-chat-compose .btn{
  min-height:48px;align-self:stretch;border-radius:6px;padding:9px 19px}
 .noway-dashboard[data-console-active="equipe"] .noway-chat-tools{margin-top:8px}
@@ -158,55 +158,55 @@
 .noway-console-tabs{
  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px!important;
  padding:13px!important;overflow:visible!important;scrollbar-width:auto;
- background:linear-gradient(130deg,#141a16,#101510)!important;border-color:#455344!important
+ background:linear-gradient(130deg,#181818,#101510)!important;border-color:#4f4f4f!important
 }
 .noway-console-tab-group{
  display:flex;flex-direction:column;align-items:stretch;flex:none!important;min-width:0;
- border:1px solid #36483a!important;background:#1d2620;border-radius:8px;
+ border:1px solid #434343!important;background:#242424;border-radius:8px;
  padding:15px 12px!important;gap:6px!important
 }
-.noway-console-tab-group:last-child{border:1px solid #36483a!important}
+.noway-console-tab-group:last-child{border:1px solid #434343!important}
 .noway-console-nav-label{
  display:flex;align-items:center;gap:8px;padding:0 6px 8px!important;
- border-bottom:1px solid #445346;letter-spacing:.1em!important;font:900 10px/1.4 Inter,sans-serif;
- color:#bdcfb3!important;margin-bottom:5px
+ border-bottom:1px solid #4f4f4f;letter-spacing:.1em!important;font:900 10px/1.4 Inter,sans-serif;
+ color:#c9c9c9!important;margin-bottom:5px
 }
 .noway-console-nav-label:before{content:"";width:6px;height:6px;flex:0 0 6px;background:#f2ff00;
  transform:rotate(45deg);opacity:.85}
 .noway-console-tab-group button{
  display:flex;align-items:center;justify-content:space-between;gap:12px;
  position:relative;width:100%;text-align:left;min-height:51px;padding:12px 32px 12px 13px!important;
- border:1px solid #425746!important;border-radius:6px!important;
- background:#26322a!important;color:#e7f0e5!important;
+ border:1px solid #515151!important;border-radius:6px!important;
+ background:#2f2f2f!important;color:#ededed!important;
  cursor:pointer;letter-spacing:.035em!important;font:850 11px/1.3 Inter,sans-serif!important;
  transition:background .18s,border-color .18s,transform .18s,color .18s!important
 }
 .noway-console-tab-group button::after{
  content:"↗";position:absolute;right:11px;top:50%;transform:translateY(-50%);
- color:#b4caa8;font:800 14px/1 Inter,sans-serif;opacity:.7;
+ color:#c3c3c3;font:800 14px/1 Inter,sans-serif;opacity:.7;
  pointer-events:none
 }
 .noway-console-tab-group button:hover{
- background:#34452f!important;border-color:#b8cd81!important;color:#fafff3!important;
+ background:#404040!important;border-color:#c3c3c3!important;color:#fdfdfd!important;
  transform:translateY(-1px)
 }
 .noway-console-tab-group button:hover::after{color:#f2ff00;opacity:1}
 .noway-console-tab-group button.is-active{
- background:#f2ff00!important;border-color:#f2ff00!important;color:#10180a!important;
+ background:#f2ff00!important;border-color:#f2ff00!important;color:#151515!important;
  box-shadow:0 5px 21px #f2ff001b
 }
-.noway-console-tab-group button.is-active::after{color:#0e160a;opacity:1}
+.noway-console-tab-group button.is-active::after{color:#131313;opacity:1}
 .noway-console-tab-group button:focus-visible{outline:2px solid #f2ff00;outline-offset:3px}
 .noway-console-tab-group button[hidden]{display:none!important}
 .noway-console-tab-group[hidden]{display:none!important}
 .noway-console-tab-group button.has-new::before,
 .noway-console-tab-group button.has-unread::before{
  content:"";position:absolute;right:23px;top:7px;z-index:2;width:8px;height:8px;
- border-radius:50%;background:#f2ff00;box-shadow:0 0 0 3px #171e18,0 0 10px #f2ff00a0;
+ border-radius:50%;background:#f2ff00;box-shadow:0 0 0 3px #1c1c1c,0 0 10px #f2ff00a0;
  animation:nowayNavPulse 3.4s ease-in-out infinite
 }
 .noway-console-tab-group button.is-active.has-new::before,
-.noway-console-tab-group button.is-active.has-unread::before{background:#141b0e;box-shadow:0 0 0 2px #e8f600}
+.noway-console-tab-group button.is-active.has-unread::before{background:#191919;box-shadow:0 0 0 2px #e8f600}
 .noway-console-tab-group button:has(.noway-chat-unread)::after{right:9px}
 .noway-console-tab-group button .noway-chat-unread{
  margin:0 15px 0 auto;min-width:19px;height:19px;flex:none;font-size:9px
@@ -286,8 +286,8 @@
 .noway-dashboard[data-console-active="equipe"] .noway-chat-event-quote strong{
   font-size:19px;line-height:1.1;
 }
-.noway-chat-expand{border-color:#7b905b!important;color:#f2ff00!important}
-.noway-chat-expand:hover{background:#333e29}
+.noway-chat-expand{border-color:#888888!important;color:#f2ff00!important}
+.noway-chat-expand:hover{background:#3a3a3a}
 body.noway-chat-focus{overflow:hidden!important}
 body.noway-chat-focus::before{
   content:"";position:fixed;inset:0;background:rgba(3,6,4,.87);
@@ -297,7 +297,7 @@ body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-team
   position:fixed!important;inset:14px 22px!important;z-index:1200!important;
   width:auto!important;height:auto!important;min-height:0!important;
   max-height:none!important;margin:0!important;padding:14px!important;
-  border:1px solid #8b9e68!important;box-shadow:0 30px 110px #000e;
+  border:1px solid #969696!important;box-shadow:0 30px 110px #000e;
 }
 body.noway-chat-focus .noway-dashboard[data-console-active="equipe"] .noway-chat-scroll-shell{
   min-height:0;
