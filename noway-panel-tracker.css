@@ -83,3 +83,50 @@
  .noway-tracker-chart-panel,.noway-tracker-insight-panel{padding:16px}
  .noway-tracker-external{width:100%;text-align:center}
  .noway-tracker-state{min-height:170px;padding:16px}}
+
+
+/* NOWAY ID — identidade vinculada ao Tracker sem alterar o design aprovado. */
+.noway-tracker-self{margin-top:16px;border:1px solid #526c47;background:linear-gradient(125deg,#253124,#17211a);
+ padding:23px 24px;color:#eff5e9}
+.noway-tracker-self-head{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.noway-tracker-self-head h4{font:900 clamp(29px,3vw,40px)/.98 "Barlow Condensed",sans-serif;color:#fff;margin:10px 0}
+.noway-tracker-self-head h4 em{font-style:normal;color:#f2ff00}
+.noway-tracker-self-head p{color:#b6c9ae;font:600 11px/1.8 Inter,sans-serif;margin:0;max-width:650px}
+.noway-tracker-my-button,.noway-tracker-link-form button{border:1px solid #f2ff00;background:#f2ff00;
+ color:#121c0e;font:900 10px/1.45 Inter,sans-serif;padding:15px 18px;cursor:pointer;white-space:nowrap}
+.noway-tracker-my-button:hover,.noway-tracker-link-form button:hover{background:#fff}
+.noway-tracker-my-button:disabled,.noway-tracker-link-form button:disabled{opacity:.55;cursor:wait}
+.noway-tracker-link-form{display:grid;grid-template-columns:1fr minmax(170px,.34fr) auto;
+ gap:9px;align-items:center;margin-top:20px}
+.noway-tracker-link-form label{font:900 9px Inter,sans-serif;color:#bdd3ab;letter-spacing:.09em;grid-row:1}
+.noway-tracker-link-form label[for="nowayTrackerLinkPlatform"]{grid-column:2}
+.noway-tracker-link-form input,.noway-tracker-link-form select{min-width:0;width:100%;height:46px;
+ border:1px solid #6b8061;background:#111b14;color:#fff;padding:0 13px;font:700 11px Inter,sans-serif;grid-row:2}
+.noway-tracker-link-form input{grid-column:1}.noway-tracker-link-form select{grid-column:2}
+.noway-tracker-link-form button{grid-column:3;grid-row:2;height:46px}
+.noway-tracker-self-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.noway-tracker-self-actions button{border:0;background:none;padding:5px 0;color:#d8e9c9;
+ font:900 9px Inter,sans-serif;cursor:pointer;letter-spacing:.04em}
+.noway-tracker-self-actions button:hover{color:#f2ff00;text-decoration:underline}
+.noway-tracker-disclaimer{font:600 9px/1.65 Inter,sans-serif;color:#899e88;margin:14px 0 0}
+.noway-tracker-search-title{padding:30px 2px 12px;display:flex;align-items:end;justify-content:space-between;gap:15px}
+.noway-tracker-search-title>span{color:#f2ff00;font:900 10px Inter,sans-serif;letter-spacing:.11em}
+.noway-tracker-search-title>p{color:#a6b8a4;font:600 10px Inter,sans-serif;margin:0}
+.noway-tracker-search-title+.noway-tracker-search{border-top:1px solid #52694c}
+@media(max-width:950px){
+ .noway-tracker-link-form{grid-template-columns:1fr minmax(165px,.55fr)}
+ .noway-tracker-link-form button{grid-column:1/3;grid-row:3}
+ .noway-tracker-self-head{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:630px){
+ .noway-tracker-self{padding:18px 14px}
+ .noway-tracker-link-form{grid-template-columns:1fr}
+ .noway-tracker-link-form label[for="nowayTrackerLinkName"]{grid-column:1;grid-row:1}
+ .noway-tracker-link-form input{grid-column:1;grid-row:2}
+ .noway-tracker-link-form label[for="nowayTrackerLinkPlatform"]{grid-column:1;grid-row:3}
+ .noway-tracker-link-form select{grid-column:1;grid-row:4}
+ .noway-tracker-link-form button{grid-column:1;grid-row:5}
+ .noway-tracker-search-title{display:block}
+ .noway-tracker-search-title p{margin-top:9px;line-height:1.5}
+ .noway-tracker-my-button{width:100%}
+}
