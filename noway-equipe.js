@@ -12,7 +12,10 @@ const rosterRoles=new Set(["owner","manager","jogador"]);
 const ranks={copper:"COBRE",bronze:"BRONZE",silver:"PRATA",gold:"OURO",platinum:"PLATINA",emerald:"ESMERALDA",diamond:"DIAMANTE",champion:"CAMPEÃO",unranked:"SEM RANK"};
 const roman=["","I","II","III","IV","V"];
 const rankLabel=r=>r&&ranks[r.tier]?ranks[r.tier]+(r.division?" "+roman[r.division]:""):"NÃO REGISTRADO";
-const rankIcon=r=>{
+const rankIcon=(r,image)=>{
+ const trusted=typeof image==="string"&&
+  /^https:\/\/r6\.arenyze\.com\/assets\/img\/r6_ranks_img\/[a-z0-9_-]+\.webp$/i.test(image)?image:null;
+ if(trusted)return '<img src="'+safe(trusted)+'" alt="'+safe(rankLabel(r))+'" loading="lazy">';
  if(!r||!Object.hasOwn(ranks,r.tier))return "";
  const file=["champion","unranked"].includes(r.tier)?r.tier+"-small.webp":
  roman[Number(r.division)]?r.tier+"-"+roman[Number(r.division)].toLowerCase()+"-small.webp":null;
@@ -153,7 +156,7 @@ function renderRoster(){
  const list=people.filter(p=>[p.name,p.ubisoft,roleLabel[p.role]].some(v=>String(v||"").toLocaleLowerCase("pt-BR").includes(term)));
  $("nowayTeamHubRoster").innerHTML=list.length?list.map(p=>{
   const x=live(p),rank=x?.rank?rankTier(x.rank):null,entry=externalCache.get(p.id);
-  const emblem=rank?rankIcon(rank):'<span class="nw-team-rank-empty" aria-hidden="true">◇</span>';
+  const emblem=rank||x?.rankImage?rankIcon(rank,x?.rankImage):'<span class="nw-team-rank-empty" aria-hidden="true">◇</span>';
   const rankName=x?.rank||(p.ubisoft?"RANK INDISPONÍVEL":"RANK PENDENTE");
   const rp=x?.rankPoints==null?"RP NÃO INFORMADO":fmt(x.rankPoints)+" RP";
   const stats=[["K/D",x?fmt(x.kd,2):"—"],["WIN RATE",x&&x.winRate!==null?fmt(x.winRate,1)+"%":"—"],
@@ -173,7 +176,7 @@ function renderRoster(){
 }
 function renderRank(p){
  const x=live(p),rank=x?.rank?rankTier(x.rank):null;
- const emblem=rank?rankIcon(rank):'<span class="nw-team-rank-empty" aria-hidden="true">◇</span>';
+ const emblem=rank||x?.rankImage?rankIcon(rank,x?.rankImage):'<span class="nw-team-rank-empty" aria-hidden="true">◇</span>';
  const name=x?.rank||(p.ubisoft?"RANK INDISPONÍVEL":"AGUARDANDO VÍNCULO R6");
  const detail=!p.ubisoft?"Vincule sua conta R6 em Minha Conta":x?
  (x.rankPoints===null?"RP não informado":fmt(x.rankPoints)+" RP")+" · ARENYZE · "+trackerDisplayTime(x.fetchedAt):

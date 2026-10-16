@@ -1,6 +1,7 @@
 // NOWAY Tracker backend. The Arenyze credential lives in Vercel's encrypted
 // ARENYZE_API_KEY environment variable, never in public HTML or JavaScript.
 const API = "https://public-api.arenyze.com/r6/api/v2/profile";
+const OPERATORS_API = "https://public-api.arenyze.com/r6/api/v2/operators";
 const SUPABASE_AUTH = "https://vdipsufzlqmnprbjiojb.supabase.co/auth/v1/user";
 const PUBLIC_KEY = "sb_publishable_sYb-pfY4GhRjeQzEBKa_kg__xIZUg7e";
 const dataCache = new Map();
@@ -56,10 +57,17 @@ module.exports = async function handler(req, res) {
   url.searchParams.set("platform_families", platform === "uplay" ? "pc" : "console");
 
   try {
-    const response = await fetch(url, {
-      headers: { "api-key": credential, accept: "application/json" },
-      signal: AbortSignal.timeout(16000)
-    });
+    // Consulta complementar: no R6 V2 o headshot fica nos operadores.
+    // Falha de operadores nao impede a consulta principal.
+    const operatorsUrl = new URL(OPERATORS_API);
+    operatorsUrl.searchParams.set("nameOnPlatform", name);
+    operatorsUrl.searchParams.set("platformType", platform);
+    operatorsUrl.searchParams.set("modes", "ranked");
+    const headers = { "api-key": credential, accept: "application/json" };
+    const [response, opsResponse] = await Promise.all([
+      fetch(url, { headers, signal: AbortSignal.timeout(16000) }),
+      fetch(operatorsUrl, { headers, signal: AbortSignal.timeout(12000) }).catch(() => null)
+    ]);
     if (!response.ok) {
       const status = response.status === 404 ? 404 : response.status === 429 ? 429 : 502;
       const message = response.status === 404 ? "Jogador não encontrado."
@@ -71,13 +79,18 @@ module.exports = async function handler(req, res) {
     const result = await response.json();
     if (!result || typeof result !== "object")
       return send(res, 502, { error: "O provedor retornou uma resposta inválida." });
+    let operators = null;
+    if (opsResponse?.ok) {
+      try { operators = (await opsResponse.json())?.operators || null; } catch {}
+    }
     const profile = {
       player: result.player || null,
       account: result.account || null,
       stats: result.stats || null,
       seasons: result.seasons || null,
       history: result.history || null,
-      meta: result.meta || null
+      meta: result.meta || null,
+      operators
     };
     const fetchedAt = new Date(now).toISOString();
     dataCache.set(cacheKey, { profile, fetchedAt, expires: now + 300000 });

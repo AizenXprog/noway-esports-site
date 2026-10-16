@@ -293,3 +293,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Limite do provedor: /r6/api/v2/profile expõe estatísticas e evolução de RP, não um feed completo de todas as partidas individuais R6. Não confundir histórico de RP com histórico de partidas.
 - Arquivos: painel.html, noway-equipe.js, noway-equipe.css e este registro. Nenhuma foto, cargo, regra do banco ou frontend de outra seção alterados.
 - Testes pendentes: contas autenticadas reais, dados reais Arenyze, responsividade no navegador e confirmação de deploy READY.
+
+## Correção Arenyze V2: rank, imagem, win rate e HS — 16/10/2026
+
+- Identificou-se estrutura real documentada do provedor: `history.data.history.data[][1].metadata.rank` e `imageUrl`; rank também pode estar em `segments[].stats.rankPoints.metadata`. Os segmentos atuais têm `type=season` e `attributes.gamemode=pvp_ranked`. Dados numéricos da temporada: `platform_families_full_profiles[].board_ids_full_profiles[].full_profiles[].profile` e `season_statistics.match_outcomes`.
+- `noway-r6-model.js`: lê tais estruturas, temporadas, `kdRatio`, rank e imagem, sem estimar quando ausentes. Win rate usa vitórias e derrotas da mesma fonte; HS calculado por soma de headshots/soma de kills se o conjunto de operadores tiver dados completos.
+- `api/noway-r6.js`: consulta adicional paralela `GET /r6/api/v2/operators?modes=ranked`, preservando o perfil mesmo se a consulta de operadores falhar; cache existente e credencial segura mantidos.
+- `noway-equipe.js`: renderiza imagem de rank fornecida pela Arenyze (domínio e caminho validados), fallback para pacote comunitário. Sem mudanças no banco, cargos, recrutamento ou fotos.
+- Ainda deve ser validado com sessão autenticada e conta real; status READY do deploy, isoladamente, não prova disponibilidade de estatísticas.
