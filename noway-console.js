@@ -55,8 +55,8 @@ const safeLink=url=>{
 const viewPermitted=name=>{
   if(name==="users")return isOwner();
   if(name==="recruitment")return canRecruit();
-  if(["chat","agenda","competitive"].includes(name))return isStaff();
-  return ["overview","contacts","profile","tracker"].includes(name);
+  if(["equipe","agenda","competitive"].includes(name))return isStaff();
+  return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
 
@@ -107,9 +107,10 @@ function syncConsoleNavigationGroups(){
   });
 }
 function setTab(name){
+  if(name==="chat"||name==="tracker")name="equipe"; // links antigos continuam funcionando
   if(!signed()||!viewPermitted(name))name="overview";
   currentTab=name;
-  if(name!=="chat"&&document.body.classList.contains("noway-chat-focus")){
+  if(name!=="equipe"&&document.body.classList.contains("noway-chat-focus")){
     document.body.classList.remove("noway-chat-focus");
     const expand=$("nowayChatExpand");
     if(expand){expand.textContent="EXPANDIR ↗";expand.setAttribute("aria-pressed","false");}
@@ -131,7 +132,7 @@ function setTab(name){
   $("nowayConsoleUsers").hidden=name!=="users";
   $("nowayConsoleAgenda").hidden=name!=="agenda";
   $("nowayConsoleCompetitive").hidden=name!=="competitive";
-  $("nowayConsoleTracker").hidden=name!=="tracker";
+  $("nowayConsoleEquipe").hidden=name!=="equipe";
   $("nowayConsoleProfile").hidden=name!=="profile";
   $("nowayConsoleRecruitment").hidden=name!=="recruitment";
   $("nowayConsoleOverview").hidden=name!=="overview";
@@ -144,17 +145,16 @@ function setTab(name){
     if(Date.now()-hqLoadedAt>60000)refreshHQ();
   }
   if(name==="profile")renderProfile();
-  if(name==="chat")window.dispatchEvent(new Event("noway:chat-open"));
+  if(name==="equipe"){
+    window.dispatchEvent(new Event("noway:chat-open"));
+    window.dispatchEvent(new Event("noway:equipe-open"));
+  }
   if(name==="competitive")refreshCompetitive();
-  if(name==="tracker")window.dispatchEvent(new Event("noway:tracker-open"));
+
   if(name==="recruitment")window.dispatchEvent(new Event("noway:recruitment-open"));
   try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
   // Abrir o chat na conversa, sem obrigar o jogador a descer toda a página.
-  if(name==="chat"){
-    requestAnimationFrame(()=>{
-      document.querySelector(".noway-team-chat")?.scrollIntoView({behavior:"smooth",block:"start"});
-    });
-  }else document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
+  document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function syncRoles(){
   document.querySelectorAll("[data-console-tab]").forEach(btn=>btn.hidden=!viewPermitted(btn.dataset.consoleTab));
@@ -176,7 +176,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab(viewPermitted(requested)&&["overview","agenda","competitive","tracker","chat","contacts","recruitment","users","profile"].includes(requested)?requested:"overview");
+  setTab((requested==="chat"||requested==="tracker"||viewPermitted(requested))&&["overview","agenda","competitive","equipe","contacts","recruitment","users","profile","tracker","chat"].includes(requested)?requested:"overview");
 }
 async function loadAccount(){
   try{
