@@ -384,3 +384,13 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `api/youtube-live.js` aceita `diagnostic=1` para devolver, além do contrato normal, `diagnostic.apiConfigured` e status por handle (`live`, `not_detected`, `unavailable`), sem mostrar nenhuma credencial ou conteúdo privado. `not_detected` não significa canal comprovadamente offline. HTTP 503 com `unavailable` sinaliza erro de consulta, em vez de falsa ausência de live. Resposta de diagnóstico com `Cache-Control: no-store`.
 - A rota de API oficial, já existente, é acionada quando o usuário inserir uma chave válida de YouTube Data API v3 como env `YOUTUBE_API_KEY` no projeto Vercel e redistribuir a produção. A chave NÃO deve ser colocada no JavaScript público nem em mensagens/documentação.
 - Testes locais simulados e deploy READY comprovam sintaxe e publicação, não disponibilidade da transmissão real. Não atribuir o status AO VIVO sem prova. Necessária chave oficial configurada pelo proprietário para aumentar confiabilidade.
+
+
+## Atualização operacional — Twitch Live API (17/10/2026)
+
+- **Pedido autorizado:** conectar a detecção de lives públicas Twitch ao elenco NOWAY. O aplicativo Twitch **NOWAY Esports Live API** foi criado pelo Founder como cliente **Confidencial**, categoria Website Integration.
+- **Configuração de produção:** `TWITCH_CLIENT_ID` atualizado para o novo aplicativo; `TWITCH_CLIENT_SECRET` cadastrado como variável criptografada somente na Vercel, sem expor valores no repositório. `YOUTUBE_API_KEY` permanece cadastrado.
+- **Backend existente:** `api/live.js` usa Client Credentials Grant e a API Helix `streams`, já estava implementado; nenhuma alteração de código ou visual nesta etapa.
+- **Publicação verificada:** deployment Production **READY** `dpl_DisGXrGqAtnHyDf4upkQRJcdTgyd` no commit `dd218f2e41e13f3a83f675c1070965f2b2dfe722`, anterior à inclusão desta nota documental.
+- **Limite de validação:** Vercel confirmou presença das duas variáveis e o deploy READY, mas teste HTTP de ponta a ponta de `/api/live` e confirmação de banner com live real não foram possíveis neste ambiente. Não declarar live detectada sem resposta real.
+- **Segurança:** o Client Secret apareceu em captura na conversa; recomenda-se substituí-lo por novo segredo no Twitch Developers, atualizar **somente** `TWITCH_CLIENT_SECRET` na Vercel e fazer novo deploy. Não publicar o segredo nem registrá-lo na documentação.
