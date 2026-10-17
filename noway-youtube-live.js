@@ -16,10 +16,24 @@
   }
   function updateBadges() {
     document.querySelectorAll('#roster [data-person]').forEach(card => {
-      card.querySelectorAll('.noway-live-youtube').forEach(tag => tag.remove());
+      card.querySelectorAll('.noway-live-youtube, .noway-youtube-watch-link').forEach(tag => tag.remove());
       const person = roster.find(item => item.id === card.dataset.person);
       const handle = handleOf(person);
-      if (!handle || !streams.has(handle)) return;
+      if (!handle) return;
+      if (!streams.has(handle)) {
+        // Se o YouTube impedir a consulta, mantenha acesso à transmissão sem mentir que está AO VIVO.
+        const link = document.createElement('a');
+        link.className = 'noway-youtube-watch-link';
+        link.href = 'https://www.youtube.com/@' + encodeURIComponent(handle) + '/live';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'YOUTUBE ↗';
+        link.setAttribute('aria-label', 'Assistir ao YouTube de ' + person.name);
+        link.addEventListener('click', event => event.stopPropagation());
+        link.addEventListener('keydown', event => event.stopPropagation());
+        card.querySelector('.player-art')?.appendChild(link);
+        return;
+      }
       const tag = document.createElement('span');
       tag.className = 'player-live-tag noway-live-youtube';
       tag.textContent = '● AO VIVO · YOUTUBE';
@@ -113,7 +127,7 @@
   }
 
   function invalidateIfStale() {
-    if (streams.size && Date.now() - lastVerifiedAt > 5 * 60 * 1000) {
+    if (streams.size && Date.now() - lastVerifiedAt > 2 * 60 * 1000) {
       streams.clear();
       updateBadges();
       renderCurrentIfOpen();
@@ -142,6 +156,6 @@
 
   document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', updateBadges));
   refresh();
-  setInterval(refresh, 90000);
+  setInterval(refresh, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 })();
