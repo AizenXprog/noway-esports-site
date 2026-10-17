@@ -97,10 +97,25 @@ module.exports=async function(req,res){
  const handles=[...new Set(raw.split(",").map(s=>s.trim().replace(/^@/,"").toLowerCase()).filter(s=>validHandle.test(s)))].slice(0,8);
  if(!handles.length)return res.status(200).json({configured:true,streams:[]});
  const checked=await Promise.allSettled(handles.map(get));
+ const diagnostic=req.query?.diagnostic==="1";
+ const checks=checked.map((item,index)=>({
+  channel:handles[index],
+  state:item.status==="rejected"?"unavailable":item.value?"live":"not_detected"
+ }));
+ const streams=checked.filter(x=>x.status==="fulfilled"&&x.value).map(x=>x.value);
  if(checked.every(x=>x.status==="rejected")){
   res.setHeader("Cache-Control","no-store");
-  return res.status(503).json({configured:true,streams:[],error:"Live status temporarily unavailable"});
+  return res.status(503).json({
+   configured:true,streams:[],error:"Live status temporarily unavailable",
+   ...(diagnostic?{diagnostic:{source:key?"youtube_data_api":"public_page",apiConfigured:!!key,checks}}:{})
+  });
  }
- res.setHeader("Cache-Control","public, s-maxage="+(key?1200:60)+", stale-while-revalidate=90");
- return res.status(200).json({configured:true,streams:checked.filter(x=>x.status==="fulfilled"&&x.value).map(x=>x.value)});
+ res.setHeader("Cache-Control",diagnostic?"no-store":"public, s-maxage="+(key?1200:60)+", stale-while-revalidate=90");
+ return res.status(200).json({
+  configured:true,streams,
+  ...(diagnostic?{diagnostic:{
+    source:key?"youtube_data_api":"public_page",apiConfigured:!!key,
+    checks,description:"not_detected nao comprova que o canal esteja offline; consultas publicas podem nao detectar lives."
+  }}:{})
+ });
 };
