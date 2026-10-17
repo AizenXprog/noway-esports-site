@@ -348,3 +348,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Privacy: Tracker privado preservado no NOWAY ID e removidos TODOS os links para tracker.html da Home pública (desktop, mobile, rodapé e CTA abaixo do histórico). A rota tracker.html não foi apagada.
 - Ajuste de escalação: GRI incluído no editor competitivo como jogador, sem aumentar permissões.
 - Testes JS sintáticos e HTML de novos controles; SQL de RLS/grants e consulta pública vazio validados. Não houve testes end-to-end com usuários reais. Revalidar publicação Vercel após rate limit.
+
+
+## YouTube AO VIVO no Elenco — 17/10/2026
+- Youtube do Prado já constava em `site-data.js` (`https://www.youtube.com/@uprde`); etiqueta ampliada para `YouTube · @uprde` no modal do Elenco. Não alterada foto ou demais redes do atleta.
+- Nova rota backend `api/youtube-live.js` somente GET, com validação de @handles, cache e resposta `configured/streams`. Sem `YOUTUBE_API_KEY`, realiza checagem conservadora da página pública do canal `/live`: só considera ao vivo quando `ytInitialPlayerResponse.microformat.playerMicroformatRenderer.liveBroadcastDetails.isLiveNow===true` e ID de vídeo válido. Falhas de consulta/bloqueio não geram falsos selos. Com YOUTUBE_API_KEY, usa canais e buscas ao vivo da API oficial com TTL maior por restrições de quota (e fallback público em erros de API). Nenhum segredo incluído no frontend.
+- Novo `noway-youtube-live.js` amplia o Elenco com badge `AO VIVO · YOUTUBE` e preview no perfil expandido do jogador, utilizando `youtube-nocookie.com` somente após clique, com áudio mudo por padrão; se o vídeo não tiver ID válido, link seguro do canal. Atua sem sobrescrever a Twitch.
+- `script.js`: Twitch deixou de remover badges/prévias específicas do YouTube, e atualiza a posição visual dos badges quando muda o estado da Twitch. `styles.css`: CSS restrito ao selo do YouTube. `index.html`: carrega o novo arquivo e usa versão nova de cache em `script.js`/`site-data.js`.
+- Teste sintático JS, teste simulado do endpoint (live, offline, handle malicioso) e revisão de injeções de HTML. Verificação com live real do YouTube não realizada por indisponibilidade da plataforma neste ambiente; método de página pública é best-effort, podendo exigir configurar API oficial se houver bloqueio. Não declarar status real do Prado sem confirmação.

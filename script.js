@@ -60,7 +60,7 @@ function nowayTwitchLogin(person) {
 
 function nowayUpdateLiveBadges() {
   document.querySelectorAll('#roster [data-person]').forEach(card => {
-    card.querySelector('.player-live-tag')?.remove();
+    card.querySelector('.player-live-tag:not(.noway-live-youtube)')?.remove();
     const person = data.team.find(item => item.id === card.dataset.person);
     const channel = nowayTwitchLogin(person);
     if (!channel || !nowayLiveStreams.has(channel)) return;
@@ -69,12 +69,13 @@ function nowayUpdateLiveBadges() {
     tag.textContent = '● AO VIVO';
     card.querySelector('.player-art')?.appendChild(tag);
   });
+  window.nowayYoutubeUpdateBadges?.();
 }
 
 function nowayRenderLivePreview(person) {
   const profile = $('#modalContent .modal-body');
   if (!profile) return;
-  profile.querySelector('.player-stream-section')?.remove();
+  profile.querySelector('.player-stream-section:not(.noway-youtube-stream-section)')?.remove();
   const channel = nowayTwitchLogin(person);
   const stream = channel ? nowayLiveStreams.get(channel) : null;
   if (!stream) return;
