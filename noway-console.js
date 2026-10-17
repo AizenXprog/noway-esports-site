@@ -527,11 +527,22 @@ async function refreshAccounts(){
     if(!isOwner())return;
     const select=container.querySelector('[data-account-role="'+button.dataset.accountSave+'"]');
     if(!select)return;
+    const targetId=button.dataset.accountSave,requestedRole=select.value;
     button.disabled=true;
-    const {error}=await db.rpc("noway_set_member_role",{target_id:button.dataset.accountSave,next_role:select.value});
-    button.disabled=false;
-    if(error)return notice("Falha ao atualizar cargo: "+error.message,true);
-    await refreshAccounts();notice("Cargo atualizado. O acesso será aplicado conforme as permissões do banco.");
+    try{
+      const {error}=await db.rpc("noway_set_member_role",{target_id:targetId,next_role:requestedRole});
+      if(error)throw error;
+      // Confirme a alteração no banco antes de afirmar que o cargo foi aplicado.
+      const verified=await db.from("noway_profiles").select("role").eq("id",targetId).maybeSingle();
+      if(verified.error||!verified.data||verified.data.role!==requestedRole)
+        throw Error("O cargo foi enviado, mas não foi possível confirmar. Atualize as contas para conferir.");
+      await refreshAccounts();
+      notice("Cargo "+(roles[requestedRole]||requestedRole)+" confirmado no banco. "+
+        (requestedRole==="jogador"?"O jogador já pode entrar na equipe. O vínculo R6 Tracker pode ser feito depois, em Minha Conta.":"A conta recebe o acesso atualizado ao retomar o NOWAY ID."));
+    }catch(err){
+      button.disabled=false;
+      notice("Não foi possível confirmar o novo cargo: "+(err.message||"Falha desconhecida."),true);
+    }
   }));
 }
 function avatarFeedback(message,error=false){
@@ -704,6 +715,7 @@ function bind(){
   });
   $("nowayAvatarInput").addEventListener("change",ev=>uploadAvatar(ev.target.files?.[0]));
   db.auth.onAuthStateChange(()=>setTimeout(loadAccount,0));
+  window.addEventListener("noway:role-changed",()=>{loadAccount();});
   window.addEventListener("focus",()=>{if(isStaff())refreshEvents();});
 }
 window.addEventListener("noway:open-competitive",e=>{

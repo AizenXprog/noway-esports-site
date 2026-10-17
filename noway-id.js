@@ -196,12 +196,21 @@ async function refreshMembers() {
     const id=btn.dataset.saveRole;
     const sel=[...container.querySelectorAll("[data-member-role]")].find(x=>x.dataset.memberRole===id);
     if(!sel)return;
+    const requestedRole=sel.value;
     btn.disabled=true;
-    const result=await supabase.rpc("noway_set_member_role",{target_id:id,next_role:sel.value});
-    btn.disabled=false;
-    if(result.error){feedback("Não foi possível mudar o cargo: "+result.error.message,true);return}
-    feedback("Cargo do membro atualizado.");
-    await refreshMembers();
+    try{
+      const result=await supabase.rpc("noway_set_member_role",{target_id:id,next_role:requestedRole});
+      if(result.error)throw result.error;
+      const verified=await supabase.from("noway_profiles").select("role").eq("id",id).maybeSingle();
+      if(verified.error||verified.data?.role!==requestedRole)
+        throw Error("O servidor não confirmou o novo cargo. Atualize a lista para conferir.");
+      await refreshMembers();
+      feedback("Cargo "+(labels[requestedRole]||requestedRole)+" confirmado no banco. "+
+        (requestedRole==="jogador"?"O jogador pode vincular o R6 Tracker em Minha Conta depois.":"Acesso atualizado ao retomar a sessão."));
+    }catch(error){
+      btn.disabled=false;
+      feedback("Não foi possível confirmar o cargo: "+(error.message||"Erro desconhecido."),true);
+    }
   }));
 }
 
@@ -272,6 +281,29 @@ $id("nowaySaveStatus").addEventListener("click",async()=>{
 
 supabase.auth.onAuthStateChange(()=>{setTimeout(()=>{refreshAuth().catch(err=>feedback("Erro de acesso: "+err.message,true))},0)});
 refreshAuth().catch(err=>feedback("Erro ao iniciar NOWAY ID: "+err.message,true));
+
+// Permissões mudam no banco, não no token do login: atualize sem exigir sair e entrar.
+let nowayRoleCheckBusy=false,nowayRoleCheckAt=0;
+async function checkMyRoleOnResume(){
+  if(!signedUser||!profile||document.hidden||nowayRoleCheckBusy||Date.now()-nowayRoleCheckAt<15000)return;
+  const currentId=signedUser.id;
+  nowayRoleCheckBusy=true;nowayRoleCheckAt=Date.now();
+  try{
+    const response=await supabase.from("noway_profiles").select("role").eq("id",currentId).maybeSingle();
+    if(response.error||!response.data||signedUser?.id!==currentId||response.data.role===profile?.role)return;
+    const expectedRole=response.data.role;
+    await refreshAuth();
+    if(signedUser?.id===currentId&&profile?.role===expectedRole){
+      window.dispatchEvent(new Event("noway:role-changed"));
+      feedback("Permissões sincronizadas: "+(labels[expectedRole]||expectedRole)+".");
+    }
+  }catch(error){
+    console.warn("NOWAY ID: atualização de cargo adiada",error?.message||error);
+  }finally{nowayRoleCheckBusy=false;}
+}
+window.addEventListener("focus",checkMyRoleOnResume);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkMyRoleOnResume();});
+setInterval(checkMyRoleOnResume,60000);
 
 
 // Controles de administração e atualização manual, sem compartilhar e-mail no site.
