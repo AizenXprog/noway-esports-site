@@ -3,6 +3,7 @@
   const roster = window.NOWAY_DATA?.team || [];
   const streams = new Map();
   let lastVerifiedAt = 0;
+  let latestRequest = 0;
   const hostIsYoutube = host => host === 'youtube.com' || host === 'www.youtube.com';
   function handleOf(person) {
     for (const item of person?.socials || []) {
@@ -14,32 +15,13 @@
     }
     return null;
   }
+  // O visual no card pertence ao componente único, usado por qualquer atleta da NOWAY.
+  window.nowayYoutubeLiveFor = person => {
+    const handle = handleOf(person);
+    return handle && streams.has(handle) ? { platform: 'youtube' } : null;
+  };
   function updateBadges() {
-    document.querySelectorAll('#roster [data-person]').forEach(card => {
-      card.querySelectorAll('.noway-live-youtube, .noway-youtube-watch-link').forEach(tag => tag.remove());
-      const person = roster.find(item => item.id === card.dataset.person);
-      const handle = handleOf(person);
-      if (!handle) return;
-      if (!streams.has(handle)) {
-        // Se o YouTube impedir a consulta, mantenha acesso à transmissão sem mentir que está AO VIVO.
-        const link = document.createElement('a');
-        link.className = 'noway-youtube-watch-link';
-        link.href = 'https://www.youtube.com/@' + encodeURIComponent(handle) + '/live';
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = 'YOUTUBE ↗';
-        link.setAttribute('aria-label', 'Assistir ao YouTube de ' + person.name);
-        link.addEventListener('click', event => event.stopPropagation());
-        link.addEventListener('keydown', event => event.stopPropagation());
-        card.querySelector('.player-art')?.appendChild(link);
-        return;
-      }
-      const tag = document.createElement('span');
-      tag.className = 'player-live-tag noway-live-youtube';
-      tag.textContent = '● AO VIVO · YOUTUBE';
-      tag.style.bottom = card.querySelector('.player-live-tag:not(.noway-live-youtube)') ? '48px' : '14px';
-      card.querySelector('.player-art')?.appendChild(tag);
-    });
+    window.nowayRosterLive?.refresh();
   }
   window.nowayYoutubeUpdateBadges = updateBadges;
 
@@ -127,19 +109,22 @@
   }
 
   function invalidateIfStale() {
-    if (streams.size && Date.now() - lastVerifiedAt > 2 * 60 * 1000) {
-      streams.clear();
-      updateBadges();
-      renderCurrentIfOpen();
-    }
+    // Falha de rede ou verificação desconhecida não equivale a transmissão ativa.
+    streams.clear();
+    lastVerifiedAt = 0;
+    updateBadges();
+    renderCurrentIfOpen();
   }
   async function refresh() {
     const handles = [...new Set(roster.map(handleOf).filter(Boolean))];
     if (!handles.length || document.hidden) return;
+    const request = ++latestRequest;
     try {
       const response = await fetch('/api/youtube-live?handles=' + encodeURIComponent(handles.join(',')), { cache: 'no-store' });
+      if (request !== latestRequest) return;
       if (!response.ok) { invalidateIfStale(); return; }
       const payload = await response.json();
+      if (request !== latestRequest) return;
       if (!payload.configured || !Array.isArray(payload.streams)) { invalidateIfStale(); return; }
       streams.clear();
       for (const live of payload.streams) {
@@ -151,7 +136,7 @@
       lastVerifiedAt = Date.now();
       updateBadges();
       renderCurrentIfOpen();
-    } catch { invalidateIfStale(); }
+    } catch { if (request === latestRequest) invalidateIfStale(); }
   }
 
   document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', updateBadges));

@@ -58,18 +58,13 @@ function nowayTwitchLogin(person) {
   return /^[a-z0-9_]{3,25}$/.test(login || '') ? login : null;
 }
 
+// Em vez de adesivos soltos sobre a foto, as duas redes compartilham um único estado visual.
+window.nowayTwitchLiveFor = person => {
+  const login = nowayTwitchLogin(person);
+  return login && nowayLiveStreams.has(login) ? { platform: 'twitch' } : null;
+};
 function nowayUpdateLiveBadges() {
-  document.querySelectorAll('#roster [data-person]').forEach(card => {
-    card.querySelector('.player-live-tag:not(.noway-live-youtube)')?.remove();
-    const person = data.team.find(item => item.id === card.dataset.person);
-    const channel = nowayTwitchLogin(person);
-    if (!channel || !nowayLiveStreams.has(channel)) return;
-    const tag = document.createElement('span');
-    tag.className = 'player-live-tag';
-    tag.textContent = '● AO VIVO';
-    card.querySelector('.player-art')?.appendChild(tag);
-  });
-  window.nowayYoutubeUpdateBadges?.();
+  window.nowayRosterLive?.refresh();
 }
 
 function nowayRenderLivePreview(person) {
@@ -156,9 +151,13 @@ async function nowayRefreshLiveStatus() {
   if (!channels.length) return;
   try {
     const response = await fetch('/api/live?channels=' + encodeURIComponent(channels.join(',')), { cache: 'no-store' });
-    if (!response.ok) return;
+    if (!response.ok) throw Error("Consulta Twitch indisponível");
     const result = await response.json();
-    if (!result.configured || !Array.isArray(result.streams)) return;
+    if (!result.configured || !Array.isArray(result.streams)) {
+      nowayLiveStreams.clear();
+      nowayUpdateLiveBadges();
+      return;
+    }
     nowayLiveStreams.clear();
     for (const item of result.streams) {
       const login = String(item.channel || '').toLowerCase();
@@ -167,7 +166,9 @@ async function nowayRefreshLiveStatus() {
     nowayUpdateLiveBadges();
     if ($('#playerModal').open && nowayCurrentProfile) nowayRenderLivePreview(nowayCurrentProfile);
   } catch {
-    // Indisponibilidade temporária não afeta a visualização do elenco.
+    // Sem confirmação recente, não afirmar que o jogador continua ao vivo.
+    nowayLiveStreams.clear();
+    nowayUpdateLiveBadges();
   }
 }
 

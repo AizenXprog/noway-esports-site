@@ -1,0 +1,30 @@
+/* NOWAY — live nos cards. Sem links sobre a foto, sem selo offline. */
+.player-card.is-noway-live{border-color:#fb4063;box-shadow:0 0 0 1px #ff2e5640,0 16px 38px #f20e2520;transition:border-color .24s,box-shadow .24s,transform .24s}
+.player-card.is-noway-live:hover{border-color:#ff8296;box-shadow:0 0 0 1px #ff4c70,0 20px 45px #f20e2533}
+.noway-live-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:63px;padding:10px 13px;
+ background:linear-gradient(115deg,#df2344 0%,#961d37 46%,#27101b 100%);border-top:1px solid #ff7b8d60;border-bottom:1px solid #ff7b8d50;
+ color:#fff;position:relative;isolation:isolate}
+.noway-live-banner:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.32;
+ background:linear-gradient(100deg,transparent 55%,#ffffff19 75%,transparent 92%)}
+.noway-live-primary{display:flex;gap:9px;align-items:center;min-width:0}
+.noway-live-signal{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #ffffff25,0 0 14px #fff9;flex:none;
+ animation:nowayLiveBeat 2.2s ease-in-out infinite}
+.noway-live-headline{display:flex;flex-direction:column;gap:1px;min-width:0}
+.noway-live-title{font:900 clamp(23px,2.2vw,32px)/.94 'Barlow Condensed',sans-serif;letter-spacing:.05em;white-space:nowrap}
+.noway-live-subtitle{font:800 8px/1.3 'Inter',sans-serif;letter-spacing:.095em;color:#ffe1e7;white-space:nowrap}
+.noway-live-sources{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;flex:none}
+.noway-live-platform{font:900 8px/1.2 'Inter',sans-serif;letter-spacing:.065em;padding:5px 6px;
+ border:1px solid #ffffff4a;color:#fff;background:#080a0f4a;white-space:nowrap}
+@keyframes nowayLiveBeat{0%,100%{box-shadow:0 0 0 3px #ffffff24,0 0 8px #fff6}50%{box-shadow:0 0 0 6px #ffffff13,0 0 16px #fff9}}
+@media(max-width:760px){
+ .noway-live-banner{padding:9px 10px;min-height:57px;gap:4px}
+ .noway-live-primary{gap:7px}.noway-live-title{font-size:24px}
+ .noway-live-subtitle{font-size:7px;letter-spacing:.03em}
+ .noway-live-platform{font-size:7px;padding:5px 4px}
+ .noway-live-signal{width:8px;height:8px}
+}
+@media(max-width:370px){
+ .noway-live-banner{flex-wrap:wrap;gap:6px}
+ .noway-live-sources{flex-direction:row;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){.noway-live-signal{animation:none}}
