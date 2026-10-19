@@ -1,0 +1,167 @@
+/* NOWAY / Proportions 1.0 — espaço editorial confortável, sem zoom artificial.
+   Carregado depois dos estilos existentes; preserva todos os fluxos e fotos. */
+:root{--nw-layout-max:1240px}
+body:not([data-noway-console="true"]) .wrap{width:min(var(--nw-layout-max),calc(100% - 76px))}
+body:not([data-noway-console="true"]) .section{padding-top:clamp(64px,6vw,94px);padding-bottom:clamp(64px,6vw,94px)}
+body:not([data-noway-console="true"]) .section-heading{gap:24px;margin-bottom:30px}
+body:not([data-noway-console="true"]) .section h2:not(.nw-latest-title),
+body:not([data-noway-console="true"]) .store-banner h2{font-size:clamp(56px,6vw,87px);line-height:.93}
+body:not([data-noway-console="true"]) .section-heading p{font-size:13px;line-height:1.7;margin-top:16px}
+body:not([data-noway-console="true"]) .kicker{margin-bottom:16px;letter-spacing:.17em}
+body:not([data-noway-console="true"]) .header{height:76px;padding:0 clamp(22px,3vw,44px)}
+body:not([data-noway-console="true"]) .wordmark{font-size:23px;gap:10px}
+body:not([data-noway-console="true"]) .wordmark img{height:44px;width:44px}
+body:not([data-noway-console="true"]) .desktop-nav{gap:clamp(11px,1.3vw,21px)}
+body:not([data-noway-console="true"]) .desktop-nav a{font-size:9px;letter-spacing:.09em}
+body:not([data-noway-console="true"]) .header-actions{gap:13px}
+/* Primeira dobra: marca forte, porém com maior área útil. */
+body:not([data-noway-console="true"]) .hero:has(.noway-home-access){height:auto;min-height:660px;padding-bottom:56px}
+body:not([data-noway-console="true"]) .hero:has(.noway-home-access) .hero-content{padding-top:clamp(122px,9vw,146px)}
+body:not([data-noway-console="true"]) .hero:has(.noway-home-access) h1{font-size:clamp(82px,8.8vw,137px);margin:22px 0 20px;line-height:.81}
+body:not([data-noway-console="true"]) .hero:has(.noway-home-access) .hero-content>p{max-width:650px;font-size:13px;line-height:1.8;margin-bottom:19px}
+body:not([data-noway-console="true"]) .hero-symbol{width:39%;right:4%;top:16%}
+body:not([data-noway-console="true"]) .hero-symbol img{height:430px}
+body:not([data-noway-console="true"]) .hero:has(.noway-home-access) .hero-cta .btn{min-height:42px;padding:0 16px}
+body:not([data-noway-console="true"]) .noway-home-access{max-width:625px;grid-template-columns:minmax(0,1fr) 190px;margin-top:17px;padding:15px 16px;gap:14px}
+body:not([data-noway-console="true"]) .noway-home-access-copy>strong{font-size:24px}
+body:not([data-noway-console="true"]) .hero-footer{bottom:20px}
+body:not([data-noway-console="true"]) .ticker{height:49px}
+body:not([data-noway-console="true"]) .ticker-track{font-size:25px}
+/* Áreas de descoberta: mais conteúdo visível sem cards espremidos. */
+body:not([data-noway-console="true"]) .noway-home-discover{padding:clamp(48px,4.8vw,70px) 0}
+body:not([data-noway-console="true"]) .noway-discover-heading{margin-bottom:25px}
+body:not([data-noway-console="true"]) .noway-discover-heading h2{font-size:clamp(43px,4.7vw,63px)}
+body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-links{gap:12px}
+body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card{min-height:205px;padding:19px 17px 17px}
+body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card strong{font-size:clamp(25px,2.6vw,34px);line-height:.98}
+body:not([data-noway-console="true"]) .noway-discover-card-content{margin:22px 0 16px;gap:9px}
+body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card::after{font-size:125px}
+/* Elenco — cards elegantes, fotos proporcionais. */
+body:not([data-noway-console="true"]) .team-controls{padding-bottom:12px;margin-bottom:18px}
+body:not([data-noway-console="true"]) .filter{padding:10px 15px}
+body:not([data-noway-console="true"]) .roster{gap:11px}
+body:not([data-noway-console="true"]) .player-card{min-height:326px}
+body:not([data-noway-console="true"]) .player-art{height:220px}
+body:not([data-noway-console="true"]) .player-info{padding:14px}
+body:not([data-noway-console="true"]) .player-name{font-size:29px}
+body:not([data-noway-console="true"]) .player-role{min-height:26px;margin-top:6px}
+body:not([data-noway-console="true"]) .player-card:hover{transform:translateY(-4px)}
+/* Narrativa, mídia, gestão e rodapé. */
+body:not([data-noway-console="true"]) .manifesto-inner{min-height:410px;padding:63px 0}
+body:not([data-noway-console="true"]) .manifesto h2{font-size:clamp(69px,8.8vw,125px);line-height:.9}
+body:not([data-noway-console="true"]) .manifesto img{height:350px;top:25px;width:40%}
+body:not([data-noway-console="true"]) .manifesto p{margin-top:18px}
+body:not([data-noway-console="true"]) .story-layout{gap:5%}
+body:not([data-noway-console="true"]) .story-image{min-height:355px}
+body:not([data-noway-console="true"]) .story-image img{height:355px}
+body:not([data-noway-console="true"]) .story-copy h3{font-size:clamp(35px,3.5vw,47px);margin:19px 0}
+body:not([data-noway-console="true"]) .story-copy p{font-size:13px;line-height:1.75;margin-bottom:15px}
+body:not([data-noway-console="true"]) .empty-comp{min-height:210px;padding:32px}
+body:not([data-noway-console="true"]) .empty-comp b{font-size:34px}
+body:not([data-noway-console="true"]) .empty-icon{font-size:96px}
+body:not([data-noway-console="true"]) .nw-latest-title{font-size:clamp(49px,5.6vw,76px)}
+body:not([data-noway-console="true"]) .nw-latest-head{margin-bottom:21px}
+body:not([data-noway-console="true"]) .nw-weekly-card{min-height:295px}
+body:not([data-noway-console="true"]) .nw-weekly-art{min-height:295px}
+body:not([data-noway-console="true"]) .nw-weekly-copy{gap:13px;padding:clamp(22px,3vw,38px)}
+body:not([data-noway-console="true"]) .nw-weekly-title{font-size:clamp(35px,3.6vw,53px)}
+body:not([data-noway-console="true"]) .nw-weekly-count strong{font-size:clamp(42px,4.4vw,57px)}
+body:not([data-noway-console="true"]) .nw-weekly-play{width:58px;height:58px}
+body:not([data-noway-console="true"]) .nw-latest-grid{gap:13px}
+body:not([data-noway-console="true"]) .nw-post-details{gap:10px;padding:15px 16px 17px}
+body:not([data-noway-console="true"]) .nw-post-title{font-size:20px;min-height:46px}
+body:not([data-noway-console="true"]) .media-card{min-height:275px;padding:24px}
+body:not([data-noway-console="true"]) .media-card h3{font-size:37px}
+body:not([data-noway-console="true"]) .lead-grid{margin-top:28px;gap:12px}
+body:not([data-noway-console="true"]) .lead-card{padding:30px}
+body:not([data-noway-console="true"]) .lead-card h3{font-size:49px}
+body:not([data-noway-console="true"]) .store-row{padding:65px 0}
+body:not([data-noway-console="true"]) .store-banner h2{font-size:clamp(65px,8vw,106px)}
+body:not([data-noway-console="true"]) .store-coming{font-size:clamp(70px,8vw,116px)}
+body:not([data-noway-console="true"]) .footer-main{padding:43px 0;gap:27px}
+body:not([data-noway-console="true"]) .footer-brand img{height:50px}
+body:not([data-noway-console="true"]) .footer-links{gap:14px;flex-wrap:wrap;justify-content:flex-end}
+body:not([data-noway-console="true"]) .modal-body{padding:29px}
+body:not([data-noway-console="true"]) .modal-body h2{font-size:60px}
+/* Páginas internas públicas: mesma escala, mesma identidade. */
+.nw-com-intro{padding-top:clamp(46px,4.7vw,74px);padding-bottom:22px}
+.nw-com-intro h1{font-size:clamp(67px,8vw,106px);margin:20px 0}
+.nw-com-choice{margin-top:25px;gap:12px}
+.nw-com-choice>a{padding:19px 20px}
+.nw-com-section{padding-top:20px;padding-bottom:50px}
+.nw-com-section .discord-shell{min-height:400px}
+.nw-com-section .discord-content{padding:clamp(29px,3.8vw,48px)}
+.nw-com-section .discord-content h2{font-size:clamp(57px,6.6vw,87px);margin:25px 0 20px}
+.nw-com-links{padding-top:38px;padding-bottom:48px}
+.nw-com-links h2{font-size:clamp(35px,4.3vw,51px)}
+.nw-rec-hero-grid{min-height:440px;padding-top:51px;padding-bottom:51px;gap:28px}
+.nw-rec-hero h1{font-size:clamp(64px,8.2vw,112px);margin:22px 0}
+.nw-rec-manifest{min-height:267px;padding:28px}
+.nw-rec-manifest strong{font-size:clamp(36px,3vw,47px)}
+.nw-rec-section{padding-top:68px}
+.nw-rec-section-header h2{font-size:clamp(46px,5vw,66px)}
+.nw-challenges-container{max-width:var(--nw-layout-max)}
+.nw-challenges-hero{padding:clamp(51px,5.6vw,80px) 0 44px}
+.nw-challenges-hero-grid{gap:39px}
+.nw-challenges-hero h1{font-size:clamp(58px,6vw,91px);margin:19px 0}
+.nw-challenges-manifest{min-height:345px}
+/* NOWAY ID: preserva formulários e dashboard; ajusta apenas o cabeçalho editorial. */
+body[data-noway-console="true"] .noway-console-main .noway-console-intro{padding-top:29px;padding-bottom:18px}
+body[data-noway-console="true"] .noway-console-intro h1{font-size:clamp(49px,5.3vw,75px);margin-top:10px}
+/* Telas intermediárias e móveis: tipografia legível sem títulos dominarem a tela. */
+@media(max-width:1100px){
+  body:not([data-noway-console="true"]) .hero-symbol{opacity:.38;right:-8%}
+  body:not([data-noway-console="true"]) .roster{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  body:not([data-noway-console="true"]) .wrap{width:calc(100% - 38px)}
+  body:not([data-noway-console="true"]) .header{height:72px;padding-inline:18px}
+  body:not([data-noway-console="true"]) .hero:has(.noway-home-access){min-height:630px;padding-bottom:42px}
+  body:not([data-noway-console="true"]) .hero:has(.noway-home-access) .hero-content{padding-top:120px}
+  body:not([data-noway-console="true"]) .hero:has(.noway-home-access) h1{font-size:clamp(69px,16vw,112px);margin:21px 0}
+  body:not([data-noway-console="true"]) .hero:has(.noway-home-access) .hero-content>p{font-size:12px;line-height:1.7}
+  body:not([data-noway-console="true"]) .hero-symbol{width:88%;right:-24%;top:16%;opacity:.26}
+  body:not([data-noway-console="true"]) .hero-symbol img{height:335px}
+  body:not([data-noway-console="true"]) .noway-home-access{grid-template-columns:1fr;max-width:470px;padding:14px 16px}
+  body:not([data-noway-console="true"]) .noway-home-access-copy>strong{font-size:22px}
+  body:not([data-noway-console="true"]) .section{padding-top:54px;padding-bottom:54px}
+  body:not([data-noway-console="true"]) .section h2:not(.nw-latest-title){font-size:clamp(51px,10vw,73px)}
+  body:not([data-noway-console="true"]) .noway-home-discover{padding:45px 0}
+  body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card{min-height:176px;padding:15px 13px}
+  body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card strong{font-size:clamp(22px,5.3vw,29px)}
+  body:not([data-noway-console="true"]) .noway-discover-card-content{margin:17px 0 12px}
+  body:not([data-noway-console="true"]) .roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  body:not([data-noway-console="true"]) .player-card{min-height:274px}
+  body:not([data-noway-console="true"]) .player-art{height:181px}
+  body:not([data-noway-console="true"]) .player-name{font-size:25px}
+  body:not([data-noway-console="true"]) .player-info{padding:12px}
+  body:not([data-noway-console="true"]) .manifesto-inner{min-height:305px;padding:48px 0}
+  body:not([data-noway-console="true"]) .manifesto h2{font-size:clamp(64px,12vw,88px)}
+  body:not([data-noway-console="true"]) .manifesto img{height:265px;opacity:.35}
+  body:not([data-noway-console="true"]) .story-image{min-height:250px}
+  body:not([data-noway-console="true"]) .story-image img{height:250px}
+  body:not([data-noway-console="true"]) .nw-latest-title{font-size:clamp(48px,9.1vw,65px)}
+  body:not([data-noway-console="true"]) .nw-weekly-card{grid-template-columns:1fr;min-height:0}
+  body:not([data-noway-console="true"]) .nw-weekly-art{aspect-ratio:16/9;min-height:0}
+  body:not([data-noway-console="true"]) .nw-weekly-title{font-size:clamp(36px,7.2vw,47px)}
+  body:not([data-noway-console="true"]) .nw-weekly-count strong{font-size:48px}
+  body:not([data-noway-console="true"]) .media-card{min-height:220px;padding:19px}
+  body:not([data-noway-console="true"]) .media-card h3{font-size:31px}
+  .nw-com-intro h1{font-size:clamp(59px,12vw,87px)}
+  .nw-com-section .discord-content h2{font-size:clamp(51px,10vw,71px)}
+  .nw-rec-hero-grid{min-height:0;padding-top:43px;padding-bottom:43px}
+  .nw-rec-hero h1{font-size:clamp(56px,12vw,86px)}
+  .nw-rec-manifest{min-height:235px}
+  .nw-challenges-hero h1{font-size:clamp(55px,11vw,79px)}
+  .nw-challenges-manifest{min-height:266px}
+  body[data-noway-console="true"] .noway-console-intro h1{font-size:clamp(48px,9.5vw,67px)}
+}
+@media(max-width:420px){
+  body:not([data-noway-console="true"]) .hero:has(.noway-home-access) h1{font-size:clamp(67px,15.8vw,83px)}
+  body:not([data-noway-console="true"]) .noway-home-discover .noway-discover-card strong{font-size:23px}
+  body:not([data-noway-console="true"]) .nw-post-title{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  body:not([data-noway-console="true"]) .player-card,
+  body:not([data-noway-console="true"]) .nw-weekly-card{transition:none}
+}
