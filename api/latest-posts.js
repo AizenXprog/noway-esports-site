@@ -7,6 +7,9 @@ let cached=null, authCache=null;
 const videoPattern=/^[a-z0-9_-]{11}$/i;
 const validHandle=/^[a-z0-9_.-]{3,30}$/i;
 const validLogin=/^[a-z0-9_]{3,25}$/i;
+const WEEK_MS=7*24*60*60*1000;
+function views(raw){if(typeof raw!=='number'&&!(typeof raw==='string'&&/^\d+$/.test(raw)))return null;
+ const value=Number(raw);return Number.isSafeInteger(value)&&value>=0?value:null;}
 function channels(){
   const out={youtube:[],twitch:[]},seen=new Set();
   for(const person of team){
@@ -48,11 +51,11 @@ async function getYouTube(m){
   const c=await youtube("channels",{part:"contentDetails",forHandle:"@"+m.account});
   const playlist=c.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
   if(!/^[a-z0-9_-]{10,36}$/i.test(playlist||""))return[];
-  const p=await youtube("playlistItems",{part:"contentDetails,snippet",playlistId:playlist,maxResults:8});
+  const p=await youtube("playlistItems",{part:"contentDetails,snippet",playlistId:playlist,maxResults:50});
   const entries=(p.items||[]).filter(i=>videoPattern.test(i.contentDetails?.videoId||""))
     .filter(i=>!["private video","deleted video"].includes(String(i.snippet?.title||"").toLowerCase()));
   if(!entries.length)return[];
-  const v=await youtube("videos",{part:"snippet,status",id:entries.map(x=>x.contentDetails.videoId).join(",")});
+  const v=await youtube("videos",{part:"snippet,status,statistics",id:entries.map(x=>x.contentDetails.videoId).join(",")});
   const byId=new Map((v.items||[]).map(x=>[x.id,x]));
   return entries.map(item=>{
     const id=item.contentDetails.videoId,video=byId.get(id);
@@ -62,7 +65,7 @@ async function getYouTube(m){
     return{platform:"youtube",memberId:m.memberId,videoId:id,publishedAt:date,
       title:String(video.snippet.title||"Vídeo").slice(0,180),
       thumbnail:thumb(video.snippet.thumbnails?.high?.url||video.snippet.thumbnails?.medium?.url),
-      kind:"VÍDEO"};
+      viewCount:views(video.statistics?.viewCount),kind:"VÍDEO"};
   }).filter(Boolean);
 }
 async function token(){
@@ -80,14 +83,14 @@ async function getTwitch(members){
  const users=await json("https://api.twitch.tv/helix/users?"+q.toString(),{headers});
  const memberByLogin=new Map(members.map(m=>[m.account,m.memberId]));
  const jobs=(users.data||[]).filter(u=>memberByLogin.has(String(u.login||"").toLowerCase())).map(async user=>{
-   const params=new URLSearchParams({user_id:user.id,first:"6"});
+   const params=new URLSearchParams({user_id:user.id,first:"50"});
    const list=await json("https://api.twitch.tv/helix/videos?"+params.toString(),{headers});
    return(list.data||[]).filter(v=>/^\d+$/.test(String(v.id||""))).map(v=>{
      const date=v.published_at||v.created_at;
      if(!date||!Number.isFinite(Date.parse(date)))return null;
      return{platform:"twitch",memberId:memberByLogin.get(String(user.login).toLowerCase()),videoId:String(v.id),
        publishedAt:date,title:String(v.title||"Vídeo da Twitch").slice(0,180),
-       thumbnail:thumb(v.thumbnail_url),kind:v.type==="archive"?"REPLAY":v.type==="highlight"?"DESTAQUE":"VÍDEO"};
+       thumbnail:thumb(v.thumbnail_url),viewCount:views(v.view_count),kind:v.type==="archive"?"REPLAY":v.type==="highlight"?"DESTAQUE":"VÍDEO"};
    }).filter(Boolean);
  });
  const result=await Promise.allSettled(jobs);
@@ -98,15 +101,25 @@ async function collect(){
  const roster=channels(),jobs=[];
  if(ytKey)for(const m of roster.youtube)jobs.push(getYouTube(m));
  if(twitchId&&twitchSecret&&roster.twitch.length)jobs.push(getTwitch(roster.twitch));
- if(!jobs.length)return{configured:false,posts:[],partial:false};
+ if(!jobs.length)return{configured:false,posts:[],featured:null,weeklyWindowDays:7,partial:false};
  const result=await Promise.allSettled(jobs);
- const posts=result.flatMap(r=>r.status==="fulfilled"?r.value:[])
+ const all=result.flatMap(r=>r.status==="fulfilled"?r.value:[])
    .sort((a,b)=>Date.parse(b.publishedAt)-Date.parse(a.publishedAt))
-   .filter((v,i,all)=>all.findIndex(x=>x.platform===v.platform&&x.videoId===v.videoId)===i)
-   .slice(0,9);
- const partial=result.some(r=>r.status==="rejected");
+   .filter((v,i,arr)=>arr.findIndex(x=>x.platform===v.platform&&x.videoId===v.videoId)===i);
+ const posts=all.slice(0,9);
+ const partial=result.some(r=>r.status==="rejected")||
+   (roster.youtube.length>0&&!ytKey)||(roster.twitch.length>0&&(!twitchId||!twitchSecret));
+ // Views totais acumuladas de vídeos publicados nos últimos 7 dias, não as views ganhas nesses dias.
+ const now=Date.now();
+ const ranked=!partial?all.filter(v=>{
+   const at=Date.parse(v.publishedAt);
+   return Number.isFinite(at)&&at>=now-WEEK_MS&&at<=now&&
+     Number.isSafeInteger(v.viewCount)&&v.viewCount>=0;
+ }).sort((a,b)=>b.viewCount-a.viewCount||Date.parse(b.publishedAt)-Date.parse(a.publishedAt)||
+   (a.platform+":"+a.videoId).localeCompare(b.platform+":"+b.videoId)):[];
+ const featured=ranked[0]||null;
  if(partial)console.warn("NOWAY latest posts: some video providers unavailable");
- return{configured:true,posts,partial};
+ return{configured:true,posts,featured,weeklyWindowDays:7,partial};
 }
 module.exports=async function(req,res){
  if(req.method!=="GET"){res.setHeader("Allow","GET");return res.status(405).json({error:"Method not allowed"});}
