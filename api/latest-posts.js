@@ -94,7 +94,7 @@ async function getTwitch(members){
    }).filter(Boolean);
  });
  const result=await Promise.allSettled(jobs);
- if(result.length&&result.every(r=>r.status==="rejected"))throw Error("All Twitch video requests failed");
+ if(result.some(r=>r.status==="rejected"))throw Error("Twitch video requests partially or fully unavailable");
  return result.flatMap(r=>r.status==="fulfilled"?r.value:[]);
 }
 async function collect(){
