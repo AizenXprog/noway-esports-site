@@ -1,0 +1,27 @@
+/* NOWAY / Últimos postados — visual editorial dos vídeos do elenco. */
+.nw-latest-section{padding:4px 0 55px;scroll-margin-top:30px}
+.nw-latest-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:26px}
+.nw-latest-kicker{display:inline-flex;align-items:center;gap:8px;color:#f2ff00;font:900 10px/1.5 Inter,sans-serif;letter-spacing:.14em}
+.nw-latest-kicker:before{content:'';width:7px;height:7px;background:#f2ff00}
+.nw-latest-title{font:900 clamp(55px,6.7vw,96px)/.9 "Barlow Condensed",sans-serif;letter-spacing:-.02em;margin:11px 0 0}
+.nw-latest-title span{color:#f2ff00}
+.nw-latest-status{color:#949f90;margin:12px 0 0;font:800 10px/1.5 Inter,sans-serif;letter-spacing:.06em}
+.nw-latest-retry{border:1px solid #778548;background:transparent;color:#f2ff00;padding:12px 17px;font:900 10px Inter,sans-serif;cursor:pointer}
+.nw-latest-retry:hover{background:#f2ff00;color:#090909}
+.nw-latest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;min-height:95px}
+.nw-post-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;color:#fff;background:#151917;border:1px solid #384037;text-decoration:none;transition:border-color .23s ease,transform .23s ease,box-shadow .23s ease}
+.nw-post-card:hover,.nw-post-card:focus-visible{border-color:#f2ff00;transform:translateY(-5px);box-shadow:0 16px 38px #0009}
+.nw-post-thumb{position:relative;display:grid;place-items:center;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(130deg,#303c25,#10140e)}
+.nw-post-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.nw-post-card:hover .nw-post-thumb img{transform:scale(1.045)}
+.nw-post-no-thumb{font:900 28px "Barlow Condensed",sans-serif;color:#a0aa8e;letter-spacing:.1em}
+.nw-post-play{position:absolute;display:grid;place-items:center;width:50px;height:50px;border-radius:50%;border:1px solid #fff9;background:#0e120bcc;color:#f2ff00;font:800 15px Inter,sans-serif;backdrop-filter:blur(5px)}
+.nw-post-source{position:absolute;top:12px;left:12px;background:#0b0f0cdd;border:1px solid #67744c;color:#f2ff00;padding:5px 9px;font:900 9px Inter,sans-serif;letter-spacing:.1em}
+.nw-post-details{display:flex;flex-direction:column;gap:12px;flex:1;padding:18px 19px 20px}
+.nw-post-author{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:800 10px Inter,sans-serif;letter-spacing:.05em}
+.nw-post-author strong{color:#f2ff00;text-transform:uppercase}.nw-post-author span{color:#abb0a7}
+.nw-post-title{font:800 22px/1.15 "Barlow Condensed",sans-serif;min-height:51px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nw-post-watch{font:900 9px Inter,sans-serif;letter-spacing:.14em;color:#d7e3ca;margin-top:auto;padding-top:7px}
+@media(max-width:900px){.nw-latest-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.nw-latest-grid{grid-template-columns:1fr}.nw-latest-title{font-size:60px}.nw-latest-head{align-items:start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.nw-post-card,.nw-post-thumb img{transition:none}}
