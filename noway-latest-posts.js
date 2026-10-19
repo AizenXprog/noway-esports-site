@@ -5,6 +5,7 @@
  const team=window.NOWAY_DATA?.team||[];
  if(!grid||!status||!retry||!weekly)return;
  const REFRESH_MS=5*60*1000;
+ const FEATURED_CACHE_KEY="noway.roster_last_confirmed_feature_v1";
  let busy=false,last=0,started=false;
  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
  const member=id=>team.find(p=>p.id===id&&!p.vacancy);
@@ -12,7 +13,25 @@
    p.platform==="twitch"&&/^\d+$/.test(String(p.videoId||"")));
  const link=p=>p.platform==="youtube"?"https://www.youtube.com/watch?v="+p.videoId:"https://www.twitch.tv/videos/"+p.videoId;
  const same=(a,b)=>a&&b&&a.platform===b.platform&&String(a.videoId)===String(b.videoId);
+
  const count=n=>Number.isSafeInteger(n)&&n>=0?n.toLocaleString("pt-BR"):"—";
+ function cachedChampion(){
+   try{
+     const data=JSON.parse(localStorage.getItem(FEATURED_CACHE_KEY)||"null");
+     const v=data?.video;
+     return validVideo(v)&&Number.isSafeInteger(v.viewCount)&&v.viewCount>=0?v:null;
+   }catch{return null;}
+ }
+ function saveChampion(v){
+   try{
+     if(!validVideo(v)||!Number.isSafeInteger(v.viewCount)||v.viewCount<0)return;
+     // Somente informações públicas fornecidas por resposta oficial confirmada.
+     const data={platform:v.platform,memberId:v.memberId,videoId:v.videoId,viewCount:v.viewCount,
+       publishedAt:v.publishedAt,title:v.title,thumbnail:v.thumbnail};
+     localStorage.setItem(FEATURED_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),video:data}));
+   }catch{/* Armazenamento opcional, sem bloquear a vitrine. */}
+ }
+
  function image(url){
    try{const u=new URL(url);return u.protocol==="https:"&&["i.ytimg.com","img.youtube.com","static-cdn.jtvnw.net"].includes(u.hostname)?u.href:"";}catch{return"";}
  }
@@ -25,7 +44,11 @@
    return new Date(time).toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase();
  }
  function renderWeekly(featured,partial,configured){
-   const ok=!partial&&validVideo(featured)&&Number.isSafeInteger(featured.viewCount)&&featured.viewCount>=0;
+   const confirmed=!partial&&validVideo(featured)&&Number.isSafeInteger(featured.viewCount)&&featured.viewCount>=0;
+   if(confirmed)saveChampion(featured);
+   const remembered=!confirmed&&Boolean(cachedChampion());
+   if(remembered)featured=cachedChampion();
+   const ok=confirmed||remembered;
    if(!ok){
      const title=!configured?"AGUARDANDO CONEXÃO DOS CANAIS.":partial?
        "ATUALIZANDO OS DADOS DE AUDIÊNCIA.":"NENHUM VÍDEO DISPONÍVEL.";
@@ -36,15 +59,15 @@
      return;
    }
    const person=member(featured.memberId),yt=featured.platform==="youtube",src=image(featured.thumbnail);
-   weekly.innerHTML='<a class="nw-weekly-card" href="'+esc(link(featured))+'" target="_blank" rel="noopener noreferrer"'+
+   weekly.innerHTML='<a class="nw-weekly-card'+(remembered?' is-last-confirmed':'')+'" href="'+esc(link(featured))+'" target="_blank" rel="noopener noreferrer"'+
      ' aria-label="Assistir destaque da semana: '+esc(featured.title)+' de '+esc(person.name)+'">'+
      '<span class="nw-weekly-art">'+(src?'<img src="'+esc(src)+'" alt="" loading="lazy">':'<span class="nw-post-no-thumb">NOWAY / DESTAQUE</span>')+
      '<span class="nw-weekly-play" aria-hidden="true">▶</span><span class="nw-weekly-tag">★ Nº 1 EM VISUALIZAÇÕES</span></span>'+
-     '<span class="nw-weekly-copy"><span class="nw-weekly-eyebrow">★ DESTAQUE PRINCIPAL · '+(yt?"YOUTUBE":"TWITCH")+'</span>'+
+     '<span class="nw-weekly-copy"><span class="nw-weekly-eyebrow">'+(remembered?'◆ ÚLTIMO LÍDER CONFIRMADO':'★ DESTAQUE PRINCIPAL')+' · '+(yt?"YOUTUBE":"TWITCH")+'</span>'+
      '<strong class="nw-weekly-title">'+esc(featured.title)+'</strong>'+
      '<span class="nw-weekly-author">'+esc(person.name)+' <span>· '+esc(when(featured.publishedAt))+'</span></span>'+
      '<span class="nw-weekly-count"><strong>'+count(featured.viewCount)+'</strong><small>VISUALIZAÇÕES REAIS</small></span>'+
-     '<span class="nw-weekly-rule"><span class="nw-weekly-streak">◆ LÍDER DE AUDIÊNCIA</span> Permanece em destaque até outro vídeo do elenco ultrapassar suas visualizações.</span>'+
+     '<span class="nw-weekly-rule"><span class="nw-weekly-streak">◆ '+(remembered?'ÚLTIMA LEITURA DISPONÍVEL':'LÍDER DE AUDIÊNCIA')+'</span> '+(remembered?'Aguardando nova confirmação das plataformas.':'Permanece em destaque até outro vídeo do elenco ultrapassar suas visualizações.')+'</span>'+
      '<span class="nw-weekly-cta">ASSISTIR DESTAQUE ↗</span></span></a>';
  }
  function render(posts,featured){
@@ -75,8 +98,8 @@
      if(!response.ok)throw Error("HTTP "+response.status);
      const data=await response.json();
      const winner=!data.partial&&validVideo(data.featured)?data.featured:null;
-     const countPosts=render(Array.isArray(data.posts)?data.posts:[],winner);
      renderWeekly(winner,Boolean(data.partial),Boolean(data.configured));
+     const countPosts=render(Array.isArray(data.posts)?data.posts:[],winner||(data.partial?cachedChampion():null));
      const checked=Date.parse(data.checkedAt||"");
      const clock=Number.isFinite(checked)?" · ATUALIZADO ÀS "+new Date(checked).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"";
      if(countPosts)status.textContent="VÍDEOS E GRAVAÇÕES DOS JOGADORES DA NOWAY"+(data.partial?" · ALGUNS CANAIS INDISPONÍVEIS":"")+clock;
