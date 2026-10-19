@@ -4,6 +4,8 @@ const ytKey=process.env.YOUTUBE_API_KEY||"";
 const twitchId=process.env.TWITCH_CLIENT_ID||"";
 const twitchSecret=process.env.TWITCH_CLIENT_SECRET||"";
 let cached=null, authCache=null;
+// Atualização sob demanda: CDN compartilha a mesma resposta para todos os visitantes.
+const CACHE_MS=5*60*1000, RETRY_MS=60*1000;
 const videoPattern=/^[a-z0-9_-]{11}$/i;
 const validHandle=/^[a-z0-9_.-]{3,30}$/i;
 const validLogin=/^[a-z0-9_]{3,25}$/i;
@@ -101,7 +103,7 @@ async function collect(){
  const roster=channels(),jobs=[];
  if(ytKey)for(const m of roster.youtube)jobs.push(getYouTube(m));
  if(twitchId&&twitchSecret&&roster.twitch.length)jobs.push(getTwitch(roster.twitch));
- if(!jobs.length)return{configured:false,posts:[],featured:null,weeklyWindowDays:7,partial:false};
+ if(!jobs.length)return{configured:false,posts:[],featured:null,weeklyWindowDays:7,partial:false,checkedAt:new Date().toISOString()};
  const result=await Promise.allSettled(jobs);
  const all=result.flatMap(r=>r.status==="fulfilled"?r.value:[])
    .sort((a,b)=>Date.parse(b.publishedAt)-Date.parse(a.publishedAt))
@@ -119,19 +121,19 @@ async function collect(){
    (a.platform+":"+a.videoId).localeCompare(b.platform+":"+b.videoId)):[];
  const featured=ranked[0]||null;
  if(partial)console.warn("NOWAY latest posts: some video providers unavailable");
- return{configured:true,posts,featured,weeklyWindowDays:7,partial};
+ return{configured:true,posts,featured,weeklyWindowDays:7,partial,checkedAt:new Date().toISOString()};
 }
 module.exports=async function(req,res){
  if(req.method!=="GET"){res.setHeader("Allow","GET");return res.status(405).json({error:"Method not allowed"});}
  if(!cached||cached.until<Date.now()){
    const promise=collect();
-   cached={promise,until:Date.now()+300000};
-   promise.then(result=>{if(cached?.promise===promise)cached.until=Date.now()+(result.partial?300000:1800000);})
+   cached={promise,until:Date.now()+RETRY_MS};
+   promise.then(result=>{if(cached?.promise===promise)cached.until=Date.now()+(result.partial?RETRY_MS:CACHE_MS);})
      .catch(()=>{if(cached?.promise===promise)cached=null;});
  }
  try{
    const data=await cached.promise;
-   res.setHeader("Cache-Control",data.partial?"public, s-maxage=300, stale-while-revalidate=60":"public, s-maxage=1800, stale-while-revalidate=120");
+   res.setHeader("Cache-Control",data.partial?"public, s-maxage=60, stale-while-revalidate=30":"public, s-maxage=300, stale-while-revalidate=60");
    return res.status(200).json(data);
  }catch(err){
    console.error("NOWAY latest-posts error:",err.message);

@@ -4,7 +4,8 @@
    retry=document.getElementById("nowayLatestRetry"),weekly=document.getElementById("nowayWeeklyFeatured");
  const team=window.NOWAY_DATA?.team||[];
  if(!grid||!status||!retry||!weekly)return;
- let busy=false,last=0;
+ const REFRESH_MS=5*60*1000;
+ let busy=false,last=0,started=false;
  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
  const member=id=>team.find(p=>p.id===id&&!p.vacancy);
  const validVideo=p=>p&&member(p.memberId)&&(p.platform==="youtube"?/^[a-z0-9_-]{11}$/i.test(String(p.videoId||"")):
@@ -66,8 +67,9 @@
    return safe.length;
  }
  async function load(force=false){
-   if(busy||(!force&&last&&Date.now()-last<1800000))return;
-   busy=true;retry.hidden=true;status.textContent="BUSCANDO PUBLICAÇÕES DO ELENCO…";
+   if(busy||(!force&&last&&Date.now()-last<REFRESH_MS))return;
+   if(!force&&document.hidden)return;
+   busy=true;retry.hidden=true;status.textContent="ATUALIZANDO VÍDEOS E VISUALIZAÇÕES…";
    try{
      const response=await fetch("/api/latest-posts");
      if(!response.ok)throw Error("HTTP "+response.status);
@@ -75,19 +77,24 @@
      const winner=!data.partial&&validVideo(data.featured)?data.featured:null;
      const countPosts=render(Array.isArray(data.posts)?data.posts:[],winner);
      renderWeekly(winner,Boolean(data.partial),Boolean(data.configured));
-     if(countPosts)status.textContent="VÍDEOS E GRAVAÇÕES DOS JOGADORES DA NOWAY"+(data.partial?" · ALGUNS CANAIS INDISPONÍVEIS":"");
-     else if(data.partial)status.textContent="NÃO FOI POSSÍVEL CONSULTAR TODOS OS CANAIS AGORA.";
-     else status.textContent=data.configured?"NENHUM VÍDEO RECENTE ENCONTRADO NOS CANAIS CADASTRADOS.":"AGUARDANDO CONFIGURAÇÃO DOS CANAIS DE VÍDEO.";
-     retry.hidden=Boolean(countPosts&&!data.partial);last=Date.now();
+     const checked=Date.parse(data.checkedAt||"");
+     const clock=Number.isFinite(checked)?" · ATUALIZADO ÀS "+new Date(checked).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"";
+     if(countPosts)status.textContent="VÍDEOS E GRAVAÇÕES DOS JOGADORES DA NOWAY"+(data.partial?" · ALGUNS CANAIS INDISPONÍVEIS":"")+clock;
+     else if(data.partial)status.textContent="NÃO FOI POSSÍVEL CONSULTAR TODOS OS CANAIS AGORA."+clock;
+     else status.textContent=(data.configured?"NENHUM VÍDEO RECENTE ENCONTRADO NOS CANAIS CADASTRADOS.":"AGUARDANDO CONFIGURAÇÃO DOS CANAIS DE VÍDEO.")+clock;
+     retry.hidden=false;last=Date.now();
    }catch{
      status.textContent="NÃO FOI POSSÍVEL CARREGAR AS PUBLICAÇÕES AGORA.";
      renderWeekly(null,true,true);retry.hidden=false;
    }finally{busy=false;}
  }
  retry.addEventListener("click",()=>load(true));
- document.addEventListener("visibilitychange",()=>{if(!document.hidden&&last)load();});
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden&&started)load();});
+ window.addEventListener("focus",()=>{if(started)load();});
+ // Atualiza automaticamente enquanto a aba está ativa; não mantém downloads em abas ocultas.
+ setInterval(()=>{if(started&&!document.hidden)load();},60*1000);
  if("IntersectionObserver" in window){
-   const obs=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){obs.disconnect();load();}},{rootMargin:"650px"});
+   const obs=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){obs.disconnect();started=true;load();}},{rootMargin:"650px"});
    obs.observe(weekly);
- }else load();
+ }else {started=true;load();}
 })();
