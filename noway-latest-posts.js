@@ -28,10 +28,10 @@
    const ok=!partial&&validVideo(featured)&&Number.isSafeInteger(featured.viewCount)&&featured.viewCount>=0;
    if(!ok){
      const title=!configured?"AGUARDANDO CONEXÃO DOS CANAIS.":partial?
-       "DESTAQUE INDISPONÍVEL NO MOMENTO.":"AGUARDANDO O PRÓXIMO LANÇAMENTO.";
-     const note=partial?"Não foi possível consultar todos os canais para determinar o mais visto.":
-       "Quando houver um vídeo publicado nos últimos 7 dias com visualizações disponíveis, ele aparecerá aqui.";
-     weekly.innerHTML='<div class="nw-weekly-empty"><span class="nw-weekly-eyebrow">✦ DESTAQUE DA SEMANA</span><strong>'+
+       "ATUALIZANDO OS DADOS DE AUDIÊNCIA.":"NENHUM VÍDEO DISPONÍVEL.";
+     const note=partial?"A classificação aguarda os dados oficiais de todos os canais.":
+       "O destaque aparecerá quando encontrarmos visualizações públicas nos canais do elenco.";
+     weekly.innerHTML='<div class="nw-weekly-empty"><span class="nw-weekly-eyebrow">✦ RECORDISTA DA NOWAY</span><strong>'+
        title+'</strong><p>'+note+'</p></div>';
      return;
    }
@@ -39,12 +39,12 @@
    weekly.innerHTML='<a class="nw-weekly-card" href="'+esc(link(featured))+'" target="_blank" rel="noopener noreferrer"'+
      ' aria-label="Assistir destaque da semana: '+esc(featured.title)+' de '+esc(person.name)+'">'+
      '<span class="nw-weekly-art">'+(src?'<img src="'+esc(src)+'" alt="" loading="lazy">':'<span class="nw-post-no-thumb">NOWAY / DESTAQUE</span>')+
-     '<span class="nw-weekly-play" aria-hidden="true">▶</span><span class="nw-weekly-tag">★ MAIS VISTO DA SEMANA</span></span>'+
-     '<span class="nw-weekly-copy"><span class="nw-weekly-eyebrow">✦ DESTAQUE DA SEMANA · '+(yt?"YOUTUBE":"TWITCH")+'</span>'+
+     '<span class="nw-weekly-play" aria-hidden="true">▶</span><span class="nw-weekly-tag">★ Nº 1 EM VISUALIZAÇÕES</span></span>'+
+     '<span class="nw-weekly-copy"><span class="nw-weekly-eyebrow">★ DESTAQUE PRINCIPAL · '+(yt?"YOUTUBE":"TWITCH")+'</span>'+
      '<strong class="nw-weekly-title">'+esc(featured.title)+'</strong>'+
      '<span class="nw-weekly-author">'+esc(person.name)+' <span>· '+esc(when(featured.publishedAt))+'</span></span>'+
-     '<span class="nw-weekly-count"><strong>'+count(featured.viewCount)+'</strong><small>VISUALIZAÇÕES TOTAIS</small></span>'+
-     '<span class="nw-weekly-rule">Entre os vídeos publicados pelo elenco nos últimos 7 dias.</span>'+
+     '<span class="nw-weekly-count"><strong>'+count(featured.viewCount)+'</strong><small>VISUALIZAÇÕES REAIS</small></span>'+
+     '<span class="nw-weekly-rule"><span class="nw-weekly-streak">◆ LÍDER DE AUDIÊNCIA</span> Permanece em destaque até outro vídeo do elenco ultrapassar suas visualizações.</span>'+
      '<span class="nw-weekly-cta">ASSISTIR DESTAQUE ↗</span></span></a>';
  }
  function render(posts,featured){
@@ -56,7 +56,7 @@
        '" target="_blank" rel="noopener noreferrer" aria-label="Assistir vídeo de '+esc(person.name)+'">'+
        '<span class="nw-post-thumb">'+(src?'<img src="'+esc(src)+'" alt="" loading="lazy">':'<span class="nw-post-no-thumb">NOWAY / PLAY</span>')+
        '<span class="nw-post-play" aria-hidden="true">▶</span><span class="nw-post-source">'+(yt?"YOUTUBE":"TWITCH")+'</span>'+
-       (top?'<span class="nw-post-top-label">★ MAIS VISTO DA SEMANA</span>':'')+'</span>'+
+       (top?'<span class="nw-post-top-label">★ MAIS VISTO DA NOWAY</span>':'')+'</span>'+
        '<span class="nw-post-details"><span class="nw-post-author"><strong>'+esc(person.name)+'</strong><span>'+
        esc(post.kind||"VÍDEO")+(date?" · "+esc(date):"")+'</span></span>'+
        '<strong class="nw-post-title">'+esc(post.title)+'</strong>'+

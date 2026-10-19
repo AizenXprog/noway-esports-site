@@ -66,3 +66,33 @@
  .nw-weekly-copy{padding:27px}.nw-weekly-title{font-size:clamp(39px,9vw,56px)}
  .nw-weekly-count strong{font-size:58px}.nw-weekly-tag{bottom:12px;left:12px}}
 @media(prefers-reduced-motion:reduce){.nw-weekly-card,.nw-weekly-art img{transition:none}}
+
+/* Recordista NOWAY / acabamento premium editorial — mantém proporções equilibradas */
+.nw-weekly-feature{position:relative}
+.nw-weekly-feature::before{content:"";position:absolute;left:-8px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,transparent,#f2ff00 30%,#f2ff00 70%,transparent);pointer-events:none}
+.nw-weekly-card{position:relative;isolation:isolate;border-color:#abb94f;
+ background:radial-gradient(ellipse at 94% 5%,#f2ff0016,transparent 57%),linear-gradient(132deg,#1b2318,#111511);
+ box-shadow:0 23px 65px #000b,inset 0 1px #f2ff0029}
+.nw-weekly-card::after{content:"01";position:absolute;right:13px;bottom:-27px;z-index:-1;
+ font:900 clamp(150px,17vw,235px)/1 "Barlow Condensed",sans-serif;color:#f2ff0009;pointer-events:none}
+.nw-weekly-art{background:linear-gradient(145deg,#30381a,#0c100c)}
+.nw-weekly-art::after{background:linear-gradient(0deg,#080c08a9,transparent 42%),
+ linear-gradient(90deg,transparent 72%,#111511bb);pointer-events:none}
+.nw-weekly-tag{border:1px solid #fff5;box-shadow:0 6px 20px #0007;
+ letter-spacing:.1em;transform:skew(-5deg);transform-origin:left center}
+.nw-weekly-copy{position:relative;z-index:1}
+.nw-weekly-eyebrow{letter-spacing:.15em}
+.nw-weekly-author{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nw-weekly-count{gap:10px;padding:12px 0;border-top:1px solid #f2ff0029;border-bottom:1px solid #f2ff0029;width:100%}
+.nw-weekly-count strong{font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+.nw-weekly-rule{max-width:370px;color:#acbba4;line-height:1.65}
+.nw-weekly-streak{display:block;margin-bottom:7px;color:#f2ff00;font:900 9px/1.5 Inter,sans-serif;letter-spacing:.16em}
+.nw-weekly-cta{display:inline-flex;align-items:center;justify-content:center;min-height:40px;
+ background:#f2ff00;color:#10150a;transition:background .18s ease,transform .18s ease}
+.nw-weekly-card:hover .nw-weekly-cta{background:#fbffcd;transform:translateX(2px)}
+.nw-post-card.is-weekly-top{border-color:#d4ed27}
+@media(max-width:680px){.nw-weekly-card::after{font-size:150px;bottom:-13px}
+ .nw-weekly-feature::before{left:-5px}
+ .nw-weekly-art::after{background:linear-gradient(0deg,#080c0877,transparent 55%)}
+ .nw-weekly-rule{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.nw-weekly-cta{transition:none}}
