@@ -38,3 +38,14 @@
  .nw-com-links{align-items:flex-start;flex-direction:column}
  .nw-com-links>a{width:100%}
 }
+
+/* Entrada única para Discord e recrutamento, mantendo cada ação independente. */
+.nw-com-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:33px}
+.nw-com-choice>a{display:flex;flex-direction:column;gap:10px;background:#151b16;border:1px solid #475342;padding:22px 24px;color:#f8fbf5;text-decoration:none;transition:transform .2s ease,border-color .2s ease}
+.nw-com-choice>a:hover,.nw-com-choice>a:focus-visible{border-color:#f2ff00;transform:translateY(-3px)}
+.nw-com-choice span{font:900 9px Inter,sans-serif;color:#f2ff00;letter-spacing:.13em}
+.nw-com-choice strong{font:900 clamp(27px,4vw,43px)/1 "Barlow Condensed",sans-serif}
+.nw-com-choice small{font:600 11px Inter,sans-serif;color:#aab8a3}
+.nw-com-links{scroll-margin-top:40px}
+.nw-com-links p{font:500 12px/1.8 Inter,sans-serif;color:#a8b5a4;max-width:650px;margin:18px 0 0}
+@media(max-width:560px){.nw-com-choice{grid-template-columns:1fr}}
