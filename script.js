@@ -16,8 +16,39 @@ function showProfile(p){if(!p)return;
     '<div class="modal-links"><a href="recrutamento.html">CANDIDATAR-SE À VAGA ↗</a></div></div>';
   $('#playerModal').showModal();return;
  }
-const links=(p.socials||[]).map(s=>safeLink(s.url)?`<a href="${escapeHTML(safeLink(s.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(s.label)} ↗</a>`:'').join('');$('#modalContent').innerHTML=`<div class="modal-art"><img src="${escapeHTML(p.image||"assets/logo-black.webp")}" alt="${escapeHTML(p.name)}"></div><div class="modal-body"><span class="modal-label">NOWAY ESPORTS / PLAYER PROFILE</span><h2>${escapeHTML(p.name)}</h2><div class="modal-role">${escapeHTML(p.role)} ${p.management?' • '+escapeHTML(p.management):''}</div><p>${escapeHTML(p.bio)}</p><div class="modal-links">${links||'<span class="modal-no-social">Redes sociais ainda não cadastradas.</span>'}</div></div>`;$('#playerModal').showModal()}
+const links=(p.socials||[]).map(s=>safeLink(s.url)?`<a href="${escapeHTML(safeLink(s.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(s.label)} ↗</a>`:'').join('');$('#modalContent').innerHTML=`<div class="modal-art"><img src="${escapeHTML(p.image||"assets/logo-black.webp")}" alt="${escapeHTML(p.name)}"></div><div class="modal-body"><span class="modal-label">${p.honorableMention?'NOWAY ESPORTS / MENÇÕES HONROSAS':'NOWAY ESPORTS / PLAYER PROFILE'}</span><h2>${escapeHTML(p.name)}</h2><div class="modal-role">${escapeHTML(p.role)} ${p.honorableMention?' • '+escapeHTML(p.status):(p.management?' • '+escapeHTML(p.management):'')}</div>${p.honorableMention?'<p class="noway-honors-modal-tribute">'+escapeHTML(p.tribute)+'</p>':''}<p>${escapeHTML(p.bio)}</p><div class="modal-links">${links||'<span class="modal-no-social">Redes sociais ainda não cadastradas.</span>'}</div></div>`;$('#playerModal').showModal()}
 renderTeam();
+function renderHonorableMentions(){
+ const target=$('#nowayHonorsList');
+ if(!target)return;
+ const mentions=Array.isArray(data.honorableMentions)?data.honorableMentions:[];
+ if(!mentions.length){
+   const section=target.closest('.noway-honors-section');
+   if(section)section.hidden=true;
+   return;
+ }
+ target.innerHTML=mentions.map(person=>{
+   const p=person||{};
+   const safeId=escapeHTML(p.id||'');
+   return '<button class="noway-honors-card" type="button" data-honorable="'+safeId+
+     '" aria-label="Conhecer homenagem a '+escapeHTML(p.name)+'">'+
+     '<span class="noway-honors-photo">'+(p.image?'<img src="'+escapeHTML(p.image)+'" alt="Foto de '+escapeHTML(p.name)+'" loading="lazy">':
+       '<span class="noway-honors-initials">'+escapeHTML(p.initials||'NW')+'</span>')+
+     '<span class="noway-honors-photo-shade" aria-hidden="true"></span>'+
+     '<span class="noway-honors-corner" aria-hidden="true">✦</span></span>'+
+     '<span class="noway-honors-info"><span class="noway-honors-status"><span class="noway-honors-status-dot" aria-hidden="true"></span>'+
+     escapeHTML(p.status||'Em pausa')+'</span>'+
+     '<strong class="noway-honors-name">'+escapeHTML(p.name)+'</strong>'+
+     '<span class="noway-honors-role">'+escapeHTML(p.role||'Rainbow Six Siege')+' <span aria-hidden="true">/</span> NOWAY</span>'+
+     '<span class="noway-honors-tribute">'+escapeHTML(p.tribute||'Parte da nossa história.')+'</span>'+
+     '<span class="noway-honors-open">CONHECER SUA HISTÓRIA <span aria-hidden="true">↗</span></span></span></button>';
+ }).join('');
+ target.querySelectorAll('[data-honorable]').forEach(button=>{
+   const open=()=>showProfile(mentions.find(p=>p.id===button.dataset.honorable));
+   button.addEventListener('click',open);
+ });
+}
+renderHonorableMentions();
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.remove('is-active'));btn.classList.add('is-active');renderTeam(btn.dataset.filter)}));
 $('#closeModal').addEventListener('click',()=>$('#playerModal').close());$('#playerModal').addEventListener('click',e=>{if(e.target===$('#playerModal'))$('#playerModal').close()});
 const tournamentContainer=$('#tournaments');

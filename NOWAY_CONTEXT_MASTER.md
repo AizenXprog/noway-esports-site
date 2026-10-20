@@ -442,3 +442,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Ordem atual de `site-data.js.team`: **1 Nielss Uno, 2 Prado, 3 Ace, 4 Vaga Aberta — 2º Entry / Lurker, 5 Vaga Aberta — Âncora / Suporte**. Jhonny foi removido somente do elenco público; contas NOWAY ID, permissões, jogadores em bancos de dados e mensagens privadas **não** foram alterados. O arquivo da foto de Jhonny não foi apagado.
 - `script.js`: modal e acessibilidade das vagas agora utilizam a função definida no próprio registro (`p.role`) em vez de fixar Âncora/Suporte; ambas levam ao recrutamento existente. Preservada sem alteração a foto original do Ace `assets/ace-elenco-original.png`, demais redes e biografias.
 - `index.html`: URLs dos dois scripts com cache-busting para que a alteração apareça imediatamente após o deploy. Sintaxe JS e ordem de slots validadas no código; inspecionar publicação Vercel READY separadamente.
+
+## Menções Honrosas — Jhonny pausado, 20/10/2026
+
+- Pedido do Founder: adicionar uma nova seção **MENÇÕES HONROSAS** imediatamente abaixo do elenco competitivo da Home, reconhecendo **Jhonny como Jogador pausado, muito querido pela comunidade**. Jhonny não volta ao conjunto de jogadores ativos nem passa a ocupar vaga do elenco. A ordem atual dos 5 slots (Niel, Prado, Ace, vaga 2º Entry, vaga Âncora) permanece intacta.
+- `site-data.js`: nova coleção editorial `honorableMentions` independente de `team`. Recuperado do registro anterior o nome, biografia, Instagram e **foto original `assets/jhonny.webp`**, sem gerar/retocar a imagem; status `Jogador pausado` e homenagem breve. Não altera nem consulta permissões/autenticação do NOWAY ID.
+- `index.html` + `noway-honors.css`: faixa editorial responsiva sob o elenco, com foto, status, função antiga, texto de reconhecimento, CTA para o perfil, visual preto/grafite/amarelo sem títulos desproporcionais.
+- `script.js`: leitura dinâmica de `honorableMentions`, renderização sem afetar os contadores de jogadores, modal reutilizado com status de homenagem, biografia e link original Instagram. Se coleção vazia, seção oculta. Aria-labels e mouse/teclado através de botões reais.
+- QA técnico: validar os 5 slots ativos e 1 honra separados, foto original, sintaxe JS, inexistência de outros dados ou privilégios modificados, Vercel READY. Verificação visual real de navegadores ainda pendente.
