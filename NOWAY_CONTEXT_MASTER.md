@@ -435,3 +435,10 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 
 ### Resiliência do destaque confirmado — 19/10/2026
 - `noway-latest-posts.js`: grava só dados públicos do último líder autenticado por respostas completas das APIs no localStorage do navegador (videoId, autor, views da última leitura, thumbnail). Se consulta externa falhar ou ficar incompleta, mantém aquele destaque **naquele navegador**, sinalizado como 'ÚLTIMO LÍDER CONFIRMADO / ÚLTIMA LEITURA DISPONÍVEL', sem alegar que ainda é a contagem atual. Com consulta completa, vencedor oficial substitui cache. Não armazena segredo e não se proclama vencedor com dados incompletos. Navegadores novos sem leitura válida não têm esse fallback. O usuário deve fornecer o link exato do vídeo caso seja necessária garantia de pin por ID em todos os navegadores.
+
+## Atualização do elenco público — 20/10/2026
+
+- Pedido do Founder: substituir o Jhonny por **VAGA ABERTA** no elenco público, colocar **Ace na 3ª posição** e deslocar a vaga de Entry para a antiga 4ª posição do Ace, preservando a vaga Âncora/Suporte já existente em 5º.
+- Ordem atual de `site-data.js.team`: **1 Nielss Uno, 2 Prado, 3 Ace, 4 Vaga Aberta — 2º Entry / Lurker, 5 Vaga Aberta — Âncora / Suporte**. Jhonny foi removido somente do elenco público; contas NOWAY ID, permissões, jogadores em bancos de dados e mensagens privadas **não** foram alterados. O arquivo da foto de Jhonny não foi apagado.
+- `script.js`: modal e acessibilidade das vagas agora utilizam a função definida no próprio registro (`p.role`) em vez de fixar Âncora/Suporte; ambas levam ao recrutamento existente. Preservada sem alteração a foto original do Ace `assets/ace-elenco-original.png`, demais redes e biografias.
+- `index.html`: URLs dos dois scripts com cache-busting para que a alteração apareça imediatamente após o deploy. Sintaxe JS e ordem de slots validadas no código; inspecionar publicação Vercel READY separadamente.
