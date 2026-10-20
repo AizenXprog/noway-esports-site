@@ -450,3 +450,10 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `index.html` + `noway-honors.css`: faixa editorial responsiva sob o elenco, com foto, status, função antiga, texto de reconhecimento, CTA para o perfil, visual preto/grafite/amarelo sem títulos desproporcionais.
 - `script.js`: leitura dinâmica de `honorableMentions`, renderização sem afetar os contadores de jogadores, modal reutilizado com status de homenagem, biografia e link original Instagram. Se coleção vazia, seção oculta. Aria-labels e mouse/teclado através de botões reais.
 - QA técnico: validar os 5 slots ativos e 1 honra separados, foto original, sintaxe JS, inexistência de outros dados ou privilégios modificados, Vercel READY. Verificação visual real de navegadores ainda pendente.
+
+## Limpeza de parâmetros externos dos links — 20/10/2026
+
+- Pedido do Founder: impedir que o nome de ferramentas de assistência apareça em links do site ou na barra de endereço. Auditoria do código principal e busca no GitHub não identificaram qualquer referência à ferramenta mencionada nem parâmetros de campanha armazenados nos links existentes.
+- Adicionado `noway-clean-url.js` às páginas públicas e NOWAY ID para remover da URL exibida parâmetros conhecidos `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` e `utm_id` que possam ser acrescentados por canais externos. Preserva query de autenticação, parâmetros funcionais, caminhos e âncoras. Código não contém nomes de fornecedores de assistência.
+- A limpeza ocorre ao carregar uma página do próprio domínio. Não controla como aplicativos externos rotulam ou modificam links na interface deles; a URL canônica compartilhável é `https://noway-esports-site.vercel.app/`.
+- Nenhuma modificação em páginas, textos comerciais, cargos, foto de elenco ou dados do banco; validação de ausência de nomes e sintaxe JS, commit, deploy READY a confirmar.
