@@ -457,3 +457,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Adicionado `noway-clean-url.js` às páginas públicas e NOWAY ID para remover da URL exibida parâmetros conhecidos `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` e `utm_id` que possam ser acrescentados por canais externos. Preserva query de autenticação, parâmetros funcionais, caminhos e âncoras. Código não contém nomes de fornecedores de assistência.
 - A limpeza ocorre ao carregar uma página do próprio domínio. Não controla como aplicativos externos rotulam ou modificam links na interface deles; a URL canônica compartilhável é `https://noway-esports-site.vercel.app/`.
 - Nenhuma modificação em páginas, textos comerciais, cargos, foto de elenco ou dados do banco; validação de ausência de nomes e sintaxe JS, commit, deploy READY a confirmar.
+
+## Prévia de compartilhamento NOWAY — 20/10/2026
+
+- Pedido: quando alguém enviar o link do site, mostrar uma capa chamativa com a marca NOWAY, título e resumo oficiais. Animações/GIFs não são garantidos nas prévias de apps sociais; escolhida imagem estática para compatibilidade.
+- Nova imagem gerada especificamente para a NOWAY com marca dourada e fundo esportivo preto, exportada como JPEG leve `assets/noway-social-preview.jpg` (800 × 420 pixels, ~50 KB) no próprio GitHub/Vercel; não há dependência de serviço de imagem externo.
+- Foram adicionados ao HTML inicial (disponível mesmo para crawlers sem JavaScript) Open Graph: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`, `og:site_name`, locale, MIME e dimensões; Twitter/X: `summary_large_image` e título/descrição/imagem. URL absoluta oficial `https://noway-esports-site.vercel.app/assets/noway-social-preview.jpg`, canônicas próprias para Home, Comunidade, Recrutamento, Desafios e NOWAY ID.
+- Identidade do site e nenhuma das rotas internas, permissões ou fotos de atletas foi alterada. Caches de WhatsApp, Discord, Facebook e outros serviços podem reter a imagem anterior e não há suporte confiável a animações nestas prévias.
+- Conferir commit, deployment Vercel READY e, quando possível, inspecionar OG real em plataforma de compartilhamento. READY não comprova a reindexação do cache de rede social.
