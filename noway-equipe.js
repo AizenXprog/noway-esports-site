@@ -26,6 +26,7 @@ const avatar=p=>{
  return safe((p.name||"N").trim()[0]?.toUpperCase()||"N");
 };
 let people=[],events=[],current=null,user=null,canManage=false,busy=false,generation=0;
+let hubRenderSignature=null;
 let trends={},trendViewer=null;
 const active=()=>!$("nowayConsoleEquipe")?.hidden||!$("nowayConsoleAgenda")?.hidden;
 const person=()=>people.find(p=>p.id===current);
@@ -425,9 +426,13 @@ async function loadHub(force=false){
   if(trendViewer!==user.id)initTrends();
   const {data,error}=await db.rpc("noway_team_hub_v1");if(error)throw error;
   if(run!==generation||!active())return;
-  people=(Array.isArray(data?.team)?data.team:[]).filter(p=>rosterRoles.has(p.role));
-  events=Array.isArray(data?.upcoming)?data.upcoming:[];
-  renderSummary();renderFixtures();renderRoster();showTrackerRequirement();
+  const nextPeople=(Array.isArray(data?.team)?data.team:[]).filter(p=>rosterRoles.has(p.role));
+  const nextEvents=Array.isArray(data?.upcoming)?data.upcoming:[];
+  const signature=JSON.stringify([nextPeople,nextEvents]);
+  if(force||hubRenderSignature!==signature){
+    people=nextPeople;events=nextEvents;hubRenderSignature=signature;
+    renderSummary();renderFixtures();renderRoster();showTrackerRequirement();
+  }
   void refreshExternalLinked(force);
  }catch(e){
   const block='<div class="nw-team-empty">Não foi possível carregar: '+safe(e.message)+'</div>';
@@ -474,6 +479,6 @@ window.addEventListener("noway:tracker-linked",()=>{externalCache.clear();loadHu
 document.addEventListener("visibilitychange",()=>{if(active()&&!document.hidden)loadHub();});
 setInterval(()=>{if(active()&&!document.hidden)loadHub();},60000);
 db.auth.onAuthStateChange(event=>{
- if(event==="SIGNED_OUT"){people=[];events=[];current=null;canManage=false;generation++;trends={};trendViewer=null;externalCache.clear();$("nowayTeamHubPlayer").hidden=true;}
+ if(event==="SIGNED_OUT"){people=[];events=[];hubRenderSignature=null;current=null;canManage=false;generation++;trends={};trendViewer=null;externalCache.clear();$("nowayTeamHubPlayer").hidden=true;}
 });
 if(["#equipe","#chat","#tracker"].includes(location.hash))setTimeout(loadHub,800);
