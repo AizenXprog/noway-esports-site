@@ -156,7 +156,7 @@ function drawTickets() {
   );
 }
 
-async function openTicket(id) {
+async function openTicket(id,{scroll=true}={}) {
   const ticket=tickets.find(t=>t.id===id);if(!ticket)return;
   activeId=id;
   $id("nowayThreadSection").hidden=false;
@@ -165,8 +165,10 @@ async function openTicket(id) {
   $id("nowayReplyForm").hidden=ticket.status==="resolvida";
   $id("nowayOwnerTicketControls").hidden=profile?.role!=="owner";
   $id("nowayTicketStatus").value=ticket.status;
-  $id("nowayThreadMessages").innerHTML='<p class="noway-muted">Carregando conversa...</p>';
-  $id("nowayThreadSection").scrollIntoView({behavior:"smooth",block:"nearest"});
+  if(scroll){
+    $id("nowayThreadMessages").innerHTML='<p class="noway-muted">Carregando conversa...</p>';
+    $id("nowayThreadSection").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
   const [res,rolesResult]=await Promise.all([
     supabase.from("noway_contact_messages")
       .select("id,contact_id,sender_id,body,created_at")
@@ -290,7 +292,11 @@ $id("nowaySaveStatus").addEventListener("click",async()=>{
   feedback("Status atualizado.");const id=activeId;await refreshTickets();await openTicket(id);
 });
 
-supabase.auth.onAuthStateChange(()=>{setTimeout(()=>{refreshAuth().catch(err=>feedback("Erro de acesso: "+err.message,true))},0)});
+supabase.auth.onAuthStateChange((event,session)=>{
+  if(!["SIGNED_IN","SIGNED_OUT","USER_UPDATED"].includes(event))return;
+  if(event==="SIGNED_IN"&&session?.user?.id===signedUser?.id)return;
+  setTimeout(()=>refreshAuth().catch(err=>feedback("Erro de acesso: "+err.message,true)),0);
+});
 refreshAuth().catch(err=>feedback("Erro ao iniciar NOWAY ID: "+err.message,true));
 
 // Permissões mudam no banco, não no token do login: atualize sem exigir sair e entrar.
@@ -335,10 +341,12 @@ $id("nowayRefreshInbox").addEventListener("click",async()=>{
 });
 // Mantém a caixa de entrada atualizada sem descartar rascunhos.
 setInterval(async()=>{
-  if(!signedUser || document.hidden)return;
+  if(!signedUser||document.hidden)return;
+  if(document.body.dataset.nowayConsole==="true"&&
+     document.querySelector("#nowayDashboard")?.dataset.consoleActive!=="contacts")return;
   try {
     await refreshTickets();
-    if(activeId)await openTicket(activeId);
+    if(activeId)await openTicket(activeId,{scroll:false});
   }catch(error){console.warn("NOWAY ID: atualização adiada",error)}
 },60000);
 
@@ -746,8 +754,10 @@ $id("nowayRefreshTeamChat").addEventListener("click",async()=>{
 // contas comuns ou rebaixadas de ler/escrever mensagens e comunicados privados.
 setInterval(()=>{
   if(document.body.dataset.nowayConsole!=="true"||!canReadTeam()||document.hidden)return;
-  refreshTeamChat();
-  if(++teamPollCounter%3===0){refreshTeamNews();refreshTeamDirectory();}
+  const teamOpen=document.querySelector("#nowayDashboard")?.dataset.consoleActive==="equipe";
+  teamPollCounter++;
+  if(teamOpen||teamPollCounter%4===0)refreshTeamChat();
+  if(teamOpen&&teamPollCounter%4===0){refreshTeamNews();refreshTeamDirectory();}
 },12000);
 document.addEventListener("visibilitychange",()=>{
   if(!document.hidden&&canReadTeam()){
