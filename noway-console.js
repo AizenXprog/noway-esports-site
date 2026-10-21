@@ -24,7 +24,7 @@ const notice=(message,error=false)=>{
   const box=$("nowaySystemNotice");
   if(!box)return;
   box.textContent=message;box.hidden=false;box.classList.toggle("is-error",error);
-  if(error)box.scrollIntoView({behavior:"smooth",block:"nearest"});
+  // Falhas de sincronização em segundo plano não podem roubar o scroll do usuário.
 };
 const avatarURL=path=>{
   if(!path||!me||!(/^[a-f0-9-]{36}\/avatar\.(?:webp|jpg)$/.test(path)))return null;
