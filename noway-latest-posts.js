@@ -7,6 +7,7 @@
  const REFRESH_MS=5*60*1000;
  const FEATURED_CACHE_KEY="noway.roster_last_confirmed_feature_v1";
  let busy=false,last=0,started=false;
+ let weeklyRenderSignature=null,postsRenderSignature=null;
  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
  const member=id=>team.find(p=>p.id===id&&!p.vacancy);
  const validVideo=p=>p&&member(p.memberId)&&(p.platform==="youtube"?/^[a-z0-9_-]{11}$/i.test(String(p.videoId||"")):
@@ -50,6 +51,9 @@
    if(remembered)featured=cachedChampion();
    const ok=confirmed||remembered;
    if(!ok){
+     const signature="empty:"+Boolean(partial)+":"+Boolean(configured);
+     if(weeklyRenderSignature===signature)return;
+     weeklyRenderSignature=signature;
      const title=!configured?"AGUARDANDO CONEXÃO DOS CANAIS.":partial?
        "ATUALIZANDO OS DADOS DE AUDIÊNCIA.":"NENHUM VÍDEO DISPONÍVEL.";
      const note=partial?"A classificação aguarda os dados oficiais de todos os canais.":
@@ -59,6 +63,14 @@
      return;
    }
    const person=member(featured.memberId),yt=featured.platform==="youtube",src=image(featured.thumbnail);
+   const signature=[featured.platform,featured.videoId,featured.title,src,remembered].join("|");
+   const existing=weekly.querySelector(".nw-weekly-count strong");
+   if(signature===weeklyRenderSignature&&existing){
+     const value=count(featured.viewCount);
+     if(existing.textContent!==value)existing.textContent=value;
+     return;
+   }
+   weeklyRenderSignature=signature;
    weekly.innerHTML='<a class="nw-weekly-card'+(remembered?' is-last-confirmed':'')+'" href="'+esc(link(featured))+'" target="_blank" rel="noopener noreferrer"'+
      ' aria-label="Assistir destaque da semana: '+esc(featured.title)+' de '+esc(person.name)+'">'+
      '<span class="nw-weekly-art">'+(src?'<img src="'+esc(src)+'" alt="" loading="lazy">':'<span class="nw-post-no-thumb">NOWAY / DESTAQUE</span>')+
@@ -72,6 +84,22 @@
  }
  function render(posts,featured){
    const safe=posts.filter(validVideo);
+   const signature=safe.map(p=>[
+     p.platform,p.videoId,p.title,p.thumbnail,same(p,featured),
+     Number.isSafeInteger(p.viewCount)&&p.viewCount>=0
+   ].join(":")).join("|");
+   const cards=grid.querySelectorAll(".nw-post-card");
+   if(signature===postsRenderSignature&&cards.length===safe.length){
+     safe.forEach((post,i)=>{
+       const el=cards[i].querySelector(".nw-post-viewcount");
+       if(el){
+         const value=count(post.viewCount)+" VISUALIZAÇÕES";
+         if(el.textContent!==value)el.textContent=value;
+       }
+     });
+     return safe.length;
+   }
+   postsRenderSignature=signature;
    grid.innerHTML=safe.map(post=>{
      const person=member(post.memberId),yt=post.platform==="youtube",top=same(post,featured);
      const src=image(post.thumbnail),date=when(post.publishedAt);
@@ -92,7 +120,8 @@
  async function load(force=false){
    if(busy||(!force&&last&&Date.now()-last<REFRESH_MS))return;
    if(!force&&document.hidden)return;
-   busy=true;retry.hidden=true;status.textContent="ATUALIZANDO VÍDEOS E VISUALIZAÇÕES…";
+   busy=true;retry.hidden=true;
+   if(!last)status.textContent="ATUALIZANDO VÍDEOS E VISUALIZAÇÕES…";
    try{
      const response=await fetch("/api/latest-posts");
      if(!response.ok)throw Error("HTTP "+response.status);
