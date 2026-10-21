@@ -20,10 +20,14 @@
   }
   function refresh() {
     document.querySelectorAll('#roster .player-card[data-person]').forEach(card => {
-      card.querySelector('.noway-live-banner')?.remove();
-      card.classList.remove('is-noway-live');
       const person = team.find(player => player.id === card.dataset.person);
       const platforms = confirmedPlatforms(person);
+      const signature = platforms.join(',');
+      if(card.dataset.nowayLiveSignature === signature &&
+         Boolean(card.querySelector('.noway-live-banner')) === Boolean(signature))return;
+      card.dataset.nowayLiveSignature = signature;
+      card.querySelector('.noway-live-banner')?.remove();
+      card.classList.remove('is-noway-live');
       if (!platforms.length) return;
       const banner = make('div', 'noway-live-banner');
       banner.setAttribute('aria-label', person.name + ' está ao vivo na ' + platforms.map(p => platformLabels[p]).join(' e '));
