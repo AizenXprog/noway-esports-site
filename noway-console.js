@@ -110,9 +110,10 @@ function syncConsoleNavigationGroups(){
     group.hidden=!items.some(item=>!item.hidden)&&!group.querySelector('a[href]:not([hidden])');
   });
 }
-function setTab(name){
+function setTab(name,{passive=false}={}){
   if(name==="chat"||name==="tracker")name="equipe"; // links antigos continuam funcionando
   if(!signed()||!viewPermitted(name))name="overview";
+  if(passive&&currentTab===name&&$("nowayDashboard")?.dataset.consoleActive===name)return;
   currentTab=name;
   if(name!=="equipe"&&document.body.classList.contains("noway-chat-focus")){
     document.body.classList.remove("noway-chat-focus");
@@ -158,9 +159,9 @@ function setTab(name){
    if(name==="desafios")window.dispatchEvent(new Event("noway:desafios-open"));
 
   if(name==="recruitment")window.dispatchEvent(new Event("noway:recruitment-open"));
-  try{history.replaceState(null,"",location.pathname+"#"+name);}catch{}
-  // Abrir o chat na conversa, sem obrigar o jogador a descer toda a página.
-  document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
+  try{if(location.hash!=="#"+name)history.replaceState(history.state,"",location.pathname+location.search+"#"+name);}catch{}
+  // O viewport só muda por navegação voluntária, nunca após atualização de sessão.
+  if(!passive)document.querySelector(".noway-console-main")?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function syncRoles(){
   document.querySelectorAll("[data-console-tab]").forEach(btn=>btn.hidden=!viewPermitted(btn.dataset.consoleTab));
@@ -183,7 +184,7 @@ function syncRoles(){
   $("nowayHQNewEvent").hidden=!isManager();
   $("nowayHQInboxSection").hidden=!isOwner();
   const requested=location.hash.slice(1);
-  setTab((requested==="chat"||requested==="tracker"||viewPermitted(requested))&&["overview","agenda","competitive","desafios","equipe","contacts","recruitment","users","profile","tracker","chat"].includes(requested)?requested:"overview");
+  setTab((requested==="chat"||requested==="tracker"||viewPermitted(requested))&&["overview","agenda","competitive","desafios","equipe","contacts","recruitment","users","profile","tracker","chat"].includes(requested)?requested:"overview",{passive:true});
 }
 async function loadAccount(){
   try{
@@ -717,7 +718,11 @@ function bind(){
     $("nowayEditName").click();$("nowayDisplayNameForm").scrollIntoView({behavior:"smooth",block:"center"});
   });
   $("nowayAvatarInput").addEventListener("change",ev=>uploadAvatar(ev.target.files?.[0]));
-  db.auth.onAuthStateChange(()=>setTimeout(loadAccount,0));
+  db.auth.onAuthStateChange((event,session)=>{
+    if(!["SIGNED_IN","SIGNED_OUT","USER_UPDATED"].includes(event))return;
+    if(event==="SIGNED_IN"&&session?.user?.id===me?.id)return;
+    setTimeout(loadAccount,0);
+  });
   window.addEventListener("noway:role-changed",()=>{loadAccount();});
   window.addEventListener("focus",()=>{if(isStaff())refreshEvents();});
 }
