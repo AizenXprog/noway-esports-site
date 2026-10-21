@@ -4,7 +4,11 @@
   'use strict';
   const fine = matchMedia('(hover:hover) and (pointer:fine)');
   const reduced = matchMedia('(prefers-reduced-motion:reduce)');
-  if (!fine.matches || reduced.matches) return;
+  const lowPower = (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+    Boolean(navigator.connection?.saveData);
+  // On limited hardware prefer immediate native cursor; keep premium effects on capable devices.
+  if (!fine.matches || reduced.matches || lowPower) return;
 
   const root = document.documentElement;
   const host = document.createElement('div');

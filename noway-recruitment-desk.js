@@ -69,7 +69,7 @@ function showRecruitToast(item,increment){
  }
 }
 async function pollRecruitNotifications(){
- if(notificationBusy||document.documentElement.dataset.nowayRecruitRole==="membro")return;
+ if(notificationBusy||!["owner","manager","gri"].includes(document.documentElement.dataset.nowayRecruitRole))return;
  notificationBusy=true;
  const version=++notifyGeneration;
  try{
