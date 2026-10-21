@@ -435,6 +435,7 @@ async function loadHub(force=false){
   }
   void refreshExternalLinked(force);
  }catch(e){
+  hubRenderSignature=null; // Após erro, uma nova resposta deve reconstruir a tela.
   const block='<div class="nw-team-empty">Não foi possível carregar: '+safe(e.message)+'</div>';
   $("nowayTeamHubFixtures").innerHTML=block;$("nowayTeamHubRoster").innerHTML=block;
   promptError("Erro na central Equipe: "+e.message);
