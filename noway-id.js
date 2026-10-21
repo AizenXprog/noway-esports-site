@@ -40,24 +40,35 @@ function displayDate(date) {
   catch{return ""}
 }
 function nowayRoleBadge(role,senderName=""){
-  if(role!=="owner"&&role!=="manager")return "";
+  if(!["owner","manager","gri"].includes(role))return "";
   const isFounder=role==="owner";
-  const name=isFounder?"Niel":(/prado/i.test(senderName)?"Prado":String(senderName||"Team Manager").trim().split(/\s+/)[0]);
-  const description=name+(isFounder?" - founder":" - Team Manager");
-  // Desenhos SVG autorais para os dois cargos da NOWAY; o cargo vem do servidor.
+  const isGRI=role==="gri";
+  const name=isFounder?"Niel":isGRI?
+    (String(senderName||"").trim().split(/\s+/)[0]||"GRI"):
+    (/prado/i.test(senderName)?"Prado":String(senderName||"Team Manager").trim().split(/\s+/)[0]);
+  const description=name+(isFounder?" - Founder":isGRI?
+    " - GRI / Gestor de Recrutamento e Indicação":" - Team Manager");
+  // Emblemas autorais: Founder (coroa), TM (escudo) e GRI (insígnia de seleção).
+  // Cargo fornecido pelo servidor, sem atribuição pelo nome exibido.
   const icon=isFounder?
     '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
       '<path d="M3.8 10.1 8.8 13.5 14 5.8l5.2 7.7 5-3.4-2.1 11.7H5.9L3.8 10.1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
       '<path d="M6.1 18.5h15.8M7 24h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'+
       '<path d="m12 15 2-2.5 2 2.5-2 2.5-2-2.5Z" fill="currentColor"/>'+
       '<circle cx="14" cy="4.1" r="1.1" fill="currentColor"/>'+
+    '</svg>':isGRI?
+    '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
+      '<path d="M14 2.8 23.5 7.8v7.5c0 5.3-4 8.4-9.5 10.4-5.5-2-9.5-5.1-9.5-10.4V7.8L14 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
+      '<path d="m9.4 14 3.1 3.2 6.2-6.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path d="M10.6 7.5h6.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>'+
     '</svg>':
     '<svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">'+
       '<path d="M14 2.8 23 6.1v7.2c0 5.7-3.6 9.1-9 11.8-5.4-2.7-9-6.1-9-11.8V6.1L14 2.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
       '<path d="M9.5 16.9V10l4.5 5.2 4.5-5.2v6.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="round"/>'+
       '<path d="M11 6.9h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'+
     '</svg>';
-  return '<span class="noway-role-message-badge '+(isFounder?'is-founder':'is-manager')+
+  const badgeClass=isFounder?"is-founder":isGRI?"is-gri":"is-manager";
+  return '<span class="noway-role-message-badge '+badgeClass+
     '" tabindex="0" role="img" aria-label="'+clean(description)+'" title="'+clean(description)+
     '" data-tooltip="'+clean(description)+'">'+icon+'</span>';
 }
