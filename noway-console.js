@@ -15,6 +15,8 @@ let hqSnapshot=null,hqActivity=[],hqInbox=[],hqLoadedAt=0,hqLoading=false,hqRun=
 calendar=new Date(calendar.getFullYear(),calendar.getMonth(),1);
 const signed=()=>Boolean(me&&account);
 const isStaff=()=>activeRoles.has(account?.role);
+// GRI participa da Equipe como jogador, sem virar gestor do painel.
+const canOpenEquipe=()=>isStaff()||account?.role==="gri";
 const isManager=()=>account?.role==="owner"||account?.role==="manager";
 const isOwner=()=>account?.role==="owner";
 const canRecruit=()=>isManager()||account?.role==="gri";
@@ -56,7 +58,8 @@ const viewPermitted=name=>{
   if(name==="users")return isOwner();
   if(name==="recruitment")return canRecruit();
    if(name==="desafios")return isManager();
-  if(["equipe","agenda","competitive"].includes(name))return isStaff();
+  if(name==="equipe")return canOpenEquipe();
+  if(["agenda","competitive"].includes(name))return isStaff();
   return ["overview","contacts","profile"].includes(name);
 };
 let currentTab="overview";
@@ -169,10 +172,10 @@ function syncRoles(){
   $("nowayOverviewGreeting").textContent=firstName?"OLÁ, "+firstName.toUpperCase()+".":(greet[account.role]||"NOWAY ID.");
   $("nowayOverviewDesc").textContent=isOwner()?"Controle o elenco, eventos, contatos e as contas cadastradas.":
     isManager()?"Agenda, comunicados e conversas da equipe em um só lugar.":
-    account?.role==="gri"?"Acompanhe inscrições e registre pareceres na central de recrutamento.":
+    account?.role==="gri"?"Acesse a equipe, converse no chat e registre pareceres no recrutamento.":
     isStaff()?"Confira seus compromissos, comunicados e mensagens da equipe.":
     "Sua identidade e suas conversas com a NOWAY, sem complicação.";
-  $("nowayConsoleWelcomeText").textContent=isStaff()?
+  $("nowayConsoleWelcomeText").textContent=canOpenEquipe()?
     "O chat da equipe é privado. Todos os jogadores e gestores autorizados podem conversar aqui.":
     "Você pode enviar uma mensagem diretamente à organização e acompanhar a resposta.";
   document.querySelectorAll("[data-console-open]").forEach(el=>el.hidden=!viewPermitted(el.dataset.consoleOpen));

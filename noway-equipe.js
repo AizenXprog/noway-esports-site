@@ -415,13 +415,13 @@ async function checkAuth(){
  if(!user)return false;
  const {data:profile,error:pErr}=await db.from("noway_profiles").select("role").eq("id",user.id).maybeSingle();
  canManage=!pErr&&["owner","manager"].includes(profile?.role);
- return !pErr&&["owner","manager","jogador"].includes(profile?.role);
+ return !pErr&&["owner","manager","jogador","gri"].includes(profile?.role);
 }
 async function loadHub(force=false){
  if(!active()||busy)return;
  busy=true;const run=++generation;$("nowayTeamHubRefresh").disabled=true;
  try{
-  if(!await checkAuth())throw Error("Acesso exclusivo de jogadores e gestão NOWAY.");
+  if(!await checkAuth())throw Error("Acesso exclusivo de jogadores, GRI e gestão NOWAY.");
   if(trendViewer!==user.id)initTrends();
   const {data,error}=await db.rpc("noway_team_hub_v1");if(error)throw error;
   if(run!==generation||!active())return;
