@@ -493,3 +493,12 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Validação: sintaxe JS testada; não houve navegação real por navegador autenticado nem perfilamento de FPS/largura de banda. Confirmar commit e deploy Vercel READY; se continuar ocorrendo, solicitar qual página/aba e vídeo do problema.
 
 - Ajuste adicional (21/10): `noway-console.js` deixou de forçar `scrollIntoView` para avisos de erro de consultas automáticas, evitando subir a página durante falhas temporárias. Continua mostrando a mensagem no sistema, sem retirar informações de erro. Versão do script da página `painel.html` atualizada para quebrar cache.
+
+## Atualização editorial do elenco — 29/10/2026
+
+- Pedido explícito do Founder: mover **Prado** e **Ace somente do elenco público** para **Menções Honrosas**. Esta mudança não revoga funções, cargos, contas NOWAY ID, vínculos internos nem permissões de ninguém.
+- `site-data.js`: removidos os registros editoriais de Prado e Ace de `team` e transferidos para `honorableMentions`, com homenagens sobre Prado como primeiro Team Manager e colaborador da fundação, e Ace como primeiro GRI e responsável por indicações e fortalecimento da comunidade. Fotografias originais, biografias e redes foram preservadas. Jhonny permanece nas Menções Honrosas, sem alterações.
+- `index.html`: contador de cards em “TODOS” ajustado de 05 para 03 (Nielss Uno + duas vagas abertas) e atualizada a versão de cache de `site-data.js` para refletir a mudança no navegador. A seção administrativa pública, incluindo a referência ao Prado como TM, não foi modificada.
+- Sem alterações em arquivos do NOWAY ID, Supabase, RLS, funções backend ou permissões; sem alteração de CSS, estrutura do site ou implementação de novas funcionalidades.
+- **Observação:** componentes de mídia que consultam apenas `team` deixam de considerar Prado e Ace como integrantes do elenco atual. Nenhuma alteração foi feita nesses componentes.
+- **Validação:** inspeção de consistência da coleção e sintaxe JavaScript; publicação no GitHub confirmada por commit, com deploy da Vercel e teste visual a verificar separadamente.
