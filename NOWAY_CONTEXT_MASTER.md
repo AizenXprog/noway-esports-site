@@ -510,3 +510,12 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `index.html`: contador de “TODOS” voltou a **05** (Nielss Uno + quatro cards de VAGA ABERTA) e atualizada a versão de cache de `site-data.js`.
 - `honorableMentions` permanece intacta com Jhonny, Prado e Ace, mantendo homenagens, biografias, fotos e redes anteriores. Sem alterações em gestão, NOWAY ID, Supabase, cargos, acesso, permissões, recrutamento privado ou design/CSS.
 - Validação: sintaxe JavaScript e estruturas esperadas verificadas antes do commit. GitHub deve ser verificado após gravação; deploy e teste visual na Vercel permanecem verificações independentes.
+
+## Descoberta em buscadores — 29/10/2026
+
+- Pedido do Founder: começar otimização de busca da NOWAY, com instruções e execução em uma etapa por vez.
+- Nesta primeira etapa, foram criados `sitemap.xml` (somente páginas públicas `/`, `/comunidade`, `/recrutamento`, `/desafios`) e `robots.txt` permitindo rastreamento e declarando o sitemap. Endereço canônico: `https://noway-esports-site.vercel.app/`.
+- `comunidade.html`, `recrutamento.html` e `desafios.html`: somente os metadados `rel=canonical` e `og:url` foram alinhados às rotas sem extensão geradas por `vercel.json` (`cleanUrls=true`). Nada foi alterado no conteúdo visual, nas candidaturas, no backend ou nas permissões.
+- Excluídos do sitemap: painel NOWAY ID, links administrativos/autenticados, mensagens e outros recursos privados. Sitemap não é uma autorização de acesso nem uma regra de segurança.
+- A verificação de propriedade no Google Search Console e o envio do sitemap ainda dependem de ação da conta Google do Founder. Indexação/posicionamento não são garantidos.
+- Validação pendente: confirmar a publicação na Vercel e o acesso HTTP aos arquivos; commits GitHub não comprovam deploy nem indexação.
