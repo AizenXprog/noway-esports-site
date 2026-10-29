@@ -502,3 +502,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Sem alterações em arquivos do NOWAY ID, Supabase, RLS, funções backend ou permissões; sem alteração de CSS, estrutura do site ou implementação de novas funcionalidades.
 - **Observação:** componentes de mídia que consultam apenas `team` deixam de considerar Prado e Ace como integrantes do elenco atual. Nenhuma alteração foi feita nesses componentes.
 - **Validação:** inspeção de consistência da coleção e sintaxe JavaScript; publicação no GitHub confirmada por commit, com deploy da Vercel e teste visual a verificar separadamente.
+
+## Ajuste de vagas após as Menções Honrosas — 29/10/2026
+
+- Solicitação do Founder: após mover Prado e Ace apenas para Menções Honrosas, manter **cinco posições visuais** no elenco público, substituindo os dois espaços desocupados por cards iguais aos de **VAGA ABERTA**.
+- `site-data.js`: incluídas duas posições editoriais de recrutamento em 2º e 3º lugares: **Âncora / Suporte** (posição anteriormente exibida por Prado) e **Flex** (posição anteriormente exibida por Ace). Preservadas as outras duas vagas existentes de **2º Entry / Lurker** e **Âncora / Suporte**; são, portanto, duas posições de Âncora / Suporte no elenco público, sem modificar nenhuma vaga anterior.
+- `index.html`: contador de “TODOS” voltou a **05** (Nielss Uno + quatro cards de VAGA ABERTA) e atualizada a versão de cache de `site-data.js`.
+- `honorableMentions` permanece intacta com Jhonny, Prado e Ace, mantendo homenagens, biografias, fotos e redes anteriores. Sem alterações em gestão, NOWAY ID, Supabase, cargos, acesso, permissões, recrutamento privado ou design/CSS.
+- Validação: sintaxe JavaScript e estruturas esperadas verificadas antes do commit. GitHub deve ser verificado após gravação; deploy e teste visual na Vercel permanecem verificações independentes.
