@@ -519,3 +519,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Excluídos do sitemap: painel NOWAY ID, links administrativos/autenticados, mensagens e outros recursos privados. Sitemap não é uma autorização de acesso nem uma regra de segurança.
 - A verificação de propriedade no Google Search Console e o envio do sitemap ainda dependem de ação da conta Google do Founder. Indexação/posicionamento não são garantidos.
 - Validação pendente: confirmar a publicação na Vercel e o acesso HTTP aos arquivos; commits GitHub não comprovam deploy nem indexação.
+
+## Inclusão de yRaccon no elenco — 30/10/2026
+
+- Pedido do Founder: incluir **yRaccon** no elenco público da NOWAY como **Âncora / Suporte** e exibir o novo título de gestão **Gestor**. "Gestor" é distinto de Team Manager/GRI.
+- `site-data.js`: substituída somente a vaga `vaga-ancora-2` (posição 02) pelo registro `yraccon`; preservadas as demais três vagas, o card do Founder e as Menções Honrosas. Biografia está marcada 'Biografia em breve.' e será substituída pelo texto original a enviar pelo Founder. Foto editorial foi recebida na conversa em PNG original, mas ainda não está no repositório; não foi inserida uma referência quebrada. O card apresenta monograma YR provisoriamente.
+- A transferência do asset fotográfico original está **pendente**: anexar sem alterações ao repositório em `assets/yraccon-original.png` e atualizar `site-data.js` com `image:'assets/yraccon-original.png'`. Não gerar, estilizar ou recriar a foto.
+- `index.html`: somente a versão do cache de `site-data.js` foi atualizada; o número de cards continua 05. Não houve alterações de HTML, CSS, Supabase, NOWAY ID ou permissões de cargos. Este é apenas um rótulo **público**, não uma role de autorização interna.
+- Validação: conferir sequência de cards, status das Menções Honrosas, sintaxe de JavaScript e commit no GitHub; deploy na Vercel deve ser verificado separadamente.
