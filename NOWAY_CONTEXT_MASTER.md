@@ -562,3 +562,6 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Em `site-data.js`, adicionadas ao perfil do Guizxn as redes TikTok `https://www.tiktok.com/@imissheerrr`, Instagram `https://www.instagram.com/dll.gui/` (sem parâmetros de rastreamento) e Twitch `https://www.twitch.tv/guizxnn171` (endereço canônico do canal informado). Perfil e biografia não foram modificados.
 - Em `index.html`, atualizado apenas o parâmetro de cache do `site-data.js` para favorecer a propagação de redes sociais. A fotografia mantém o mesmo caminho e pode precisar de atualização de cache do navegador ou origem.
 - Nenhuma mudança no elenco de terceiros, no design, NOWAY ID, backend, cargos ou permissões. Verificar deploy READY e a imagem em produção separadamente após o commit.
+
+
+**Ajuste final de cache — 30/10/2026:** para impedir que navegadores e CDN reutilizem a fotografia antiga de 256 px, a foto WebP lossless de 1086 × 1448 agora é publicada como `assets/guizxn-elenco-hd.webp`, e somente o registro `guizxn` em `site-data.js` referencia esse arquivo novo. O arquivo de caminho antigo foi retirado da árvore do Git no mesmo commit; sem alteração de pixels ou outros perfis.
