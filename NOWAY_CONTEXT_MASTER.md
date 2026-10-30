@@ -527,3 +527,10 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - A transferência do asset fotográfico original está **pendente**: anexar sem alterações ao repositório em `assets/yraccon-original.png` e atualizar `site-data.js` com `image:'assets/yraccon-original.png'`. Não gerar, estilizar ou recriar a foto.
 - `index.html`: somente a versão do cache de `site-data.js` foi atualizada; o número de cards continua 05. Não houve alterações de HTML, CSS, Supabase, NOWAY ID ou permissões de cargos. Este é apenas um rótulo **público**, não uma role de autorização interna.
 - Validação: conferir sequência de cards, status das Menções Honrosas, sintaxe de JavaScript e commit no GitHub; deploy na Vercel deve ser verificado separadamente.
+
+## Foto pública de yRaccon — 30/10/2026
+
+- Autorização explícita do Founder para colocar a foto original de yRaccon no segundo card do elenco público.
+- Asset publicado em `assets/yraccon-original.webp` por codificação **WebP lossless** a partir do PNG original fornecido (`yraccon-original.png`), **sem alterar qualquer pixel** (igualdade integral RGBA validada após a conversão). O PNG original continua preservado no anexo da conversa. A conversão de formato foi necessária para transferência técnica ao repositório; não houve retoque, filtro, corte, redimensionamento ou geração de imagem.
+- `site-data.js`: somente a propriedade `image` foi acrescentada ao jogador `yraccon`; `index.html` atualizou versão de cache. O elenco segue com 5 posições, três vagas e três Menções Honrosas inalteradas.
+- Sem alteração de Supabase, NOWAY ID, roles/permissões, biografia ou outros assets. Validação: fonte original e arquivo WebP têm pixels RGBA idênticos, asset GitHub presente, estrutura JS validada; conferir deploy Vercel READY independentemente.
