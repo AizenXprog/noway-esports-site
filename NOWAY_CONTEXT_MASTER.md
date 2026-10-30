@@ -554,3 +554,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `index.html`: alteração apenas do sufixo de cache de `site-data.js` para atualização nos navegadores.
 - Não foram alterados o NOWAY ID, as permissões do GRI, os demais jogadores, as Menções Honrosas nem o visual da página.
 - GitHub: asset criado como blob `1d0c6bab68f185907dea008cbd5d4238b01a4080`; verificação de deploy READY e carregamento HTTP da imagem deve ser registrada separadamente.
+
+
+## Foto em alta resolução e redes sociais de Guizxn — 30/10/2026
+
+- Correção solicitada: a foto anterior do card do Guizxn havia sido publicada com largura 256px e estava visivelmente pixelizada. O mesmo caminho `assets/guizxn-elenco.webp` passa a apontar para uma nova imagem WebP **lossless de 1086 × 1448**, gerada a partir do PNG fornecido pelo Founder nesta conversa, sem alterações de pixels, retoque, corte ou redimensionamento. Integridade comprovada comparando pixel a pixel e SHA do blob `c9c2d2fac489e301905ba567ab63a9a28a4d8ae9`.
+- Em `site-data.js`, adicionadas ao perfil do Guizxn as redes TikTok `https://www.tiktok.com/@imissheerrr`, Instagram `https://www.instagram.com/dll.gui/` (sem parâmetros de rastreamento) e Twitch `https://www.twitch.tv/guizxnn171` (endereço canônico do canal informado). Perfil e biografia não foram modificados.
+- Em `index.html`, atualizado apenas o parâmetro de cache do `site-data.js` para favorecer a propagação de redes sociais. A fotografia mantém o mesmo caminho e pode precisar de atualização de cache do navegador ou origem.
+- Nenhuma mudança no elenco de terceiros, no design, NOWAY ID, backend, cargos ou permissões. Verificar deploy READY e a imagem em produção separadamente após o commit.
