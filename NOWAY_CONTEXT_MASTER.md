@@ -565,3 +565,11 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 
 
 **Ajuste final de cache — 30/10/2026:** para impedir que navegadores e CDN reutilizem a fotografia antiga de 256 px, a foto WebP lossless de 1086 × 1448 agora é publicada como `assets/guizxn-elenco-hd.webp`, e somente o registro `guizxn` em `site-data.js` referencia esse arquivo novo. O arquivo de caminho antigo foi retirado da árvore do Git no mesmo commit; sem alteração de pixels ou outros perfis.
+
+
+## Redes sociais do yRaccon — 30/10/2026
+
+- Pedido: adicionar no perfil público do jogador **yRaccon** links de redes sociais informados pelo Founder: Twitch `https://www.twitch.tv/yraccon` e YouTube `https://www.youtube.com/@yRaccon`.
+- `site-data.js`: somente o array `socials` do registro `yraccon` foi atualizado, seguindo o padrão dos demais perfis. Nenhum texto de stream/descrição de canal foi convertido em biografia, e foto, status, função e nome permaneceram iguais.
+- `index.html`: atualizado somente o parâmetro de versão do `site-data.js` para evitar dados antigos em cache.
+- Sem alteração de Supabase, NOWAY ID, permissões, CSS, estrutura de páginas, demais jogadores ou Menções Honrosas. Publicação e testes de interface são verificações separadas.
