@@ -544,3 +544,13 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - **Foto pendente de envio ao GitHub:** recebida do Founder como PNG original de 1086 × 1448, preparada localmente como `guizxn-original.webp` por compressão WebP lossless, com igualdade de pixels RGBA validada. A transferência binária ao repositório **não foi realizada**; portanto `image` ainda **não** consta na ficha e o card usa iniciais `GX`. NÃO afirmar que a foto está publicada. Quando o asset for de fato adicionado em `assets/guizxn-original.webp`, acrescentar a propriedade `image` no registro do jogador e atualizar o cache da home.
 - **Sem alteração de banco/Supabase, permissões de GRI, NOWAY ID ou contas.** GRI já é cargo existente no projeto e a atribuição editorial no elenco não modifica o cargo real de qualquer conta.
 - Commits desta etapa: `7c2b7fec238923c08418d7ea66b5d671e6646cb2` (`site-data.js`) e `2139ab0b29810393092e59b81ec92c64ad94fda9` (`index.html`). Conferir deploy Vercel READY separadamente; foto permanece pendente.
+
+
+## Foto pública do Guizxn — 30/10/2026
+
+- Pedido: incluir no card do elenco a foto enviada pelo Founder de **Guizxn / Guilherme Domingues**, função competitiva **Flex** e cargo editorial **GRI**.
+- O cadastro público `guizxn` já existia em `site-data.js`, com biografia integral. Foi preservado e recebeu `image: 'assets/guizxn-elenco.webp'`.
+- Imagem: criada a partir da **foto fornecida**, sem geração, retoque, substituição de rosto ou alteração de composição. A versão disponibilizada no repositório é WebP otimizado para tela, 256 px de largura; o original fornecido permanece no anexo da conversa e a cópia lossless de alta resolução foi preparada localmente, mas não está no repositório. Portanto **não afirmar igualdade de pixels ou arquivo original em resolução integral**.
+- `index.html`: alteração apenas do sufixo de cache de `site-data.js` para atualização nos navegadores.
+- Não foram alterados o NOWAY ID, as permissões do GRI, os demais jogadores, as Menções Honrosas nem o visual da página.
+- GitHub: asset criado como blob `1d0c6bab68f185907dea008cbd5d4238b01a4080`; verificação de deploy READY e carregamento HTTP da imagem deve ser registrada separadamente.
