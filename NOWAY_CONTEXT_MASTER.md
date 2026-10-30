@@ -534,3 +534,13 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - Asset publicado em `assets/yraccon-original.webp` por codificação **WebP lossless** a partir do PNG original fornecido (`yraccon-original.png`), **sem alterar qualquer pixel** (igualdade integral RGBA validada após a conversão). O PNG original continua preservado no anexo da conversa. A conversão de formato foi necessária para transferência técnica ao repositório; não houve retoque, filtro, corte, redimensionamento ou geração de imagem.
 - `site-data.js`: somente a propriedade `image` foi acrescentada ao jogador `yraccon`; `index.html` atualizou versão de cache. O elenco segue com 5 posições, três vagas e três Menções Honrosas inalteradas.
 - Sem alteração de Supabase, NOWAY ID, roles/permissões, biografia ou outros assets. Validação: fonte original e arquivo WebP têm pixels RGBA idênticos, asset GitHub presente, estrutura JS validada; conferir deploy Vercel READY independentemente.
+
+
+## Inclusão de Guizxn no elenco público — 30/10/2026
+
+- Pedido explícito do Founder: incluir **Guizxn** (Guilherme Domingues, 21 anos) como **jogador Flex** e **GRI** (Gestor de Recrutamento e Indicação) no elenco público, com a biografia integral enviada e fotografia original.
+- `site-data.js`: substituída exclusivamente a vaga `vaga-flex` pela ficha `guizxn`, com `role: 'Flex'`, `management: 'GRI'`, `status: 'No elenco'`, iniciais `GX` e texto biográfico integral. A coleção mantém cinco cards. Menções Honrosas e demais jogadores permanecem inalterados.
+- `index.html`: atualizada a versão de cache do `site-data.js`, para o navegador buscar a nova ficha.
+- **Foto pendente de envio ao GitHub:** recebida do Founder como PNG original de 1086 × 1448, preparada localmente como `guizxn-original.webp` por compressão WebP lossless, com igualdade de pixels RGBA validada. A transferência binária ao repositório **não foi realizada**; portanto `image` ainda **não** consta na ficha e o card usa iniciais `GX`. NÃO afirmar que a foto está publicada. Quando o asset for de fato adicionado em `assets/guizxn-original.webp`, acrescentar a propriedade `image` no registro do jogador e atualizar o cache da home.
+- **Sem alteração de banco/Supabase, permissões de GRI, NOWAY ID ou contas.** GRI já é cargo existente no projeto e a atribuição editorial no elenco não modifica o cargo real de qualquer conta.
+- Commits desta etapa: `7c2b7fec238923c08418d7ea66b5d671e6646cb2` (`site-data.js`) e `2139ab0b29810393092e59b81ec92c64ad94fda9` (`index.html`). Conferir deploy Vercel READY separadamente; foto permanece pendente.
