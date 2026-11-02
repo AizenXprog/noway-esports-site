@@ -573,3 +573,13 @@ Este arquivo é APENAS documentação. Não constitui autorização de desenvolv
 - `site-data.js`: somente o array `socials` do registro `yraccon` foi atualizado, seguindo o padrão dos demais perfis. Nenhum texto de stream/descrição de canal foi convertido em biografia, e foto, status, função e nome permaneceram iguais.
 - `index.html`: atualizado somente o parâmetro de versão do `site-data.js` para evitar dados antigos em cache.
 - Sem alteração de Supabase, NOWAY ID, permissões, CSS, estrutura de páginas, demais jogadores ou Menções Honrosas. Publicação e testes de interface são verificações separadas.
+
+
+## Destaque de parceria NOWAY × Loja Trezzy — 02/11/2026
+
+- Pedido explícito do Founder: criar uma área chamativa na tela inicial da NOWAY para anunciar parceria com Loja Trezzy, link `https://www.wwws.services/`, cupom `NIEL5` para **10% de desconto**, com animação e identidade visual premium.
+- `index.html`: seção `#partner` após os quatro cards da descoberta do lobby e antes do elenco; adicionados links `PARCERIA` ao menu desktop e mobile, sem remover os links existentes. Incluídos os arquivos CSS/JS independentes com versão.
+- `noway-partner.css`: painel preto/grafite/amarelo, título de destaque, cupom, indicador de 10%, animações suaves com suporte a `prefers-reduced-motion`, responsividade e contraste.
+- `noway-partner.js`: botão de copiar `NIEL5` com confirmação e alternativa para navegadores sem Clipboard API.
+- Não foram adicionadas marcas/logos não fornecidas; rótulos NOWAY e Loja Trezzy são tipográficos. Preservados os quatro cards originais e seções de elenco, recrutamento, competição, NOWAY ID, banco de dados e permissões.
+- Validações: GitHub commit/deploy Vercel READY e testes de interface são verificações independentes; consultar após aplicação. Sem mudanças no backend.
